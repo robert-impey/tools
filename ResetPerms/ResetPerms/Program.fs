@@ -1,6 +1,7 @@
 ﻿open System.IO
 open System
 open System.Diagnostics
+open System.CommandLine
 
 type LocationFolder = {
     Location : string
@@ -124,24 +125,24 @@ let searchLogsDirectory
 
 [<EntryPoint>]
 let main(args) = 
-    match args.Length with
-    | 0 -> printfn "Tell me what to do!"
-    | 1 -> 
-        let logsDirectory = args.[0]
+    let directoryOption = Option<string>("--directory")
 
-        let locations = [
-            "c:/Users/rober/Dropbox"
-            "c:/Users/rober/OneDrive"
-            "x:"
-            "z:"
-        ]
+    let rootCommand = RootCommand("Reset permissions for files that failed synch")
+    rootCommand.AddOption(directoryOption)
+    let locations = [
+        "c:/Users/rober/Dropbox"
+        "c:/Users/rober/OneDrive"
+        "x:"
+        "z:"
+    ]
 
-        let resetScriptDirectory = 
-            Path.Combine(
-                System.Environment.GetEnvironmentVariable("USERPROFILE"),
-                "autogen",
-                "reset-perms")
+    let resetScriptDirectory = 
+        Path.Combine(
+            System.Environment.GetEnvironmentVariable("USERPROFILE"),
+            "autogen",
+            "reset-perms")
 
-        searchLogsDirectory locations resetScriptDirectory logsDirectory
-    | _ -> printfn "Unrecognised input!"
-    0
+    let sLD = searchLogsDirectory locations resetScriptDirectory
+    rootCommand.SetHandler(sLD, directoryOption)
+    
+    rootCommand.Invoke(args)
