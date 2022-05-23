@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ResetPerms": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\synchronisation"
+    }
+  }
+}
