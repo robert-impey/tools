@@ -49,7 +49,8 @@ let convertCygwinToWindows (file : string) =
         let shortened = file.Substring(startIndex)
 
         if shortened.[1] = '/' then
-            Some (shortened.Substring(0, 1) + ":" + shortened.Substring(1))
+            let path = shortened.Substring(0, 1) + ":" + shortened.Substring(1)
+            Some (path.Replace('/', '\\'))
         else
             None
     else
@@ -65,7 +66,7 @@ let failedFileToLocationFolder (locations : string list) (failedFile: string) =
         match locations' with
         | [] -> None
         | x :: xs ->
-            if failedFile.StartsWith(x) then
+            if failedFile.StartsWith(x, StringComparison.InvariantCultureIgnoreCase) then
                 Some x
             else
                 findLocation xs
@@ -76,7 +77,7 @@ let failedFileToLocationFolder (locations : string list) (failedFile: string) =
         let startIndex = location'.Length + 1
         let pathInLocation = failedFile.Substring(startIndex)
 
-        let endIndex = pathInLocation.IndexOf('/')
+        let endIndex = pathInLocation.IndexOf('\\')
 
         if endIndex < 0 then 
             None
@@ -123,18 +124,22 @@ let searchLogsDirectory
                 printfn "Skipping %s" batch
     | None -> printfn "No error files found"
 
+let readLocationsFile (locationsFile: string) = 
+    let f = fun s ->
+        if String.IsNullOrWhiteSpace(s) then None
+        else Some s
+    File.ReadAllLines(locationsFile)
+    |> Array.toList
+    |> List.choose(f)
+
 [<EntryPoint>]
 let main(args) = 
     let directoryOption = Option<string>("--directory")
+    let locationsOption = Option<string>("--locations")
 
     let rootCommand = RootCommand("Reset permissions for files that failed synch")
     rootCommand.AddOption(directoryOption)
-    let locations = [
-        "c:/Users/rober/Dropbox"
-        "c:/Users/rober/OneDrive"
-        "x:"
-        "z:"
-    ]
+    rootCommand.AddOption(locationsOption)
 
     let resetScriptDirectory = 
         Path.Combine(
@@ -142,7 +147,10 @@ let main(args) =
             "autogen",
             "reset-perms")
 
-    let sLD = searchLogsDirectory locations resetScriptDirectory
-    rootCommand.SetHandler(sLD, directoryOption)
+    rootCommand.SetHandler(
+        fun (logsDirectory: string) (locationsFile: string) ->
+            let locations = readLocationsFile locationsFile
+            searchLogsDirectory locations resetScriptDirectory logsDirectory
+        , directoryOption, locationsOption)
     
     rootCommand.Invoke(args)
