@@ -91,7 +91,7 @@ let failedFileToLocationFolder (locations : string list) (failedFile: string) =
 
 let locationFolderToBatch (resetScriptDirectory : string) (locationFolder: LocationFolder) =
 
-    let location = locationFolder.Location.Replace('/', '_')
+    let location = locationFolder.Location.Replace('\\', '_')
 
     let indexOfColon = location.IndexOf(':')
 
