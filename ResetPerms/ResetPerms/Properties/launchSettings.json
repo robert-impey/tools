@@ -2,7 +2,7 @@
   "profiles": {
     "ResetPerms": {
       "commandName": "Project",
-      "commandLineArgs": "--directory C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\synchronisation --locations C:\\Users\\rober\\OneDrive\\local-scripts\\hiroko\\reset-perms\\locations.txt"
+      "commandLineArgs": "--directory C:\\Users\\rober\\logs\\synch --locations C:\\Users\\rober\\OneDrive\\local-scripts\\aya\\reset-perms\\locations.txt"
     }
   }
 }
