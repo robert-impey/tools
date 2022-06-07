@@ -1,7 +1,6 @@
 ﻿open System.IO
 open System
 open System.Diagnostics
-open System.CommandLine
 
 type LocationFolder = {
     Location : string
@@ -13,28 +12,23 @@ let findLatestErrFileFromTheLastDay logsDirectory =
 
     let errFiles = logsDirectoryInfo.GetFiles("*.err")
 
-    let lastDayFilter = fun (fi: FileInfo) ->
-        fi.LastAccessTimeUtc > DateTime.UtcNow.AddDays(-1)
-
-    let errFilesInLastDay = errFiles |> Array.where(lastDayFilter)
-
     let hasContentFilter = fun (fi: FileInfo) ->
         fi.Length > 0
 
-    let errFilesWithContent = errFilesInLastDay |> Array.where (hasContentFilter)
+    let errFilesWithContent = errFiles |> Array.where (hasContentFilter)
 
     match errFilesWithContent.Length with
     | 0 -> None
-    | 1 -> Some errFilesInLastDay.[0]
+    | 1 -> Some errFiles.[0]
     | _ ->
         let sortedByDate = 
-            errFilesInLastDay |> Array.sortBy (fun (fi: FileInfo) -> fi.LastAccessTimeUtc)
+            errFiles |> Array.sortByDescending (fun (fi: FileInfo) -> fi.LastAccessTimeUtc)
            
         Some sortedByDate.[0]
 
 let extractFailedFile (file: string) =
-    let prefix = "rsync: [sender] send_files failed to open \""
-    let postfix = "\": Permission denied (13)"
+    let prefix = "rsync: [generator] failed to set permissions on \""
+    let postfix = ".\": Permission denied (13)"
     if file.StartsWith(prefix) && file.EndsWith(postfix) then
         let startIndex = prefix.Length
         let endIndex = file.Length - (prefix.Length + postfix.Length)
@@ -134,23 +128,27 @@ let readLocationsFile (locationsFile: string) =
 
 [<EntryPoint>]
 let main(args) = 
-    let directoryOption = Option<string>("--directory")
-    let locationsOption = Option<string>("--locations")
-
-    let rootCommand = RootCommand("Reset permissions for files that failed synch")
-    rootCommand.AddOption(directoryOption)
-    rootCommand.AddOption(locationsOption)
+    let locationsFile =
+        Path.Combine(
+            System.Environment.GetEnvironmentVariable("USERPROFILE"),
+            "OneDrive",
+            "local-scripts",
+            System.Environment.GetEnvironmentVariable("ComputerName"),
+            "reset-perms",
+            "locations.txt")
 
     let resetScriptDirectory = 
         Path.Combine(
             System.Environment.GetEnvironmentVariable("USERPROFILE"),
             "autogen",
             "reset-perms")
-
-    rootCommand.SetHandler(
-        fun (logsDirectory: string) (locationsFile: string) ->
-            let locations = readLocationsFile locationsFile
-            searchLogsDirectory locations resetScriptDirectory logsDirectory
-        , directoryOption, locationsOption)
     
-    rootCommand.Invoke(args)
+    let logsDirectory = Path.Combine(
+        System.Environment.GetEnvironmentVariable("USERPROFILE"),
+        "logs",
+        "synch")
+
+    let locations = readLocationsFile locationsFile
+    searchLogsDirectory locations resetScriptDirectory logsDirectory
+    0
+    

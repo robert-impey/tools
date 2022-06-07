@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ResetPerms": {
-      "commandName": "Project",
-      "commandLineArgs": "--directory C:\\Users\\rober\\logs\\synch --locations C:\\Users\\rober\\OneDrive\\local-scripts\\aya\\reset-perms\\locations.txt"
+      "commandName": "Project"
     }
   }
 }
