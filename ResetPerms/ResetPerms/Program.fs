@@ -1,6 +1,7 @@
 ﻿open System.IO
 open System
 open System.Diagnostics
+open System.CommandLine
 
 type LocationFolder = {
     Location : string
@@ -27,8 +28,10 @@ let findLatestErrFileFromTheLastDay logsDirectory =
         Some sortedByDate.[0]
 
 let extractFailedFile (file: string) =
-    let prefix = "rsync: [generator] failed to set permissions on \""
-    let postfix = ".\": Permission denied (13)"
+    let prefix = "rsync: [sender] send_files failed to open \""
+    //let prefix = "rsync: [generator] failed to set permissions on \""
+    let postfix = "\": Permission denied (13)"
+    //let postfix = ".\": Permission denied (13)"
     if file.StartsWith(prefix) && file.EndsWith(postfix) then
         let startIndex = prefix.Length
         let endIndex = file.Length - (prefix.Length + postfix.Length)
@@ -97,7 +100,7 @@ let locationFolderToBatch (resetScriptDirectory : string) (locationFolder: Locat
     Path.Combine(resetScriptDirectory, script)
 
 let searchLogsDirectory 
-    (locations : string list) (resetScriptDirectory : string) (logsDirectory : string) =
+    (dryRun : bool) (locations : string list) (resetScriptDirectory : string) (logsDirectory : string) =
     let latestErrFile = findLatestErrFileFromTheLastDay logsDirectory
 
     match latestErrFile with
@@ -111,9 +114,12 @@ let searchLogsDirectory
             let batch = locationFolderToBatch resetScriptDirectory failed
             if (File.Exists(batch)) then
                 printfn "Executing %s" batch
-                let batchProcess = Process.Start(batch)
-                batchProcess.WaitForExit()
-                batchProcess.Close()
+                if dryRun then
+                    printfn "DRY RUN (execution skipped)"
+                else
+                    let batchProcess = Process.Start(batch)
+                    batchProcess.WaitForExit()
+                    batchProcess.Close()
             else
                 printfn "Skipping %s" batch
     | None -> printfn "No error files found"
@@ -128,6 +134,8 @@ let readLocationsFile (locationsFile: string) =
 
 [<EntryPoint>]
 let main(args) = 
+    let dryRunOption = Option<bool>("--dry-run", fun () -> false)
+
     let locationsFile =
         Path.Combine(
             System.Environment.GetEnvironmentVariable("USERPROFILE"),
@@ -148,7 +156,14 @@ let main(args) =
         "logs",
         "synch")
 
-    let locations = readLocationsFile locationsFile
-    searchLogsDirectory locations resetScriptDirectory logsDirectory
-    0
+    let rootCommand = RootCommand("Reset permissions for files that failed synch")
+    rootCommand.AddOption(dryRunOption)
+
+    rootCommand.SetHandler(
+        fun (dryRun: bool) ->
+            let locations = readLocationsFile locationsFile
+            searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
+        , dryRunOption)
+    
+    rootCommand.Invoke(args)
     

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ResetPerms": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--dry-run"
     }
   }
 }
