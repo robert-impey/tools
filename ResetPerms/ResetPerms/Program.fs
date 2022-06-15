@@ -130,6 +130,19 @@ let searchLogsDirectory
                 printfn "Skipping %s" batch
     | None -> printfn "No error files found"
 
+let findDefaultLocationsFile () =
+    let name = Path.Combine(
+        System.Environment.GetEnvironmentVariable("USERPROFILE"),
+        "OneDrive",
+        "local-scripts",
+        System.Environment.GetEnvironmentVariable("ComputerName"),
+        "reset-perms",
+        "locations.txt")
+    if (File.Exists(name)) then
+        Some name
+    else
+        None
+
 let readLocationsFile (locationsFile: string) = 
     let f = fun s ->
         if String.IsNullOrWhiteSpace(s) then None
@@ -142,14 +155,7 @@ let readLocationsFile (locationsFile: string) =
 let main(args) = 
     let dryRunOption = Option<bool>("--dry-run", fun () -> false)
 
-    let locationsFile =
-        Path.Combine(
-            System.Environment.GetEnvironmentVariable("USERPROFILE"),
-            "OneDrive",
-            "local-scripts",
-            System.Environment.GetEnvironmentVariable("ComputerName"),
-            "reset-perms",
-            "locations.txt")
+    let locationsFile = findDefaultLocationsFile ()
 
     let resetScriptDirectory = 
         Path.Combine(
@@ -167,8 +173,13 @@ let main(args) =
 
     rootCommand.SetHandler(
         fun (dryRun: bool) ->
-            let locations = readLocationsFile locationsFile
-            searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
+            match locationsFile with
+            | Some locationsFile' ->
+                let locations = readLocationsFile locationsFile'
+                searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
+            | None ->
+                printfn "No locations file found"
+
         , dryRunOption)
     
     rootCommand.Invoke(args)
