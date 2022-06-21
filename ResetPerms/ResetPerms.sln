@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ResetPerms", "ResetPerms\ResetPerms.fsproj", "{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ResetPerms.Test", "ResetPerms.Test\ResetPerms.Test.fsproj", "{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
