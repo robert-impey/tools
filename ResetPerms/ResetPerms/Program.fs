@@ -8,7 +8,7 @@ type LocationFolder = {
     Folder : string
 }
 
-let findLatestErrFileFromTheLastDay logsDirectory =
+let findLatestErrFile logsDirectory =
     let logsDirectoryInfo = System.IO.DirectoryInfo(logsDirectory)
 
     let errFiles = logsDirectoryInfo.GetFiles("*.err")
@@ -107,7 +107,7 @@ let locationFolderToBatch (resetScriptDirectory : string) (locationFolder: Locat
 
 let searchLogsDirectory 
     (dryRun : bool) (locations : string list) (resetScriptDirectory : string) (logsDirectory : string) =
-    let latestErrFile = findLatestErrFileFromTheLastDay logsDirectory
+    let latestErrFile = findLatestErrFile logsDirectory
 
     match latestErrFile with
     | Some latestErrFile' -> 
