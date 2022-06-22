@@ -5,7 +5,7 @@ open Xunit
 open ResetPerms.Cygwin
 
 [<Fact>]
-let ``My test`` () =
+let ``Can convert cygwin path`` () =
     let input = "/cygdrive/c/Users/rober/OneDrive/data/Nightly Cron Job Times.xlsx"
     let output =  convertCygwinToWindows input
     
