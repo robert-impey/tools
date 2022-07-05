@@ -14,40 +14,63 @@ let convertCygwinToWindows (file : string) =
     else
         None
 
-let extractFailedFile (file: string) =
-    let senderPrefix =
-        "rsync: [sender] send_files failed to open \""
+type RsyncLogLine ={
+    Actor: string
+    Message: string
+    FileName: string
+    ErrorMessage: string
+}
 
-    let senderPostfix =
-        "\": Permission denied (13)"
+let parseLogLine (logLine: string) : Option<RsyncLogLine> =
+    let rsyncPrefix = "rsync: ["
+    if logLine.StartsWith(rsyncPrefix) then
+        let indexStartActor = rsyncPrefix.Length
+        let logLineFromStartActor = logLine.Substring(indexStartActor)
+        let indexEndActor = logLineFromStartActor.IndexOf(']')
+        if indexEndActor > 0 then
+            let actor = logLineFromStartActor.Substring(0, indexEndActor)
 
-    let generatorPrefix =
-        "rsync: [generator] failed to set permissions on \""
+            let logLineFromEndActor = logLineFromStartActor.Substring(indexEndActor + 2)
 
-    let generatorPostfix =
-        ".\": Permission denied (13)"
+            let indexEndMessage = logLineFromEndActor.IndexOf('"')
 
-    if
-        file.StartsWith(senderPrefix)
-        && file.EndsWith(senderPostfix)
-    then
-        let startIndex = senderPrefix.Length
+            if indexEndMessage > 1 then
+                let message = logLineFromEndActor.Substring(0, indexEndMessage - 1)
 
-        let endIndex =
-            file.Length
-            - (senderPrefix.Length + senderPostfix.Length)
+                let logLineFromEndMessage = logLineFromEndActor.Substring(indexEndMessage + 1)
+                let indexEndFileName = logLineFromEndMessage.IndexOf('"')
 
-        Some(file.Substring(startIndex, endIndex))
-    elif
-        file.StartsWith(generatorPrefix)
-        && file.EndsWith(generatorPostfix)
-    then
-        let startIndex = generatorPrefix.Length
+                if indexEndFileName > 0 then
+                    let fileName = logLineFromEndMessage.Substring(0, indexEndFileName)
 
-        let endIndex =
-            file.Length
-            - (generatorPrefix.Length + generatorPostfix.Length)
+                    let logLineFromEndFileName = logLineFromEndMessage.Substring(indexEndFileName + 1)
+                    let failedStr = " failed: "
 
-        Some(file.Substring(startIndex, endIndex))
+                    if logLineFromEndFileName.StartsWith(failedStr) then
+                        let indexStartErrorMessage = failedStr.Length
+                        let errorMessage = logLineFromEndFileName.Substring(indexStartErrorMessage)
+
+                        Some { 
+                            Actor = actor 
+                            Message = message
+                            FileName = fileName
+                            ErrorMessage = errorMessage
+                        }
+                    else
+                        None
+                else
+                    None
+            else
+                None
+            
+        else
+            None
     else
         None
+
+let extractFailedFile (logLine: string) =
+    let parts = parseLogLine logLine
+
+    match parts with
+    | Some { FileName = fn } -> Some fn
+    | None -> None
