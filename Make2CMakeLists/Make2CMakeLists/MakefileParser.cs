@@ -59,7 +59,7 @@ internal static class MakefileParser
                 return value;
         }
 
-        return null;
+        return 17;
     }
 
     public static string? ParseVarLine(string varName, string line)
