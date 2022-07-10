@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Make2CMakeLists", "Make2CMakeLists\Make2CMakeLists.csproj", "{A83EE480-3A05-4E9C-8C72-CAD1976A173D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Make2CMakeLists.Tests", "Make2CMakeLists.Tests\Make2CMakeLists.Tests.csproj", "{86A85ECE-2CAF-4494-8CFF-BD011D3951ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A83EE480-3A05-4E9C-8C72-CAD1976A173D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A83EE480-3A05-4E9C-8C72-CAD1976A173D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A83EE480-3A05-4E9C-8C72-CAD1976A173D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A83EE480-3A05-4E9C-8C72-CAD1976A173D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86A85ECE-2CAF-4494-8CFF-BD011D3951ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A85ECE-2CAF-4494-8CFF-BD011D3951ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A85ECE-2CAF-4494-8CFF-BD011D3951ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A85ECE-2CAF-4494-8CFF-BD011D3951ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05091A01-CD64-4D62-9082-78595E8EB839}
+	EndGlobalSection
+EndGlobal

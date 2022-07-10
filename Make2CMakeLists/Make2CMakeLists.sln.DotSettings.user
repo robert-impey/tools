@@ -1,0 +1,9 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\rober\AppData\Local\Temp\JetBrains\ReSharperPlatformVs17\vAny_6cfa34d4\CoverageData\_Make2CMakeLists.1563791707\Snapshot\snapshot.utdcvr</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=52d09191_002Df7e3_002D4b9b_002D98d3_002D93d4930773ca/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" IsActive="True" Name="CanParseMakefile" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;MSTest::86A85ECE-2CAF-4494-8CFF-BD011D3951ED::net6.0::Make2CMakeLists.Tests.MakefileParserTests.CanParseMakefile&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::86A85ECE-2CAF-4494-8CFF-BD011D3951ED::net6.0::Make2CMakeLists.Tests.MakefileParserTests.CanParseCxxFlagsLine&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::86A85ECE-2CAF-4494-8CFF-BD011D3951ED::net6.0::Make2CMakeLists.Tests.MakefileParserTests.CanParseVarLine&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
