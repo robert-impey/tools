@@ -15,10 +15,10 @@ let convertCygwinToWindows (file : string) =
         None
 
 type RsyncLogLine ={
-    Actor: string
-    Message: string
-    FileName: string
-    ErrorMessage: string
+    Actor: string option
+    Message: string option
+    FileName: string option
+    ErrorMessage: string option
 }
 
 let parseLogLine (logLine: string) : Option<RsyncLogLine> =
@@ -27,50 +27,58 @@ let parseLogLine (logLine: string) : Option<RsyncLogLine> =
         let indexStartActor = rsyncPrefix.Length
         let logLineFromStartActor = logLine.Substring(indexStartActor)
         let indexEndActor = logLineFromStartActor.IndexOf(']')
+        
+        let noneRsyncLogLine = {
+            Actor = None
+            Message = None
+            FileName = None
+            ErrorMessage = None
+        }
+        
         if indexEndActor > 0 then
             let actor = logLineFromStartActor.Substring(0, indexEndActor)
 
             let logLineFromEndActor = logLineFromStartActor.Substring(indexEndActor + 2)
 
             let indexEndMessage = logLineFromEndActor.IndexOf('"')
-
+            
+            let actorRsyncLogLine = { noneRsyncLogLine with Actor = Some actor }
+            
             if indexEndMessage > 1 then
                 let message = logLineFromEndActor.Substring(0, indexEndMessage - 1)
 
+                let messageRsyncLogLine = { actorRsyncLogLine with Message = Some message }
+                
                 let logLineFromEndMessage = logLineFromEndActor.Substring(indexEndMessage + 1)
                 let indexEndFileName = logLineFromEndMessage.IndexOf('"')
 
                 if indexEndFileName > 0 then
                     let fileName = logLineFromEndMessage.Substring(0, indexEndFileName)
 
+                    let fileNameRsyncLogLine = { messageRsyncLogLine with FileName = Some fileName }
+                    
                     let logLineFromEndFileName = logLineFromEndMessage.Substring(indexEndFileName + 1)
-                    let failedStr = " failed: "
+                    let indexColon = logLineFromEndFileName.IndexOf(':')
 
-                    if logLineFromEndFileName.StartsWith(failedStr) then
-                        let indexStartErrorMessage = failedStr.Length
-                        let errorMessage = logLineFromEndFileName.Substring(indexStartErrorMessage)
+                    if indexColon >= 0 then
+                        let errorMessage = logLineFromEndFileName.Substring(indexColon + 2)
 
-                        Some { 
-                            Actor = actor 
-                            Message = message
-                            FileName = fileName
-                            ErrorMessage = errorMessage
+                        Some { fileNameRsyncLogLine with ErrorMessage = Some errorMessage
                         }
                     else
-                        None
+                        Some fileNameRsyncLogLine
                 else
-                    None
+                    Some messageRsyncLogLine
             else
-                None
-            
+                Some actorRsyncLogLine
         else
             None
     else
         None
 
-let extractFailedFile (logLine: string) =
+let extractFailedFile (logLine: string) : string option =
     let parts = parseLogLine logLine
 
     match parts with
-    | Some { FileName = fn } -> Some fn
+    | Some { FileName = fn } -> fn
     | None -> None
