@@ -122,7 +122,7 @@ let findDefaultLocationsFile () =
     let name =
         Path.Combine(
             System.Environment.GetEnvironmentVariable("USERPROFILE"),
-            "OneDrive",
+            "Dropbox",
             "local-scripts",
             System.Environment.GetEnvironmentVariable("ComputerName"),
             "reset-perms",
