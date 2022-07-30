@@ -90,6 +90,21 @@ let locationFolderToBatch (resetScriptDirectory: string) (locationFolder: Locati
 
     Path.Combine(resetScriptDirectory, script)
 
+let resetPermsFolder (dryRun: bool) (locationFolder: LocationFolder) (resetScriptDirectory: string) =
+    let batch = locationFolderToBatch resetScriptDirectory locationFolder
+
+    if (File.Exists(batch)) then
+        printfn "Executing %s" batch
+
+        if dryRun then
+            printfn "DRY RUN (execution skipped)"
+        else
+            let batchProcess = Process.Start(batch)
+            batchProcess.WaitForExit()
+            batchProcess.Close()
+    else
+        printfn "Skipping %s" batch
+
 let searchLogsDirectory (dryRun: bool) (locations: string list) (resetScriptDirectory: string) (logsDirectory: string) =
     let latestErrFile =
         findLatestErrFile logsDirectory
@@ -102,20 +117,7 @@ let searchLogsDirectory (dryRun: bool) (locations: string list) (resetScriptDire
             |> Array.distinct
 
         for failed in failedLocationFolders do
-            let batch =
-                locationFolderToBatch resetScriptDirectory failed
-
-            if (File.Exists(batch)) then
-                printfn "Executing %s" batch
-
-                if dryRun then
-                    printfn "DRY RUN (execution skipped)"
-                else
-                    let batchProcess = Process.Start(batch)
-                    batchProcess.WaitForExit()
-                    batchProcess.Close()
-            else
-                printfn "Skipping %s" batch
+            resetPermsFolder dryRun failed resetScriptDirectory
     | None -> printfn "No error files found"
 
 let findDefaultLocationsFile () =
