@@ -7,7 +7,7 @@ open ResetPerms.Cygwin
 
 type LocationFolder = { Location: string; Folder: string }
 
-let findLatestErrFile logsDirectory =
+let findLatestErrFileInfo logsDirectory =
     let logsDirectoryInfo =
         System.IO.DirectoryInfo(logsDirectory)
 
@@ -30,8 +30,8 @@ let findLatestErrFile logsDirectory =
 
         Some sortedByDate.[0]
 
-let extractFailedFiles (errFile: FileInfo) =
-    File.ReadAllLines(errFile.FullName)
+let extractFailedFiles (errFile: string) =
+    File.ReadAllLines(errFile)
     |> Array.choose (extractFailedFile)
     |> Array.choose (convertCygwinToWindows)
 
@@ -105,20 +105,14 @@ let resetPermsFolder (dryRun: bool) (locationFolder: LocationFolder) (resetScrip
     else
         printfn "Skipping %s" batch
 
-let searchLogsDirectory (dryRun: bool) (locations: string list) (resetScriptDirectory: string) (logsDirectory: string) =
-    let latestErrFile =
-        findLatestErrFile logsDirectory
+let searchLogsDirectory (dryRun: bool) (locations: string list) (resetScriptDirectory: string) (errFile: string) =
+    let failedLocationFolders =
+        extractFailedFiles errFile
+        |> Array.choose (failedFileToLocationFolder locations)
+        |> Array.distinct
 
-    match latestErrFile with
-    | Some latestErrFile' ->
-        let failedLocationFolders =
-            extractFailedFiles latestErrFile'
-            |> Array.choose (failedFileToLocationFolder locations)
-            |> Array.distinct
-
-        for failed in failedLocationFolders do
-            resetPermsFolder dryRun failed resetScriptDirectory
-    | None -> printfn "No error files found"
+    for failed in failedLocationFolders do
+        resetPermsFolder dryRun failed resetScriptDirectory
 
 let findDefaultLocationsFile () =
     let name =
@@ -159,20 +153,30 @@ let main (args) =
     let resetScriptDirectory =
         Path.Combine(System.Environment.GetEnvironmentVariable("USERPROFILE"), "autogen", "reset-perms")
 
-    let logsDirectory =
-        Path.Combine(System.Environment.GetEnvironmentVariable("USERPROFILE"), "logs", "synch")
+    let findDefaultErrFile () =
+        let logsDirectory = 
+            Path.Combine(System.Environment.GetEnvironmentVariable(
+                "USERPROFILE"), "logs", "synch")
+        let latestErrFileInfo = 
+            findLatestErrFileInfo logsDirectory
+        match latestErrFileInfo with
+        | Some latestErrFileInfo' -> latestErrFileInfo'.FullName
+        | None -> raise (ApplicationException "No error file found!")
+
+    let errFileOption = Option<string>("--err-file", findDefaultErrFile)
 
     let rootCommand =
         RootCommand("Reset permissions for files that failed synch")
 
     rootCommand.AddOption(dryRunOption)
     rootCommand.AddOption(locationsFileOption)
+    rootCommand.AddOption(errFileOption)
 
-    let handler (dryRun: bool) (locationsFile : string) =
+    let handler (dryRun: bool) (locationsFile : string) (errFile : string) =
         let locations = readLocationsFile locationsFile
 
-        searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
+        searchLogsDirectory dryRun locations resetScriptDirectory errFile
 
-    rootCommand.SetHandler(handler, dryRunOption, locationsFileOption)
+    rootCommand.SetHandler(handler, dryRunOption, locationsFileOption, errFileOption)
 
     rootCommand.Invoke(args)
