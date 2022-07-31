@@ -132,9 +132,9 @@ let findDefaultLocationsFile () =
         )
 
     if (File.Exists(name)) then
-        Some name
+        name
     else
-        None
+        raise (ApplicationException "No locations file found in the default location!")
 
 let readLocationsFile (locationsFile: string) =
     let f =
@@ -153,8 +153,8 @@ let main (args) =
     let dryRunOption =
         Option<bool>("--dry-run", (fun () -> false))
 
-    let locationsFile =
-        findDefaultLocationsFile ()
+    let locationsFileOption =
+        Option<string>("--locations-file", findDefaultLocationsFile)
 
     let resetScriptDirectory =
         Path.Combine(System.Environment.GetEnvironmentVariable("USERPROFILE"), "autogen", "reset-perms")
@@ -166,17 +166,13 @@ let main (args) =
         RootCommand("Reset permissions for files that failed synch")
 
     rootCommand.AddOption(dryRunOption)
+    rootCommand.AddOption(locationsFileOption)
 
-    rootCommand.SetHandler(
-        fun (dryRun: bool) ->
-            match locationsFile with
-            | Some locationsFile' ->
-                let locations =
-                    readLocationsFile locationsFile'
+    let handler (dryRun: bool) (locationsFile : string) =
+        let locations = readLocationsFile locationsFile
 
-                searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
-            | None -> printfn "No locations file found"
-        ,
-        dryRunOption)
+        searchLogsDirectory dryRun locations resetScriptDirectory logsDirectory
+
+    rootCommand.SetHandler(handler, dryRunOption, locationsFileOption)
 
     rootCommand.Invoke(args)

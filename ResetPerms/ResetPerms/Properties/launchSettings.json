@@ -2,7 +2,7 @@
   "profiles": {
     "ResetPerms": {
       "commandName": "Project",
-      "commandLineArgs": "--dry-run"
+      "commandLineArgs": "--dry-run --locations-file C:\\Users\\rober\\Dropbox\\local-scripts/neith\\reset-perms\\locations.txt"
     }
   }
 }
