@@ -2,11 +2,11 @@
 #include <fstream>
 #include <filesystem>
 
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
-using std::string;
 using std::ifstream;
+using std::string;
 
 namespace fs = std::filesystem;
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             if (test_file_starts_with_shebang(file)) {
                 fs::path path = file;
                 try {
-                    fs::permissions(path, fs::perms::owner_all); // Uses fs::perm_options::replace.
+                    fs::permissions(path, fs::perms::owner_all);
                 }
                 catch (std::exception& e) {
                     cerr << e.what() << endl;
