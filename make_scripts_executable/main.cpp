@@ -1,11 +1,16 @@
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
-using std::cout; using std::cerr;
-using std::endl; using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
 using std::ifstream;
 
-bool test_file_starts_with_shebang(const string& file);
+namespace fs = std::filesystem;
+
+bool test_file_starts_with_shebang(const string &file);
 
 int main(int argc, char *argv[]) {
     if (argc == 3) {
@@ -20,6 +25,24 @@ int main(int argc, char *argv[]) {
                 cout << "It does!" << endl;
             } else {
                 cout << "It does not!" << endl;
+            }
+
+            return 0;
+        }
+
+        if (task == "update") {
+            string file = argv[2];
+
+            if (test_file_starts_with_shebang(file)) {
+                fs::path path = file;
+                try {
+                    fs::permissions(path, fs::perms::owner_all); // Uses fs::perm_options::replace.
+                }
+                catch (std::exception& e) {
+                    cerr << e.what() << endl;
+                }
+            } else {
+                cout << file << " does not start with a shebang! Skipping." << endl;
             }
 
             return 0;
