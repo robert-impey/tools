@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 
 bool test_file_starts_with_shebang(const string &file);
 bool update_file(const string &file);
+void search(const string &path);
 
 int main(int argc, char *argv[]) {
     if (argc == 3) {
@@ -39,6 +40,14 @@ int main(int argc, char *argv[]) {
             } else {
                 cout << file << " does not start with a shebang! Skipping." << endl;
             }
+
+            return 0;
+        }
+
+        if (task == "search") {
+            string path = argv[2];
+
+            search(path);
 
             return 0;
         }
@@ -75,5 +84,13 @@ bool update_file(const string &file) {
     }
     catch (std::exception& e) {
         cerr << e.what() << endl;
+    }
+}
+
+void search(const string &path) {
+    for (auto const& dir_entry : fs::recursive_directory_iterator(path)) {
+        if (dir_entry.is_regular_file() && test_file_starts_with_shebang(dir_entry.path().string())) {
+            std::cout << dir_entry << '\n';
+        }
     }
 }
