@@ -11,6 +11,7 @@ using std::string;
 namespace fs = std::filesystem;
 
 bool test_file_starts_with_shebang(const string &file);
+bool update_file(const string &file);
 
 int main(int argc, char *argv[]) {
     if (argc == 3) {
@@ -34,13 +35,7 @@ int main(int argc, char *argv[]) {
             string file = argv[2];
 
             if (test_file_starts_with_shebang(file)) {
-                fs::path path = file;
-                try {
-                    fs::permissions(path, fs::perms::owner_all);
-                }
-                catch (std::exception& e) {
-                    cerr << e.what() << endl;
-                }
+                update_file(file);
             } else {
                 cout << file << " does not start with a shebang! Skipping." << endl;
             }
@@ -71,4 +66,14 @@ bool test_file_starts_with_shebang(const string &file) {
     }
 
     return false;
+}
+
+bool update_file(const string &file) {
+    fs::path path = file;
+    try {
+        fs::permissions(path, fs::perms::owner_all);
+    }
+    catch (std::exception& e) {
+        cerr << e.what() << endl;
+    }
 }
