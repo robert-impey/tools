@@ -11,7 +11,7 @@ using std::string;
 namespace fs = std::filesystem;
 
 bool test_file_starts_with_shebang(const string &file);
-bool update_file(const string &file);
+bool update_path(const fs::path &path);
 void search(const string &path);
 
 int main(int argc, char *argv[]) {
@@ -36,7 +36,8 @@ int main(int argc, char *argv[]) {
             string file = argv[2];
 
             if (test_file_starts_with_shebang(file)) {
-                update_file(file);
+                fs::path path = file;
+                update_path(path);
             } else {
                 cout << file << " does not start with a shebang! Skipping." << endl;
             }
@@ -77,8 +78,7 @@ bool test_file_starts_with_shebang(const string &file) {
     return false;
 }
 
-bool update_file(const string &file) {
-    fs::path path = file;
+bool update_path(const fs::path &path) {
     try {
         fs::permissions(path, fs::perms::owner_all);
     }
@@ -90,7 +90,8 @@ bool update_file(const string &file) {
 void search(const string &path) {
     for (auto const& dir_entry : fs::recursive_directory_iterator(path)) {
         if (dir_entry.is_regular_file() && test_file_starts_with_shebang(dir_entry.path().string())) {
-            std::cout << dir_entry << '\n';
+            std::cout << "Updating the perms of " << dir_entry << '\n';
+            update_path(dir_entry.path());
         }
     }
 }
