@@ -11,7 +11,7 @@ using std::string;
 namespace fs = std::filesystem;
 
 bool test_file_starts_with_shebang(const string &file);
-bool update_path(const fs::path &path);
+void update_path(const fs::path &path);
 void search(const string &path);
 
 int main(int argc, char *argv[]) {
@@ -78,7 +78,7 @@ bool test_file_starts_with_shebang(const string &file) {
     return false;
 }
 
-bool update_path(const fs::path &path) {
+void update_path(const fs::path &path) {
     try {
         fs::permissions(path, fs::perms::owner_all);
     }
