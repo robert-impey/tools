@@ -80,7 +80,9 @@ bool test_file_starts_with_shebang(const string &file) {
 
 void update_path(const fs::path &path) {
     try {
-        fs::permissions(path, fs::perms::owner_all);
+        fs::permissions(path, fs::perms::owner_all
+            | fs::perms::group_read | fs::perms::group_exec
+            | fs::perms::others_read | fs::perms::others_exec);
     }
     catch (std::exception& e) {
         cerr << e.what() << endl;
