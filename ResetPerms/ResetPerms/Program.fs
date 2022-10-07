@@ -56,16 +56,14 @@ let failedFileToLocationFolder (locations: string list) (failedFile: string) =
 
         let endIndex = pathInLocation.IndexOf('\\')
 
-        if endIndex < 0 then
-            None
-        else
-            let folder =
+        let folder = 
+            if endIndex < 0 then
+                pathInLocation
+            else
                 pathInLocation.Substring(0, endIndex)
 
-            Some(
-                { Location = location'
-                  Folder = folder }
-            )
+        Some({ Location = location'
+               Folder = folder })
     | None -> None
 
 let locationFolderToBatch (resetScriptDirectory: string) (locationFolder: LocationFolder) =
