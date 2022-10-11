@@ -6,8 +6,7 @@ uses
   {$IFDEF UNIX}
   cthreads,
   {$ENDIF}
-  Classes, SysUtils, CustApp
-  { you can add units after this };
+  Classes, SysUtils, CustApp, LogsDeleting;
 
 type
 
@@ -53,7 +52,7 @@ begin
   end
   else
       If (LogsDirAttr and faDirectory)<>0 then
-         Writeln (LogsDir, ' is a directory');
+         LogsDeleting.DeleteLogs(LogsDir);
 
   // stop program loop
   Terminate;
