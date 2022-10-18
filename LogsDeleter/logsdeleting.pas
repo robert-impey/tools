@@ -33,7 +33,7 @@ begin
             Inc(Count);
           end;
         end;
-    Until FindNext(info)<>0;
+    Until FindNext(Info)<>0;
     FindClose(Info);
     end;
   Writeln ('Finished search. Found ',Count,' matches');
