@@ -4,16 +4,17 @@ unit LogsDeleting;
 
 interface
 
+uses
+    Classes, FileUtil, SysUtils;
+
 procedure DeleteLogs(LogsDir : string);
+procedure DeleteLogsFromSubDir(SubDirPath: string);
 
 implementation
 
-uses
-  Classes, FileUtil, SysUtils;
-
 procedure DeleteLogs(LogsDir : string);
 var
-   SearchPath : string;
+   SearchPath, SubDirsPath : string;
    Info : TSearchRec;
    Count : longint;
 begin
@@ -29,14 +30,21 @@ begin
         begin
           If ((Attr and faDirectory) = faDirectory) and (Name<>'.') and (Name<>'..') then
           begin
-            Writeln(Name);
-            Inc(Count);
+               SubDirsPath := Concat(LogsDir, '/', Name);
+               DoDirSeparators(SubDirsPath);
+               DeleteLogsFromSubDir(SubDirsPath);
+               Inc(Count);
           end;
         end;
     Until FindNext(Info)<>0;
     FindClose(Info);
     end;
   Writeln ('Finished search. Found ',Count,' matches');
+end;
+
+procedure DeleteLogsFromSubDir(SubDirPath: string);
+begin
+     Writeln(Format('Searching for log files in %s', [SubDirPath]));
 end;
 
 end.
