@@ -158,10 +158,10 @@ let main (args) =
         let latestErrFileInfo = 
             findLatestErrFileInfo logsDirectory
         match latestErrFileInfo with
-        | Some latestErrFileInfo' -> latestErrFileInfo'.FullName
-        | None -> raise (ApplicationException "No error file found!")
+        | Some latestErrFileInfo' -> Some latestErrFileInfo'.FullName
+        | None -> None
 
-    let errFileOption = Option<string>("--err-file", findDefaultErrFile)
+    let errFileOption = Option<string option>("--err-file", findDefaultErrFile)
 
     let rootCommand =
         RootCommand("Reset permissions for files that failed synch")
@@ -170,10 +170,13 @@ let main (args) =
     rootCommand.AddOption(locationsFileOption)
     rootCommand.AddOption(errFileOption)
 
-    let handler (dryRun: bool) (locationsFile : string) (errFile : string) =
-        let locations = readLocationsFile locationsFile
+    let handler (dryRun: bool) (locationsFile : string) (errFile : string option) =
+        match errFile with
+        | None -> eprintfn "No error file provided or found!"
+        | Some errFile' ->
+            let locations = readLocationsFile locationsFile
 
-        searchLogsDirectory dryRun locations resetScriptDirectory errFile
+            searchLogsDirectory dryRun locations resetScriptDirectory errFile'
 
     rootCommand.SetHandler(handler, dryRunOption, locationsFileOption, errFileOption)
 
