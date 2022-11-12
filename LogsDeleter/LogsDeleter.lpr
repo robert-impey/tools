@@ -55,6 +55,7 @@ type
     if LogsDirAttr < 0 then
     begin
       WriteLn('Unable to read the file attributes of ', LogsDir);
+      WriteLn('Does it exist?');
     end
     else
     if (LogsDirAttr and faDirectory) <> 0 then
