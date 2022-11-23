@@ -28,11 +28,11 @@ type
 
   procedure TLogsDeleter.DoRun;
   var
-    ErrorMsg, LogsDir: string;
+    ErrorMsg, LogsDir, Tool: string;
     LogsDirAttr: longint;
   begin
     // quick check parameters
-    ErrorMsg := CheckOptions('h', 'help');
+    ErrorMsg := CheckOptions('ht', 'help tool');
     if ErrorMsg <> '' then
     begin
       ShowException(Exception.Create(ErrorMsg));
@@ -48,6 +48,15 @@ type
       Exit;
     end;
 
+    if HasOption('t', 'tool') then
+    begin
+      Tool := GetOptionValue('t', 'tool');
+    end
+    else
+    begin
+      Tool := '';
+    end;
+
     LogsDir := Concat(GetUserDir, 'logs');
     DoDirSeparators(LogsDir);
     LogsDirAttr := FileGetAttr(LogsDir);
@@ -59,7 +68,7 @@ type
     end
     else
     if (LogsDirAttr and faDirectory) <> 0 then
-      LogsDeleting.DeleteLogs(LogsDir);
+      LogsDeleting.DeleteLogs(LogsDir, Tool);
 
     // stop program loop
     Terminate;

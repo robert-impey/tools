@@ -7,35 +7,44 @@ interface
 uses
   Classes, FileUtil, SysUtils, DateUtils;
 
-procedure DeleteLogs(LogsDir: string);
+procedure DeleteLogs(LogsDir, Tool: string);
 procedure DeleteLogsFromSubDir(SubDirPath: string);
 
 implementation
 
-procedure DeleteLogs(LogsDir: string);
+procedure DeleteLogs(LogsDir, Tool: string);
 var
   SearchPath, SubDirsPath: string;
   Info: TSearchRec;
 begin
-  Writeln(Format('Searching for subdirectories of %s', [LogsDir]));
-
-  SearchPath := Concat(LogsDir, '/*');
-  DoDirSeparators(SearchPath);
-  if FindFirst(SearchPath, faAnyFile, Info) = 0 then
+  if Tool = '' then
   begin
-    repeat
-      with Info do
-      begin
-        if ((Attr and faDirectory) = faDirectory) and (Name <> '.') and (Name <> '..') then
+    Writeln(Format('Searching for subdirectories of %s', [LogsDir]));
+
+    SearchPath := Concat(LogsDir, '/*');
+    DoDirSeparators(SearchPath);
+    if FindFirst(SearchPath, faAnyFile, Info) = 0 then
+    begin
+      repeat
+        with Info do
         begin
-          SubDirsPath := Concat(LogsDir, '/', Name);
-          DoDirSeparators(SubDirsPath);
-          DeleteLogsFromSubDir(SubDirsPath);
+          if ((Attr and faDirectory) = faDirectory) and (Name <> '.') and (Name <> '..') then
+          begin
+            SubDirsPath := Concat(LogsDir, '/', Name);
+            DoDirSeparators(SubDirsPath);
+            DeleteLogsFromSubDir(SubDirsPath);
+          end;
         end;
-      end;
-    until FindNext(Info) <> 0;
-    FindClose(Info);
-  end;
+      until FindNext(Info) <> 0;
+      FindClose(Info);
+    end ;
+    end
+    else
+    begin
+      SubDirsPath := Concat(LogsDir, '/', Tool);
+      DoDirSeparators(SubDirsPath);
+      DeleteLogsFromSubDir(SubDirsPath);
+    end;
 end;
 
 procedure DeleteLogsFromSubDir(SubDirPath: string);
