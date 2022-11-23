@@ -28,7 +28,8 @@ begin
       repeat
         with Info do
         begin
-          if ((Attr and faDirectory) = faDirectory) and (Name <> '.') and (Name <> '..') then
+          if ((Attr and faDirectory) = faDirectory) and (Name <> '.') and
+            (Name <> '..') then
           begin
             SubDirsPath := Concat(LogsDir, '/', Name);
             DoDirSeparators(SubDirsPath);
@@ -37,14 +38,14 @@ begin
         end;
       until FindNext(Info) <> 0;
       FindClose(Info);
-    end ;
-    end
-    else
-    begin
-      SubDirsPath := Concat(LogsDir, '/', Tool);
-      DoDirSeparators(SubDirsPath);
-      DeleteLogsFromSubDir(SubDirsPath);
     end;
+  end
+  else
+  begin
+    SubDirsPath := Concat(LogsDir, '/', Tool);
+    DoDirSeparators(SubDirsPath);
+    DeleteLogsFromSubDir(SubDirsPath);
+  end;
 end;
 
 procedure DeleteLogsFromSubDir(SubDirPath: string);

@@ -5,7 +5,7 @@ program LogsDeleter;
 uses
  {$IFDEF UNIX}
   cthreads,
-   {$ENDIF}
+      {$ENDIF}
   Classes,
   SysUtils,
   CustApp,
@@ -49,13 +49,9 @@ type
     end;
 
     if HasOption('t', 'tool') then
-    begin
-      Tool := GetOptionValue('t', 'tool');
-    end
+      Tool := GetOptionValue('t', 'tool')
     else
-    begin
       Tool := '';
-    end;
 
     LogsDir := Concat(GetUserDir, 'logs');
     DoDirSeparators(LogsDir);
