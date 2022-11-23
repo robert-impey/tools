@@ -5,7 +5,7 @@ program LogsDeleter;
 uses
  {$IFDEF UNIX}
   cthreads,
-      {$ENDIF}
+       {$ENDIF}
   Classes,
   SysUtils,
   CustApp,
