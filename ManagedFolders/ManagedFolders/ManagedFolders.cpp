@@ -9,23 +9,23 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-void manage_local_scripts(const fs::path &local_scripts_dir);
+void list_managed_folders(const fs::path &local_scripts_dir);
 
 int main(int argc, char* argv[])
 {
-    if (argc == 2)
-    {
-        fs::path local_scripts_dir = argv[1];
-        manage_local_scripts(local_scripts_dir);
+    char* local_scripts_env = getenv("LOCAL_SCRIPTS");
 
-        return 0;
+    if (local_scripts_env == NULL)
+    {
+        cerr << "LOCAL_SCRIPTS env var not set!" << endl;
+        return 1;
     }
 
-    cerr << "I don't understand!" << endl;
-    return 1;
+    fs::path local_scripts_dir = local_scripts_env;
+    list_managed_folders(local_scripts_dir);
 }
 
-void manage_local_scripts(const fs::path &local_scripts_dir)
+void list_managed_folders(const fs::path &local_scripts_dir)
 {
     const auto locations_file_path = local_scripts_dir / "_Common" / "locations.txt";
 
