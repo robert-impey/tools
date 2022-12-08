@@ -22,8 +22,21 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    fs::path local_scripts_dir = local_scripts_env;
-    list_managed_folders(local_scripts_dir);
+    if (argc >= 2)
+    {
+        string task(argv[1]);
+
+        if (task == "list")
+        {
+            fs::path local_scripts_dir = local_scripts_env;
+            list_managed_folders(local_scripts_dir);
+
+            return 0;
+        }
+    }
+
+    cerr << "Please tell me what to do!" << endl;
+    return 1;
 }
 
 void list_managed_folders(const fs::path &local_scripts_dir)
