@@ -11,6 +11,7 @@ using namespace std;
 namespace fs = std::filesystem;
 
 void list_managed_folders(const fs::path &local_scripts_dir);
+vector<string> read_all_non_empty_lines(const fs::path& path);
 
 int main(int argc, char* argv[])
 {
@@ -42,45 +43,10 @@ int main(int argc, char* argv[])
 void list_managed_folders(const fs::path &local_scripts_dir)
 {
     const auto locations_file_path{ local_scripts_dir / "_Common" / "locations.txt" };
-
-    ifstream locations_file_stream{ locations_file_path };
-    if (!locations_file_stream.is_open()) {
-        cerr << "Could not open the locations file - '"
-            << locations_file_path << "'" << endl;
-        return;
-    }
-
     const auto folders_file_path{ local_scripts_dir / "_Common" / "folders.txt" };
 
-    ifstream folders_file_stream{ folders_file_path };
-    if (!folders_file_stream.is_open()) {
-        cerr << "Could not open the folders file - '"
-            << folders_file_path << "'" << endl;
-        return;
-    }
-
-    vector<string> locations;
-
-    string locations_line;
-    while (getline(locations_file_stream, locations_line))
-    {
-        if (locations_line.size())
-        {
-            locations.push_back(locations_line);
-        }
-    }
-    locations_file_stream.close();
-
-    vector<string> folders;
-    string folders_line;
-    while (getline(folders_file_stream, folders_line))
-    {
-        if (folders_line.size())
-        {
-            folders.push_back(folders_line);
-        }
-    }
-    folders_file_stream.close();
+    const auto locations{ read_all_non_empty_lines(locations_file_path) };
+    const auto folders{ read_all_non_empty_lines(folders_file_path) };
     
     auto first{ true };
     for (auto &location : locations)
@@ -102,4 +68,25 @@ void list_managed_folders(const fs::path &local_scripts_dir)
             }
         }
     }
+}
+
+vector<string> read_all_non_empty_lines(const fs::path& path)
+{
+    ifstream file_stream{ path };
+    if (!file_stream.is_open()) {
+        throw std::runtime_error("Failed to open " + path.string() + "'");
+    }
+
+    vector<string> lines;
+    string line;
+    while (getline(file_stream, line))
+    {
+        if (line.size())
+        {
+            lines.push_back(line);
+        }
+    }
+    file_stream.close();
+
+    return lines;
 }
