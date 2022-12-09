@@ -16,10 +16,10 @@ void search(const string &path);
 
 int main(int argc, char *argv[]) {
     if (argc == 3) {
-        string task = argv[1];
+        string task { argv[1] };
 
         if (task == "test") {
-            string file = argv[2];
+            string file {argv[2] };
 
             cout << "Testing if " << file << " starts with a shebang." << endl;
 
@@ -33,10 +33,10 @@ int main(int argc, char *argv[]) {
         }
 
         if (task == "update") {
-            string file = argv[2];
+            string file { argv[2] };
 
             if (test_file_starts_with_shebang(file)) {
-                fs::path path = file;
+                fs::path path { file };
                 update_path(path);
             } else {
                 cout << file << " does not start with a shebang! Skipping." << endl;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (task == "search") {
-            string path = argv[2];
+            string path { argv[2] };
 
             search(path);
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 bool test_file_starts_with_shebang(const string &file) {
     string line;
 
-    ifstream input_file(file);
+    ifstream input_file { file };
     if (!input_file.is_open()) {
         cerr << "Could not open the file - '"
              << file << "'" << endl;

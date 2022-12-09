@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Search Local Scripts" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="search C:\Users\rober\Dropbox\local-scripts" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="make_scripts_executable" TARGET_NAME="make_scripts_executable" CONFIG_NAME="Debug-Visual Studio" RUN_TARGET_PROJECT_NAME="make_scripts_executable" RUN_TARGET_NAME="make_scripts_executable">
+  <configuration default="false" name="Search Local Scripts" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="search C:\Users\rober\Dropbox\local-scripts" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="make_scripts_executable" TARGET_NAME="make_scripts_executable" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="make_scripts_executable" RUN_TARGET_NAME="make_scripts_executable">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>
