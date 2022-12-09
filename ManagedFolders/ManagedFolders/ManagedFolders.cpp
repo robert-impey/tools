@@ -14,7 +14,7 @@ void list_managed_folders(const fs::path &local_scripts_dir);
 
 int main(int argc, char* argv[])
 {
-    char* local_scripts_env = getenv("LOCAL_SCRIPTS");
+    char* local_scripts_env{ getenv("LOCAL_SCRIPTS") };
 
     if (local_scripts_env == NULL)
     {
@@ -24,11 +24,11 @@ int main(int argc, char* argv[])
 
     if (argc >= 2)
     {
-        string task(argv[1]);
+        string task{ argv[1] };
 
         if (task == "list")
         {
-            fs::path local_scripts_dir = local_scripts_env;
+            fs::path local_scripts_dir{ local_scripts_env };
             list_managed_folders(local_scripts_dir);
 
             return 0;
@@ -41,27 +41,27 @@ int main(int argc, char* argv[])
 
 void list_managed_folders(const fs::path &local_scripts_dir)
 {
-    const auto locations_file_path = local_scripts_dir / "_Common" / "locations.txt";
+    const auto locations_file_path{ local_scripts_dir / "_Common" / "locations.txt" };
 
-    ifstream locations_file_stream(locations_file_path);
+    ifstream locations_file_stream{ locations_file_path };
     if (!locations_file_stream.is_open()) {
         cerr << "Could not open the locations file - '"
             << locations_file_path << "'" << endl;
         return;
     }
 
-    const auto folders_file_path = local_scripts_dir / "_Common" / "folders.txt";
+    const auto folders_file_path{ local_scripts_dir / "_Common" / "folders.txt" };
 
-    ifstream folders_file_stream(folders_file_path);
+    ifstream folders_file_stream{ folders_file_path };
     if (!folders_file_stream.is_open()) {
         cerr << "Could not open the folders file - '"
             << folders_file_path << "'" << endl;
         return;
     }
 
-    vector<string> folders, locations;
+    vector<string> locations;
 
-    string folders_line, locations_line;
+    string locations_line;
     while (getline(locations_file_stream, locations_line))
     {
         if (locations_line.size())
@@ -71,6 +71,8 @@ void list_managed_folders(const fs::path &local_scripts_dir)
     }
     locations_file_stream.close();
 
+    vector<string> folders;
+    string folders_line;
     while (getline(folders_file_stream, folders_line))
     {
         if (folders_line.size())
@@ -80,7 +82,7 @@ void list_managed_folders(const fs::path &local_scripts_dir)
     }
     folders_file_stream.close();
     
-    auto first = true;
+    auto first{ true };
     for (auto &location : locations)
     {
         if (first)
@@ -88,11 +90,11 @@ void list_managed_folders(const fs::path &local_scripts_dir)
         else
             cout << endl;
 
-        const fs::path location_path = location;
+        const fs::path location_path{ location };
 
         for (auto& folder : folders)
         {
-            const fs::path located_folder_path = location_path / folder;
+            const fs::path located_folder_path{ location_path / folder };
 
             if (fs::exists(located_folder_path))
             {
