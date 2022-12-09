@@ -14,7 +14,7 @@ void list_managed_folders(const fs::path &local_scripts_dir);
 
 int main(int argc, char* argv[])
 {
-    char* local_scripts_env{ getenv("LOCAL_SCRIPTS") };
+    auto local_scripts_env{ getenv("LOCAL_SCRIPTS") };
 
     if (local_scripts_env == NULL)
     {
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     }
 
     cerr << "Please tell me what to do!" << endl;
-    return 1;
+    return -1;
 }
 
 void list_managed_folders(const fs::path &local_scripts_dir)
