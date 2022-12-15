@@ -25,7 +25,7 @@ public:
 		locations = read_all_non_empty_lines(locations_file_path);
 		folders = read_all_non_empty_lines(folders_file_path);
 	}
-	void list_all_folders()
+	void list()
 	{
 		auto first{ true };
 		for (auto& location : locations)
@@ -48,9 +48,55 @@ public:
 			}
 		}
 	}
+	void list_pairs()
+	{
+		auto pairs = find_pairs();
+
+		for (auto& a_pair : pairs)
+		{
+			cout << a_pair.first << " <-> " << a_pair.second << endl;
+		}
+	}
 private:
 	fs::path local_scripts_dir, locations_file_path, folders_file_path;
 	vector<string> locations, folders;
+	vector<pair<fs::path, fs::path>> find_pairs()
+	{
+		vector<pair<fs::path, fs::path>> pairs;
+
+		for (auto& folder : folders)
+		{
+			for (auto& location1 : locations)
+			{
+				for (auto& location2 : locations)
+				{
+					if (location1 == location2)
+						continue;
+
+					const fs::path location1_path{ location1 };
+					const fs::path location2_path{ location2 };
+
+					const fs::path located_folder_path1{ location1_path / folder };
+					const fs::path located_folder_path2{ location2_path / folder };
+
+					if (fs::exists(located_folder_path1) && fs::exists(located_folder_path2))
+					{
+						pair<fs::path, fs::path> a_pair{ located_folder_path1 , located_folder_path2 };
+						pair<fs::path, fs::path> reversed_pair { located_folder_path2 , located_folder_path1 };
+
+						if (std::find(pairs.begin(), pairs.end(), reversed_pair) != pairs.end())
+						{
+							continue;
+						}
+
+						pairs.push_back(a_pair);
+					}
+				}
+			}
+		}
+
+		return pairs;
+	}
 };
 
 
@@ -68,10 +114,18 @@ int main(int argc, char* argv[])
 	{
 		string task{ argv[1] };
 
+		FolderManager folder_manager(local_scripts_env);
+
 		if (task == "list")
 		{
-			FolderManager folder_manager(local_scripts_env);
-			folder_manager.list_all_folders();
+			folder_manager.list();
+
+			return 0;
+		}
+
+		if (task == "list_pairs")
+		{
+			folder_manager.list_pairs();
 
 			return 0;
 		}
