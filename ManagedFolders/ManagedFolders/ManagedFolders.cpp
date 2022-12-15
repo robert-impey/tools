@@ -10,8 +10,27 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-void list_managed_folders(const fs::path &local_scripts_dir);
 vector<string> read_all_non_empty_lines(const fs::path& path);
+
+void list_managed_folders(const fs::path& local_scripts_dir);
+
+class FolderManager
+{
+public:
+    FolderManager(string _local_scripts_env)
+    {
+        local_scripts_env = _local_scripts_env;
+        local_scripts_dir = local_scripts_env;
+    }
+    void list_all_folders()
+    {
+        list_managed_folders(local_scripts_dir);
+    }
+private:
+    string local_scripts_env;
+    fs::path local_scripts_dir;
+};
+
 
 int main(int argc, char* argv[])
 {
