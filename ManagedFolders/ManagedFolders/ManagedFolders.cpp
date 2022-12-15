@@ -12,8 +12,6 @@ namespace fs = std::filesystem;
 
 vector<string> read_all_non_empty_lines(const fs::path& path);
 
-void list_managed_folders(const fs::path& local_scripts_dir);
-
 class FolderManager
 {
 public:
@@ -24,7 +22,32 @@ public:
     }
     void list_all_folders()
     {
-        list_managed_folders(local_scripts_dir);
+        const auto locations_file_path{ local_scripts_dir / "_Common" / "locations.txt" };
+        const auto folders_file_path{ local_scripts_dir / "_Common" / "folders.txt" };
+
+        const auto locations{ read_all_non_empty_lines(locations_file_path) };
+        const auto folders{ read_all_non_empty_lines(folders_file_path) };
+
+        auto first{ true };
+        for (auto& location : locations)
+        {
+            if (first)
+                first = false;
+            else
+                cout << endl;
+
+            const fs::path location_path{ location };
+
+            for (auto& folder : folders)
+            {
+                const fs::path located_folder_path{ location_path / folder };
+
+                if (fs::exists(located_folder_path))
+                {
+                    cout << located_folder_path << endl;
+                }
+            }
+        }
     }
 private:
     string local_scripts_env;
@@ -48,8 +71,8 @@ int main(int argc, char* argv[])
 
         if (task == "list")
         {
-            fs::path local_scripts_dir{ local_scripts_env };
-            list_managed_folders(local_scripts_dir);
+            FolderManager folder_manager(local_scripts_env);
+            folder_manager.list_all_folders();
 
             return 0;
         }
@@ -57,36 +80,6 @@ int main(int argc, char* argv[])
 
     cerr << "Please tell me what to do!" << endl;
     return -1;
-}
-
-void list_managed_folders(const fs::path &local_scripts_dir)
-{
-    const auto locations_file_path{ local_scripts_dir / "_Common" / "locations.txt" };
-    const auto folders_file_path{ local_scripts_dir / "_Common" / "folders.txt" };
-
-    const auto locations{ read_all_non_empty_lines(locations_file_path) };
-    const auto folders{ read_all_non_empty_lines(folders_file_path) };
-    
-    auto first{ true };
-    for (auto &location : locations)
-    {
-        if (first)
-            first = false;
-        else
-            cout << endl;
-
-        const fs::path location_path{ location };
-
-        for (auto& folder : folders)
-        {
-            const fs::path located_folder_path{ location_path / folder };
-
-            if (fs::exists(located_folder_path))
-            {
-                cout << located_folder_path << endl;
-            }
-        }
-    }
 }
 
 vector<string> read_all_non_empty_lines(const fs::path& path)
