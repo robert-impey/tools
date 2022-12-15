@@ -17,17 +17,16 @@ class FolderManager
 public:
 	FolderManager(string _local_scripts_env)
 	{
-		local_scripts_env = _local_scripts_env;
-		local_scripts_dir = local_scripts_env;
+		local_scripts_dir = _local_scripts_env;
+
+		locations_file_path = local_scripts_dir / "_Common" / "locations.txt";
+		folders_file_path = local_scripts_dir / "_Common" / "folders.txt";
+
+		locations = read_all_non_empty_lines(locations_file_path);
+		folders = read_all_non_empty_lines(folders_file_path);
 	}
 	void list_all_folders()
 	{
-		const auto locations_file_path{ local_scripts_dir / "_Common" / "locations.txt" };
-		const auto folders_file_path{ local_scripts_dir / "_Common" / "folders.txt" };
-
-		const auto locations{ read_all_non_empty_lines(locations_file_path) };
-		const auto folders{ read_all_non_empty_lines(folders_file_path) };
-
 		auto first{ true };
 		for (auto& location : locations)
 		{
@@ -50,8 +49,8 @@ public:
 		}
 	}
 private:
-	string local_scripts_env;
-	fs::path local_scripts_dir;
+	fs::path local_scripts_dir, locations_file_path, folders_file_path;
+	vector<string> locations, folders;
 };
 
 
