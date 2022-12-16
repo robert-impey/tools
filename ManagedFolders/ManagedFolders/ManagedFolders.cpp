@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -14,6 +15,7 @@ namespace fs = std::filesystem;
 vector<string> read_all_non_empty_lines(const fs::path& path);
 fs::path find_autogen_path();
 string clean_path(string);
+void generate_folder_synch_script(const string, const fs::path&, const fs::path&, const fs::path&);
 
 class FolderManager
 {
@@ -155,6 +157,17 @@ private:
 				{
 					fs::create_directory(sub_path2);
 				}
+
+				for (auto& folder : folders)
+				{
+					auto location_folder_path1{ location_path1 / folder };
+					auto location_folder_path2{ location_path2 / folder };
+
+					if (fs::exists(location_folder_path1) && fs::exists(location_folder_path2))
+					{
+						generate_folder_synch_script(folder, sub_path2, location_path1, location_path2);
+					}
+				}
 			}
 		}
 	}
@@ -249,4 +262,28 @@ string clean_path(string path_str)
 	string replacement{ "_" };
 
 	return std::regex_replace(path_str, illegals, replacement);
+}
+
+void generate_folder_synch_script(
+	const std::string folder,
+	const fs::path& script_folder, 
+	const fs::path& location_path1, 
+	const fs::path& location_path2)
+{
+	ostringstream script_name;
+	script_name << folder << ".ps1";
+
+	fs::path script_path{ script_folder / script_name.str() };
+
+	ofstream script_file;
+	script_file.open(script_path, ios::out | ios::trunc);
+	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl;
+
+	script_file << "$folder = \"" << folder << "\"" << endl;
+	script_file << "$src = " << location_path1 << endl;
+	script_file << "$dst = " << location_path2 << endl;
+
+	script_file << "Synch $folder $src $dst" << endl;
+	
+	script_file.close();
 }
