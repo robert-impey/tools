@@ -282,11 +282,11 @@ void generate_folder_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
-	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl;
+	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
-	script_file << "$folder = \"" << folder << "\"" << endl;
+	script_file << "$folder = \"" << folder << "\"" << endl << endl;
 	script_file << "$src = " << location_path1 << endl;
-	script_file << "$dst = " << location_path2 << endl;
+	script_file << "$dst = " << location_path2 << endl << endl;
 
 	script_file << "Synch $folder $src $dst" << endl;
 	
@@ -303,11 +303,10 @@ void generate_all_folders_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
-	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl;
-	script_file << endl;
+	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
-	script_file << "$folder = ";
-	
+	script_file << "$folders = ";
+
 	auto first{ true };
 	for (auto& folder : folders)
 	{
@@ -319,13 +318,11 @@ void generate_all_folders_synch_script(
 		script_file << "\"" << folder << "\"";
 	}	
 		
-	script_file << endl;
+	script_file << endl << endl;
 
 	script_file << "$src = " << location_path1 << endl;
-	script_file << "$dst = " << location_path2 << endl;
-	script_file << endl;
+	script_file << "$dst = " << location_path2 << endl << endl;
 
-	script_file << "Synch $folder $src $dst" << endl;
 	script_file << "foreach($folder in $folders)" << endl;
 	script_file << "{" << endl;
 	script_file << "    Synch $folder $src $dst" << endl;
