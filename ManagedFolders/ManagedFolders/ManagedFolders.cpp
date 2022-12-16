@@ -282,6 +282,9 @@ void generate_folder_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
+
+	script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
+
 	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
 	script_file << "$folder = \"" << folder << "\"" << endl << endl;
@@ -303,6 +306,9 @@ void generate_all_folders_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
+	
+	script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
+
 	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
 	script_file << "$folders = ";
