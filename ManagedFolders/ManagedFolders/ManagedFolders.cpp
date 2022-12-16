@@ -16,6 +16,7 @@ vector<string> read_all_non_empty_lines(const fs::path& path);
 fs::path find_autogen_path();
 string clean_path(string);
 void generate_folder_synch_script(const string, const fs::path&, const fs::path&, const fs::path&);
+void generate_all_folders_synch_script(const vector<string>, const fs::path&, const fs::path&, const fs::path&);
 
 class FolderManager
 {
@@ -158,6 +159,7 @@ private:
 					fs::create_directory(sub_path2);
 				}
 
+				vector<string> common_folders;
 				for (auto& folder : folders)
 				{
 					auto location_folder_path1{ location_path1 / folder };
@@ -165,9 +167,12 @@ private:
 
 					if (fs::exists(location_folder_path1) && fs::exists(location_folder_path2))
 					{
+						common_folders.push_back(folder);
 						generate_folder_synch_script(folder, sub_path2, location_path1, location_path2);
 					}
 				}
+
+				generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
 			}
 		}
 	}
@@ -285,5 +290,46 @@ void generate_folder_synch_script(
 
 	script_file << "Synch $folder $src $dst" << endl;
 	
+	script_file.close();
+}
+
+void generate_all_folders_synch_script(
+	vector<string> folders,
+	const fs::path& script_folder,
+	const fs::path& location_path1,
+	const fs::path& location_path2)
+{
+	fs::path script_path{ script_folder / "_all.ps1" };
+
+	ofstream script_file;
+	script_file.open(script_path, ios::out | ios::trunc);
+	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl;
+	script_file << endl;
+
+	script_file << "$folder = ";
+	
+	auto first{ true };
+	for (auto& folder : folders)
+	{
+		if (first)
+			first = false;
+		else 
+			script_file << ", ";
+
+		script_file << "\"" << folder << "\"";
+	}	
+		
+	script_file << endl;
+
+	script_file << "$src = " << location_path1 << endl;
+	script_file << "$dst = " << location_path2 << endl;
+	script_file << endl;
+
+	script_file << "Synch $folder $src $dst" << endl;
+	script_file << "foreach($folder in $folders)" << endl;
+	script_file << "{" << endl;
+	script_file << "    Synch $folder $src $dst" << endl;
+	script_file << "}" << endl;
+
 	script_file.close();
 }
