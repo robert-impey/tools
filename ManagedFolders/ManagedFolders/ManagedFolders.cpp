@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 vector<string> read_all_non_empty_lines(const fs::path& path);
 fs::path find_autogen_path();
-string clean_path(fs::path);
+string clean_path(string);
 
 class FolderManager
 {
@@ -134,7 +134,7 @@ private:
 	{
 		for (auto& location_path1 : location_paths)
 		{
-			const string clean_path1 = clean_path(location_path1);
+			const string clean_path1 = clean_path(location_path1.string());
 
 			const fs::path sub_path1{ synch_autogen_path / clean_path1 };
 
@@ -147,7 +147,7 @@ private:
 			{
 				if (location_path1 == location_path2) continue;
 
-				const string clean_path2 = clean_path(location_path2);
+				const string clean_path2 = clean_path(location_path2.string());
 
 				const fs::path sub_path2{ sub_path1 / clean_path2 };
 
@@ -243,10 +243,8 @@ fs::path find_autogen_path()
 	return autogen_path;
 }
 
-string clean_path(fs::path path)
+string clean_path(string path_str)
 {
-	string path_str{ path.string()};
-
 	std::regex illegals{ "[:\\\\/]+" };
 	string replacement{ "_" };
 
