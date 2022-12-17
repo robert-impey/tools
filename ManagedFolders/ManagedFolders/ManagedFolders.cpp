@@ -35,9 +35,16 @@ public:
 		{
 			const fs::path location_path{ location };
 
-			if (fs::exists(location_path))
+			try
 			{
-				location_paths.push_back(location_path);
+				if (fs::exists(location_path))
+				{
+					location_paths.push_back(location_path);
+				}
+			}
+			catch (std::filesystem::filesystem_error e)
+			{
+				std::cerr << e.what() << endl;
 			}
 		}
 	}
