@@ -30,9 +30,10 @@ type
   var
     ErrorMsg, LogsDir, Tool: string;
     LogsDirAttr: longint;
+    Days: int
   begin
     // quick check parameters
-    ErrorMsg := CheckOptions('ht', 'help tool');
+    ErrorMsg := CheckOptions('htd', 'help tool days');
     if ErrorMsg <> '' then
     begin
       ShowException(Exception.Create(ErrorMsg));

@@ -57,7 +57,7 @@ var
 begin
   Writeln(Format('Searching for log files in %s', [SubDirPath]));
 
-  Threshold := IncMonth(Date, -1);
+  Threshold := DateOf(IncDay(Date, -30));
 
   LogFiles := FindAllFiles(SubDirPath, '*.log;*.err', False);
   try
@@ -68,7 +68,7 @@ begin
       if FA <> -1 then
       begin
         LogFileDate := FileDateToDateTime(FA);
-        if DateOf(LogFileDate) <= DateOf(Threshold) then
+        if DateOf(LogFileDate) <= Threshold then
         begin
           Writeln(Format('%s is old - deleting...', [LogFiles[I]]));
           DeleteFile(LogFiles[I]);
