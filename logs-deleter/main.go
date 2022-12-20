@@ -42,7 +42,7 @@ func sweepLogsDir() error {
 			return err
 		}
 
-		fmt.Printf("%v - %v", subStat.Name(), subStat.ModTime())
+		fmt.Printf("%v - %v\n", subStat.Name(), subStat.ModTime())
 	}
 
 	return nil
