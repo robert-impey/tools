@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"time"
 )
 
 func main() {
@@ -42,7 +43,40 @@ func sweepLogsDir() error {
 			return err
 		}
 
-		fmt.Printf("%v - %v\n", subStat.Name(), subStat.ModTime())
+		deleteFrom(filepath.Join(logsDir, subStat.Name()))
+	}
+
+	return nil
+}
+
+func deleteFrom(subPath string) error {
+	cutoff := time.Now().AddDate(0, -1, 0)
+
+	fmt.Printf("Searching %v for files older than %v\n", subPath, cutoff)
+
+	files, err := filepath.Glob(filepath.Join(subPath, "*"))
+	if err != nil {
+		return err
+	}
+
+	filesToDelete := make([]os.FileInfo, 0)
+	for _, file := range files {
+		fileStat, err := os.Stat(file)
+		if err != nil {
+			return err
+		}
+		if fileStat.ModTime().Before(cutoff) {
+			filesToDelete = append(filesToDelete, fileStat)
+		}
+	}
+
+	fmt.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
+
+	for _, fileToDelete := range filesToDelete {
+		err = os.RemoveAll(fileToDelete.Name())
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
