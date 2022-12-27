@@ -43,7 +43,10 @@ func sweepLogsDir() error {
 			return err
 		}
 
-		deleteFrom(filepath.Join(logsDir, subStat.Name()))
+		err = deleteFrom(filepath.Join(logsDir, subStat.Name()))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
