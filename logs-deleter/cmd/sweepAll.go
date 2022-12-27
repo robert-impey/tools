@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 */
 package cmd
 
