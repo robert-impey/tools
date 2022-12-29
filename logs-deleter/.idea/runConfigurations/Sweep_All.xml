@@ -2,7 +2,7 @@
   <configuration default="false" name="Sweep All" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="logs-deleter" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="sweepAll" />
+    <parameters value="sweepAll -d 1" />
     <kind value="PACKAGE" />
     <package value="robertimpey.com/tools/logs-deleter" />
     <directory value="$PROJECT_DIR$" />

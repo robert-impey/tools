@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Days int
+
 // sweepAllCmd represents the sweepAll command
 var sweepAllCmd = &cobra.Command{
 	Use:   "sweepAll",
@@ -45,7 +47,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// sweepAllCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	sweepAllCmd.Flags().IntVarP(&Days, "days", "d", 30, "Days ago for cut off")
 }
 
 func sweepLogsDir() error {
@@ -83,7 +85,7 @@ func sweepLogsDir() error {
 }
 
 func deleteFrom(subPath string) error {
-	cutoff := time.Now().AddDate(0, -1, 0)
+	cutoff := time.Now().AddDate(0, 0, -1*Days)
 
 	fmt.Printf("Searching %v for files older than %v\n", subPath, cutoff)
 
@@ -106,7 +108,10 @@ func deleteFrom(subPath string) error {
 	fmt.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
 
 	for _, fileToDelete := range filesToDelete {
-		err = os.RemoveAll(fileToDelete.Name())
+		var pathToDelete = filepath.Join(subPath, fileToDelete.Name())
+		fmt.Printf("Deleting %v\n", pathToDelete)
+		
+		err = os.RemoveAll(pathToDelete)
 		if err != nil {
 			return err
 		}
