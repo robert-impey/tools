@@ -57,7 +57,7 @@ func sweepFrom() error {
 		return err1
 	}
 
-	err2 := lib.DeleteFrom(toolPath, Days)
+	err2 := lib.DeleteFrom(toolPath, Days, DeleteEmpty)
 	if err2 != nil {
 		return err2
 	}

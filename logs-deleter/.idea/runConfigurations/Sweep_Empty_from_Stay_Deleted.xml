@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Sweep From Synch" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="Sweep Empty from Stay Deleted" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="logs-deleter" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="sweepFrom -t synch -d 1" />
+    <parameters value="sweepFrom -t staydeleted -e" />
     <kind value="PACKAGE" />
     <package value="robertimpey.com/tools/logs-deleter" />
     <directory value="$PROJECT_DIR$" />

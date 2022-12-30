@@ -26,7 +26,7 @@ func GetLogsDir() (string, error) {
 	return logsDir, nil
 }
 
-func DeleteFrom(subPath string, days int) error {
+func DeleteFrom(subPath string, days int, deleteEmpty bool) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
 	fmt.Printf("Searching %v for files older than %v\n", subPath, cutoff)
@@ -43,6 +43,8 @@ func DeleteFrom(subPath string, days int) error {
 			return err
 		}
 		if fileStat.ModTime().Before(cutoff) {
+			filesToDelete = append(filesToDelete, fileStat)
+		} else if deleteEmpty && fileStat.Size() == 0 {
 			filesToDelete = append(filesToDelete, fileStat)
 		}
 	}
