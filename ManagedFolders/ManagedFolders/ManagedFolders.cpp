@@ -65,9 +65,16 @@ public:
 			{
 				const fs::path located_folder_path{ location_path / folder };
 
-				if (fs::exists(located_folder_path))
+				try
 				{
-					cout << located_folder_path << endl;
+					if (fs::exists(located_folder_path))
+					{
+						cout << located_folder_path << endl;
+					}
+				}
+				catch (std::filesystem::filesystem_error e)
+				{
+					std::cerr << e.what() << endl;
 				}
 			}
 		}
@@ -121,17 +128,24 @@ private:
 					const fs::path located_folder_path1{ location1_path / folder };
 					const fs::path located_folder_path2{ location2_path / folder };
 
-					if (fs::exists(located_folder_path1) && fs::exists(located_folder_path2))
+					try
 					{
-						pair<fs::path, fs::path> a_pair{ located_folder_path1 , located_folder_path2 };
-						pair<fs::path, fs::path> reversed_pair{ located_folder_path2 , located_folder_path1 };
-
-						if (std::find(pairs.begin(), pairs.end(), reversed_pair) != pairs.end())
+						if (fs::exists(located_folder_path1) && fs::exists(located_folder_path2))
 						{
-							continue;
-						}
+							pair<fs::path, fs::path> a_pair{ located_folder_path1 , located_folder_path2 };
+							pair<fs::path, fs::path> reversed_pair{ located_folder_path2 , located_folder_path1 };
 
-						pairs.push_back(a_pair);
+							if (std::find(pairs.begin(), pairs.end(), reversed_pair) != pairs.end())
+							{
+								continue;
+							}
+
+							pairs.push_back(a_pair);
+						}
+					}
+					catch (std::filesystem::filesystem_error e)
+					{
+						std::cerr << e.what() << endl;
 					}
 				}
 			}
@@ -270,7 +284,7 @@ fs::path find_autogen_path()
 
 string clean_path(string path_str)
 {
-	std::regex illegals{ "[:\\\\/]+" };
+	std::regex illegals{ "[:\\\\/ ]+" };
 	string replacement{ "_" };
 
 	return std::regex_replace(path_str, illegals, replacement);
@@ -278,8 +292,8 @@ string clean_path(string path_str)
 
 void generate_folder_synch_script(
 	const std::string folder,
-	const fs::path& script_folder, 
-	const fs::path& location_path1, 
+	const fs::path& script_folder,
+	const fs::path& location_path1,
 	const fs::path& location_path2)
 {
 	ostringstream script_name;
@@ -299,7 +313,7 @@ void generate_folder_synch_script(
 	script_file << "$dst = " << location_path2 << endl << endl;
 
 	script_file << "Synch $folder $src $dst" << endl;
-	
+
 	script_file.close();
 }
 
@@ -313,7 +327,7 @@ void generate_all_folders_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
-	
+
 	script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
 
 	script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
@@ -325,12 +339,12 @@ void generate_all_folders_synch_script(
 	{
 		if (first)
 			first = false;
-		else 
+		else
 			script_file << ", ";
 
 		script_file << "\"" << folder << "\"";
-	}	
-		
+	}
+
 	script_file << endl << endl;
 
 	script_file << "$src = " << location_path1 << endl;
