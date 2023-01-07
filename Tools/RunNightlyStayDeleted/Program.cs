@@ -1,8 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
+// See https://codepedia.info/dotnet-core-to-detect-operating-system-os-platform/
+var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+var homeDir = isWindows ? Environment.GetEnvironmentVariable("USERPROFILE") : Environment.GetEnvironmentVariable("HOME");
+
+var localScriptsDir = isWindows ? Environment.GetEnvironmentVariable("LOCAL_SCRIPTS") : Path.Join(homeDir, "local-scripts");
+
 var machineLocalScriptsDir =
-    Path.Join(Environment.GetEnvironmentVariable("HOME"), "local-scripts", Environment.MachineName);
+    Path.Join(localScriptsDir, Environment.MachineName);
 
 var userLocalScriptsDir =
     Path.Join(machineLocalScriptsDir, Environment.UserName);
@@ -34,20 +42,30 @@ else
     Console.WriteLine($"Found {foundNightly}");
 
     // Where is the staydeleted executable?
-    var executablesDir = Path.Join(Environment.GetEnvironmentVariable("HOME"), "executables");
-    
-    string? stayDeletedExe = null;
-    
-    // See https://codepedia.info/dotnet-core-to-detect-operating-system-os-platform/
-    var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+    string? executablesDir = null;
+
+    if (isWindows)
+    {
+        executablesDir = Environment.GetEnvironmentVariable("EXECUTABLES");
+    }
+
     if (isLinux)
     {
-        var linuxExe = Path.Join(executablesDir, "Linux", "prod", "x64", "staydeleted");
+        executablesDir = Path.Join(Environment.GetEnvironmentVariable("HOME"), "executables", "Linux", "prod", "x64");
+    }
 
-        if (File.Exists(linuxExe))
-        {
-            stayDeletedExe = linuxExe;
-        }
+    string? stayDeletedExe = null;
+
+    var exeSearch = Path.Join(executablesDir, "staydeleted");
+
+    if (isWindows)
+    {
+        exeSearch = $"{exeSearch}.exe";
+    }
+
+    if (File.Exists(exeSearch))
+    {
+        stayDeletedExe = exeSearch;
     }
 
     // If present, invoke it with the found nightly.txt file.    
@@ -59,7 +77,7 @@ else
     {
         Console.WriteLine($"Running {stayDeletedExe} sweep {foundNightly}");
 
-        var logsDir = Path.Join(Environment.GetEnvironmentVariable("HOME"), "logs");
+        var logsDir = Path.Join(homeDir, "logs");
         Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", "1" });
     }
 }
