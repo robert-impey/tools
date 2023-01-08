@@ -75,9 +75,12 @@ else
     }
     else
     {
-        Console.WriteLine($"Running {stayDeletedExe} sweep {foundNightly}");
+        Console.WriteLine($"Stay Deleted Exe: {stayDeletedExe}");
+        Console.WriteLine($"Nightly File: {foundNightly}");
 
         var logsDir = Path.Join(homeDir, "logs");
+        Console.WriteLine($"Logs Directory: {logsDir}");
+
         Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", "1" });
     }
 }
