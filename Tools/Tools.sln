@@ -1,8 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj", "{6746F7F4-82C3-4B2B-ACF9-4A0BE3B360BD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunNightlyStayDeleted", "RunNightlyStayDeleted\RunNightlyStayDeleted.csproj", "{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunNightlyStayDeleted", "RunNightlyStayDeleted\RunNightlyStayDeleted.csproj", "{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6746F7F4-82C3-4B2B-ACF9-4A0BE3B360BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6746F7F4-82C3-4B2B-ACF9-4A0BE3B360BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6746F7F4-82C3-4B2B-ACF9-4A0BE3B360BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6746F7F4-82C3-4B2B-ACF9-4A0BE3B360BD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05FBC6C3-F4CC-40C3-868C-59DB71B62B10}
 	EndGlobalSection
 EndGlobal
