@@ -81,6 +81,9 @@ else
         var logsDir = Path.Join(homeDir, "logs");
         Console.WriteLine($"Logs Directory: {logsDir}");
 
-        Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", "1" });
+        var repeats = isWindows ? 8 : 1;
+        Console.WriteLine($"Repeats: {repeats}");
+
+        Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", repeats.ToString() });
     }
 }
