@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+using Tools;
 
 // See https://codepedia.info/dotnet-core-to-detect-operating-system-os-platform/
-var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+var isWindows = OsHelper.IsWindows();
 
 var homeDir = isWindows ? Environment.GetEnvironmentVariable("USERPROFILE") : Environment.GetEnvironmentVariable("HOME");
 
@@ -41,49 +40,16 @@ else
 {
     Console.WriteLine($"Found {foundNightly}");
 
-    // Where is the staydeleted executable?
-    string? executablesDir = null;
+    var stayDeletedExe = ExecutablesHelper.FindExecutable("staydeleted");
 
-    if (isWindows)
-    {
-        executablesDir = Environment.GetEnvironmentVariable("EXECUTABLES");
-    }
+    Console.WriteLine($"Stay Deleted Exe: {stayDeletedExe}");
+    Console.WriteLine($"Nightly File: {foundNightly}");
 
-    if (isLinux)
-    {
-        executablesDir = Path.Join(Environment.GetEnvironmentVariable("HOME"), "executables", "Linux", "prod", "x64");
-    }
+    var logsDir = Path.Join(homeDir, "logs");
+    Console.WriteLine($"Logs Directory: {logsDir}");
 
-    string? stayDeletedExe = null;
+    var repeats = isWindows ? 8 : 1;
+    Console.WriteLine($"Repeats: {repeats}");
 
-    var exeSearch = Path.Join(executablesDir, "staydeleted");
-
-    if (isWindows)
-    {
-        exeSearch = $"{exeSearch}.exe";
-    }
-
-    if (File.Exists(exeSearch))
-    {
-        stayDeletedExe = exeSearch;
-    }
-
-    // If present, invoke it with the found nightly.txt file.    
-    if (stayDeletedExe is null)
-    {
-        Console.WriteLine("Stay Deleted executable not found!");
-    }
-    else
-    {
-        Console.WriteLine($"Stay Deleted Exe: {stayDeletedExe}");
-        Console.WriteLine($"Nightly File: {foundNightly}");
-
-        var logsDir = Path.Join(homeDir, "logs");
-        Console.WriteLine($"Logs Directory: {logsDir}");
-
-        var repeats = isWindows ? 8 : 1;
-        Console.WriteLine($"Repeats: {repeats}");
-
-        Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", repeats.ToString() });
-    }
+    Process.Start(stayDeletedExe, new[] { "sweep", foundNightly, "--logs", logsDir, "--repeats", repeats.ToString() });
 }
