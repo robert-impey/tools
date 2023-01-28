@@ -1,6 +1,13 @@
 ﻿using System.Diagnostics;
 using Tools;
 
+if (OsHelper.IsLinux())
+{
+    var rand = new Random();
+    var sleep = rand.NextDouble() * 60;
+    Thread.Sleep(TimeSpan.FromMinutes(sleep));
+}
+
 var logsDeleter = ExecutablesHelper.FindExecutable("logs-deleter");
 
 var logsDir = WellKnownFoldersHelper.GetLogsDir();
