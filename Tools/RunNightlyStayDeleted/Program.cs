@@ -4,7 +4,7 @@ using Tools;
 // See https://codepedia.info/dotnet-core-to-detect-operating-system-os-platform/
 var isWindows = OsHelper.IsWindows();
 
-var homeDir = isWindows ? Environment.GetEnvironmentVariable("USERPROFILE") : Environment.GetEnvironmentVariable("HOME");
+var homeDir = OsHelper.GetHomeDir();
 
 var localScriptsDir = isWindows ? Environment.GetEnvironmentVariable("LOCAL_SCRIPTS") : Path.Join(homeDir, "local-scripts");
 
@@ -45,7 +45,7 @@ else
     Console.WriteLine($"Stay Deleted Exe: {stayDeletedExe}");
     Console.WriteLine($"Nightly File: {foundNightly}");
 
-    var logsDir = Path.Join(homeDir, "logs");
+    var logsDir = WellKnownFoldersHelper.GetLogsDir();
     Console.WriteLine($"Logs Directory: {logsDir}");
 
     var repeats = isWindows ? 8 : 1;
