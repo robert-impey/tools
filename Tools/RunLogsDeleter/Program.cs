@@ -32,6 +32,7 @@ var processStartInfo = new ProcessStartInfo();
 processStartInfo.CreateNoWindow = true;
 processStartInfo.RedirectStandardOutput = true;
 processStartInfo.RedirectStandardInput = true;
+processStartInfo.RedirectStandardError = true;
 processStartInfo.UseShellExecute = false;
 processStartInfo.Arguments = "sweepAll";
 processStartInfo.FileName = logsDeleter;
