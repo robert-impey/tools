@@ -6,9 +6,11 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"io"
 	"os"
 	"path/filepath"
 	"robertimpey.com/tools/logs-deleter/lib"
+	"time"
 )
 
 // sweepAllCmd represents the sweepAll command
@@ -31,20 +33,37 @@ func init() {
 }
 
 func sweepLogsDirWithLogs() {
-	var err = sweepLogsDir()
+	logsDir, err := lib.GetLogsDir()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
+		return
+	}
+
+	const toolName = "logs-deleter"
+	timeStr := time.Now().Format("2006-01-02_15.04.05")
+	outLogFileName := filepath.Join(logsDir, toolName, fmt.Sprintf("%s.log", timeStr))
+	errLogFileName := filepath.Join(logsDir, toolName, fmt.Sprintf("%s.err", timeStr))
+
+	outLogFile, err := os.Create(outLogFileName)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	errLogFile, err := os.Create(errLogFileName)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+
+	err = sweepLogsDir(logsDir, outLogFile)
+	if err != nil {
+		fmt.Fprint(os.Stderr, errLogFile)
 	} else {
-		fmt.Println("Success")
+		fmt.Fprintf(outLogFile, "Success")
 	}
 }
 
-func sweepLogsDir() error {
-	logsDir, err := lib.GetLogsDir()
-	if err != nil {
-		return err
-	}
-
+func sweepLogsDir(logsDir string, outWriter io.Writer) error {
 	subDirs, err := filepath.Glob(filepath.Join(logsDir, "*"))
 	if err != nil {
 		return err
@@ -56,7 +75,7 @@ func sweepLogsDir() error {
 			return err
 		}
 
-		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, os.Stdout)
+		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, outWriter)
 		if err != nil {
 			return err
 		}

@@ -30,7 +30,7 @@ func GetLogsDir() (string, error) {
 func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
-	fmt.Printf("Searching %v for files older than %v\n", subPath, cutoff)
+	fmt.Fprintf(outWriter, "Searching %v for files older than %v\n", subPath, cutoff)
 
 	files, err := filepath.Glob(filepath.Join(subPath, "*"))
 	if err != nil {
