@@ -22,17 +22,21 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err = sweepLogsDir()
-		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
-		} else {
-			fmt.Println("Success")
-		}
+		sweepLogsDirWithLogs()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sweepAllCmd)
+}
+
+func sweepLogsDirWithLogs() {
+	var err = sweepLogsDir()
+	if err != nil {
+		fmt.Fprint(os.Stderr, err.Error())
+	} else {
+		fmt.Println("Success")
+	}
 }
 
 func sweepLogsDir() error {
@@ -52,7 +56,7 @@ func sweepLogsDir() error {
 			return err
 		}
 
-		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty)
+		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, os.Stdout)
 		if err != nil {
 			return err
 		}

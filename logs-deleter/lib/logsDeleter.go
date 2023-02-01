@@ -3,6 +3,7 @@ package lib
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -26,7 +27,7 @@ func GetLogsDir() (string, error) {
 	return logsDir, nil
 }
 
-func DeleteFrom(subPath string, days int, deleteEmpty bool) error {
+func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
 	fmt.Printf("Searching %v for files older than %v\n", subPath, cutoff)
@@ -49,11 +50,11 @@ func DeleteFrom(subPath string, days int, deleteEmpty bool) error {
 		}
 	}
 
-	fmt.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
+	fmt.Fprintf(outWriter, "Found %d files to delete in %v\n", len(filesToDelete), subPath)
 
 	for _, fileToDelete := range filesToDelete {
 		var pathToDelete = filepath.Join(subPath, fileToDelete.Name())
-		fmt.Printf("Deleting %v\n", pathToDelete)
+		fmt.Fprintf(outWriter, "Deleting %v\n", pathToDelete)
 
 		err = os.RemoveAll(pathToDelete)
 		if err != nil {
