@@ -7,22 +7,24 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"robertimpey.com/tools/logs-deleter/lib"
 	"time"
 )
 
+var Sleep int32
+
 // sweepAllCmd represents the sweepAll command
 var sweepAllCmd = &cobra.Command{
 	Use:   "sweepAll",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Sweep all the log directories",
+	Long: `Sweep all the log directories.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Find files that are older than an expiry.
+Optionally wait a random number of seconds before starting.
+This command logs its output.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sweepLogsDirWithLogs()
 	},
@@ -30,9 +32,16 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(sweepAllCmd)
+	sweepAllCmd.Flags().Int32VarP(&Sleep, "sleep", "s", 0,
+		"The maximum number of seconds to sleep before starting. A random time during the period is chosen.")
 }
 
 func sweepLogsDirWithLogs() {
+	if Sleep > 0 {
+		wait := rand.Int31n(Sleep)
+		time.Sleep(time.Duration(wait) * time.Second)
+	}
+
 	logsDir, err := lib.GetLogsDir()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
