@@ -5,13 +5,15 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
+	"hash/maphash"
 	"io"
 	"math/rand"
 	"os"
 	"path/filepath"
-	"robertimpey.com/tools/logs-deleter/lib"
 	"time"
+
+	"github.com/spf13/cobra"
+	"robertimpey.com/tools/logs-deleter/lib"
 )
 
 var Sleep int32
@@ -38,7 +40,8 @@ func init() {
 
 func sweepLogsDirWithLogs() {
 	if Sleep > 0 {
-		wait := rand.Int31n(Sleep)
+		r := rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
+		wait := r.Int31n(Sleep)
 		time.Sleep(time.Duration(wait) * time.Second)
 	}
 
