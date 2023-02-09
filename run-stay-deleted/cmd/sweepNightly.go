@@ -6,10 +6,13 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/robert-impey/staydeleted/sdlib"
 	"github.com/spf13/cobra"
 	"os"
+	"os/user"
 	"path"
 	"path/filepath"
+	"time"
 )
 
 // sweepNightlyCmd represents the sweepNightly command
@@ -79,6 +82,33 @@ func sweepNightly() {
 	}
 
 	fmt.Printf("%s exists\n", absMachineLSNightly)
+
+	const toolName = "staydeleted"
+
+	user, err := user.Current()
+	var logsDir = filepath.Join(user.HomeDir, "logs", toolName)
+
+	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
+		err := os.MkdirAll(logsDir, os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	timeStr := time.Now().Format("2006-01-02_15.04.05")
+	outLogFileName := filepath.Join(logsDir, fmt.Sprintf("%s.log", timeStr))
+	errLogFileName := filepath.Join(logsDir, fmt.Sprintf("%s.err", timeStr))
+
+	outLogFile, err := os.Create(outLogFileName)
+	if err != nil {
+		panic(err)
+	}
+	errLogFile, err := os.Create(errLogFileName)
+	if err != nil {
+		panic(err)
+	}
+
+	sdlib.SweepFrom(absMachineLSNightly, 12, outLogFile, errLogFile, false)
 }
 
 func getLocalScriptsDirectory() (string, error) {
