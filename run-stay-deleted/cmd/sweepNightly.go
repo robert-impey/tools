@@ -47,14 +47,14 @@ func init() {
 func sweepNightly() {
 	localScriptsDirectory, err := getLocalScriptsDirectory()
 	if err != nil {
-		fmt.Fprint(os.Stderr, err.Error())
+		panic(err)
 	}
-	fmt.Printf("localScriptsDirectory: %s\n", localScriptsDirectory)
 
 	hostname, err := os.Hostname()
 	if err != nil {
 		panic(err)
 	}
+
 	machineLSDir := path.Join(localScriptsDirectory, hostname)
 
 	machineLSDirStat, err := os.Stat(machineLSDir)
@@ -62,31 +62,52 @@ func sweepNightly() {
 		panic(err)
 	}
 
-	if machineLSDirStat.IsDir() {
-		absMachineLSDir, err := filepath.Abs(machineLSDir)
+	if !machineLSDirStat.IsDir() {
+		panic(errors.New(fmt.Sprintf("%s is not a directory!", machineLSDir)))
+	}
+	absMachineLSDir, err := filepath.Abs(machineLSDir)
+	if err != nil {
+		panic(err)
+	}
+
+	userInfo, err := user.Current()
+
+	userMachineLSDir := path.Join(absMachineLSDir, userInfo.Username)
+
+	userMachineLSNightly := path.Join(userMachineLSDir, "staydeleted", "nightly.txt")
+	machineLSNightly := path.Join(machineLSDir, "staydeleted", "nightly.txt")
+
+	nightlyFile := ""
+	nightlyErr := errors.New("No nightly file found!")
+
+	_, err = os.Stat(userMachineLSNightly)
+	if err == nil {
+		nightlyFile, err = filepath.Abs(userMachineLSNightly)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("%s exists\n", absMachineLSDir)
-	}
-	machineLSNightly := path.Join(machineLSDir, "staydeleted", "nightly.txt")
+		nightlyErr = nil
 
-	_, err = os.Stat(machineLSNightly)
-	if err != nil {
-		panic(err)
+	} else {
+		_, err = os.Stat(machineLSNightly)
+		if err != nil {
+			panic(err)
+		}
+		nightlyFile, err = filepath.Abs(machineLSNightly)
+		if err != nil {
+			panic(err)
+		}
+		nightlyErr = nil
 	}
 
-	absMachineLSNightly, err := filepath.Abs(machineLSNightly)
-	if err != nil {
-		panic(err)
+	if nightlyErr != nil {
+		panic(nightlyErr)
 	}
 
-	fmt.Printf("%s exists\n", absMachineLSNightly)
+	fmt.Printf("Using %s\n", nightlyFile)
 
 	const toolName = "staydeleted"
-
-	user, err := user.Current()
-	var logsDir = filepath.Join(user.HomeDir, "logs", toolName)
+	var logsDir = filepath.Join(userInfo.HomeDir, "logs", toolName)
 
 	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(logsDir, os.ModePerm)
@@ -108,7 +129,7 @@ func sweepNightly() {
 		panic(err)
 	}
 
-	sdlib.SweepFrom(absMachineLSNightly, 12, outLogFile, errLogFile, false)
+	sdlib.SweepFrom(nightlyFile, 12, outLogFile, errLogFile, false)
 }
 
 func getLocalScriptsDirectory() (string, error) {
@@ -127,5 +148,26 @@ func getLocalScriptsDirectory() (string, error) {
 
 		return absDir, nil
 	}
-	return "", errors.New("LOCAL_SCRIPTS var not set!")
+
+	user, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	localScriptsDir := filepath.Join(user.HomeDir, "local-scripts")
+	localScriptsDirStat, err := os.Stat(localScriptsDir)
+	if err != nil {
+		return "", err
+	}
+
+	if !localScriptsDirStat.IsDir() {
+		return "", err
+	}
+	absLocalScriptsDir, err := filepath.Abs(localScriptsDir)
+	if err != nil {
+		return "", err
+	}
+
+	return absLocalScriptsDir, nil
+
+	return "", errors.New("Unable to find the local scripts dir!")
 }
