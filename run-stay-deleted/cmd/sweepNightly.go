@@ -4,7 +4,11 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
+	"fmt"
 	"github.com/spf13/cobra"
+	"os"
+	"path/filepath"
 )
 
 // sweepNightlyCmd represents the sweepNightly command
@@ -37,5 +41,28 @@ func init() {
 }
 
 func sweepNightly() {
+	localScriptsDirectory, err := getLocalScriptsDirectory()
+	if err != nil {
+		fmt.Fprint(os.Stderr, err.Error())
+	}
+	fmt.Printf("localScriptsDirectory: %s\n", localScriptsDirectory)
+}
 
+func getLocalScriptsDirectory() (string, error) {
+	if dir, ok := os.LookupEnv("LOCAL_SCRIPTS"); ok {
+		dirStat, err := os.Stat(dir)
+		if err != nil {
+			return "", err
+		}
+		if !dirStat.IsDir() {
+			return "", err
+		}
+		absDir, err := filepath.Abs(dir)
+		if err != nil {
+			return "", err
+		}
+
+		return absDir, nil
+	}
+	return "", errors.New("LOCAL_SCRIPTS var not set!")
 }
