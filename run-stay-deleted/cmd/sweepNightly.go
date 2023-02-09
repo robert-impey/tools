@@ -60,7 +60,11 @@ func sweepNightly() {
 	}
 
 	if machineLSDirStat.IsDir() {
-		fmt.Printf("%s exists", machineLSDir)
+		absMachineLSDir, err := filepath.Abs(machineLSDir)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s exists\n", absMachineLSDir)
 	}
 	machineLSNightly := path.Join(machineLSDir, "staydeleted", "nightly.txt")
 
@@ -74,7 +78,7 @@ func sweepNightly() {
 		panic(err)
 	}
 
-	fmt.Printf("%s exists", absMachineLSNightly)
+	fmt.Printf("%s exists\n", absMachineLSNightly)
 }
 
 func getLocalScriptsDirectory() (string, error) {
