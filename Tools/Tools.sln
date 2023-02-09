@@ -5,9 +5,7 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunNightlyStayDeleted", "RunNightlyStayDeleted\RunNightlyStayDeleted.csproj", "{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunLogsDeleter", "RunLogsDeleter\RunLogsDeleter.csproj", "{21741B67-5F0C-42E7-A577-D027CE07C6CD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj", "{768C7CC6-23CD-41EE-8479-CDC3B90F0353}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools", "Tools\Tools.csproj", "{768C7CC6-23CD-41EE-8479-CDC3B90F0353}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D0F0C3A-E1AE-43FC-920F-CEC485164B94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21741B67-5F0C-42E7-A577-D027CE07C6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21741B67-5F0C-42E7-A577-D027CE07C6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21741B67-5F0C-42E7-A577-D027CE07C6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21741B67-5F0C-42E7-A577-D027CE07C6CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{768C7CC6-23CD-41EE-8479-CDC3B90F0353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{768C7CC6-23CD-41EE-8479-CDC3B90F0353}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{768C7CC6-23CD-41EE-8479-CDC3B90F0353}.Release|Any CPU.ActiveCfg = Release|Any CPU
