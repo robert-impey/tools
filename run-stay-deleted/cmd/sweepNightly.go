@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -46,6 +47,34 @@ func sweepNightly() {
 		fmt.Fprint(os.Stderr, err.Error())
 	}
 	fmt.Printf("localScriptsDirectory: %s\n", localScriptsDirectory)
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	machineLSDir := path.Join(localScriptsDirectory, hostname)
+
+	machineLSDirStat, err := os.Stat(machineLSDir)
+	if err != nil {
+		panic(err)
+	}
+
+	if machineLSDirStat.IsDir() {
+		fmt.Printf("%s exists", machineLSDir)
+	}
+	machineLSNightly := path.Join(machineLSDir, "staydeleted", "nightly.txt")
+
+	_, err = os.Stat(machineLSNightly)
+	if err != nil {
+		panic(err)
+	}
+
+	absMachineLSNightly, err := filepath.Abs(machineLSNightly)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%s exists", absMachineLSNightly)
 }
 
 func getLocalScriptsDirectory() (string, error) {
