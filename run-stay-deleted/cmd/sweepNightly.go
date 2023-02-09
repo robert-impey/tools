@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/robert-impey/staydeleted/sdlib"
 	"github.com/spf13/cobra"
+	"hash/maphash"
+	"math/rand"
 	"os"
 	"os/user"
 	"path"
@@ -30,21 +32,21 @@ to quickly create a Cobra application.`,
 	},
 }
 
+var Sleep int32
+
 func init() {
 	rootCmd.AddCommand(sweepNightlyCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// sweepNightlyCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// sweepNightlyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	sweepNightlyCmd.Flags().Int32VarP(&Sleep, "sleep", "s", 0,
+		"The maximum number of seconds to sleep before starting. A random time during the period is chosen.")
 }
 
 func sweepNightly() {
+	if Sleep > 0 {
+		r := rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
+		wait := r.Int31n(Sleep)
+		time.Sleep(time.Duration(wait) * time.Second)
+	}
+
 	localScriptsDirectory, err := getLocalScriptsDirectory()
 	if err != nil {
 		panic(err)

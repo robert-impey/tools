@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Sweep Nightly Sleep 60" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="run-stay-deleted" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="sweepNightly --sleep 60" />
+    <kind value="PACKAGE" />
+    <package value="robertimpey.com/tools/run-stay-deleted" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
