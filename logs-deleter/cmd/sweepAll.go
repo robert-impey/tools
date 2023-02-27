@@ -4,6 +4,7 @@ Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"hash/maphash"
 	"io"
@@ -52,9 +53,18 @@ func sweepLogsDirWithLogs() {
 	}
 
 	const toolName = "logs-deleter"
+	toolLogDir := filepath.Join(logsDir, toolName)
+	if _, err := os.Stat(toolLogDir); errors.Is(err, os.ErrNotExist) {
+		err := os.MkdirAll(toolLogDir, os.ModePerm)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return
+		}
+	}
+
 	timeStr := time.Now().Format("2006-01-02_15.04.05")
-	outLogFileName := filepath.Join(logsDir, toolName, fmt.Sprintf("%s.log", timeStr))
-	errLogFileName := filepath.Join(logsDir, toolName, fmt.Sprintf("%s.err", timeStr))
+	outLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.log", timeStr))
+	errLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.err", timeStr))
 
 	outLogFile, err := os.Create(outLogFileName)
 	if err != nil {
