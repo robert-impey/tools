@@ -6,8 +6,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/robert-impey/staydeleted/sdlib"
-	"github.com/spf13/cobra"
 	"hash/maphash"
 	"math/rand"
 	"os"
@@ -15,18 +13,18 @@ import (
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/robert-impey/staydeleted/sdlib"
+	"github.com/spf13/cobra"
 )
 
 // sweepNightlyCmd represents the sweepNightly command
 var sweepNightlyCmd = &cobra.Command{
 	Use:   "sweepNightly",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Runs the stay deleted command with the nightly list",
+	Long: `The list of directories to sweep can be saved in a text file.
+	
+A random delay can be set before starting the sweep.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sweepNightly()
 	},
@@ -170,6 +168,4 @@ func getLocalScriptsDirectory() (string, error) {
 	}
 
 	return absLocalScriptsDir, nil
-
-	return "", errors.New("Unable to find the local scripts dir!")
 }
