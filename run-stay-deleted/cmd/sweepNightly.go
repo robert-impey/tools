@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/maphash"
+	"log"
 	"math/rand"
 	"os"
 	"os/user"
@@ -47,27 +48,27 @@ func sweepNightly() {
 
 	localScriptsDirectory, err := getLocalScriptsDirectory()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	machineLSDir := path.Join(localScriptsDirectory, hostname)
 
 	machineLSDirStat, err := os.Stat(machineLSDir)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	if !machineLSDirStat.IsDir() {
-		panic(errors.New(fmt.Sprintf("%s is not a directory!", machineLSDir)))
+		log.Fatalf("%s is not a directory!\n", machineLSDir)
 	}
 	absMachineLSDir, err := filepath.Abs(machineLSDir)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	userInfo, err := user.Current()
@@ -84,24 +85,24 @@ func sweepNightly() {
 	if err == nil {
 		nightlyFile, err = filepath.Abs(userMachineLSNightly)
 		if err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 		nightlyErr = nil
 
 	} else {
 		_, err = os.Stat(machineLSNightly)
 		if err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 		nightlyFile, err = filepath.Abs(machineLSNightly)
 		if err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 		nightlyErr = nil
 	}
 
 	if nightlyErr != nil {
-		panic(nightlyErr)
+		log.Fatalln(nightlyErr)
 	}
 
 	fmt.Printf("Using %s\n", nightlyFile)
@@ -112,7 +113,7 @@ func sweepNightly() {
 	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(logsDir, os.ModePerm)
 		if err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 	}
 
@@ -122,11 +123,11 @@ func sweepNightly() {
 
 	outLogFile, err := os.Create(outLogFileName)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	errLogFile, err := os.Create(errLogFileName)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	sdlib.SweepFrom(nightlyFile, 12, outLogFile, errLogFile, false)
