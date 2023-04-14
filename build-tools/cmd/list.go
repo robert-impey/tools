@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 */
 package cmd
 
@@ -10,13 +10,8 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "List the tools to build",
+	Long:  `This tool searches the golang source directory for tools to build.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		list()
 	},
