@@ -23,7 +23,7 @@ var sweepNightlyCmd = &cobra.Command{
 	Use:   "sweepNightly",
 	Short: "Runs the stay deleted command with the nightly list",
 	Long: `The list of directories to sweep can be saved in a text file.
-	
+
 A random delay can be set before starting the sweep.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sweepNightly()
@@ -41,6 +41,7 @@ func init() {
 func sweepNightly() {
 	if Sleep > 0 {
 		wait := rand.Int31n(Sleep)
+		log.Printf("Sleeping for %d seconds...\n", wait)
 		time.Sleep(time.Duration(wait) * time.Second)
 	}
 
