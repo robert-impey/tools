@@ -6,7 +6,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"hash/maphash"
 	"log"
 	"math/rand"
 	"os"
@@ -41,8 +40,7 @@ func init() {
 
 func sweepNightly() {
 	if Sleep > 0 {
-		r := rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
-		wait := r.Int31n(Sleep)
+		wait := rand.Int31n(Sleep)
 		time.Sleep(time.Duration(wait) * time.Second)
 	}
 
