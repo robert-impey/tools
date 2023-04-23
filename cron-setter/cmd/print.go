@@ -1,11 +1,13 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
+
+/*
+Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
+*/
 
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"math/rand"
 )
 
 // printCmd represents the print command
@@ -28,11 +30,36 @@ func init() {
 }
 
 func print() {
-	cron := `# m h  dom mon dow   command
-0 * * * * /home/robert/executables/Linux/prod/x64/run-stay-deleted sweepNightly --sleep 3600
-0 11 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/reset-perms/reset-perms.sh
-0 12 * * * /home/robert/executables/Linux/prod/x64/logs-deleter sweepAll --sleep 3600
-0 13 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/synch/run-nightly.sh`
+	printStayDeleted()
+	printResetPerms()
+	printLogsDeleter()
+	printSynch()
+}
 
-	fmt.Println(cron)
+func printStayDeleted() {
+	fmt.Println("# Stay Deleted")
+	for i := 1; i < 11; i++ {
+		stayDeletedMinutes := rand.Int31n(60)
+		fmt.Printf("%d %d * * * /home/robert/executables/Linux/prod/x64/run-stay-deleted sweepNightly\n", stayDeletedMinutes, i)
+	}
+	fmt.Println()
+}
+
+func printResetPerms() {
+	resetPermsMinutes := rand.Int31n(60)
+
+	fmt.Printf("%d 11 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/reset-perms/reset-perms.sh\n", resetPermsMinutes)
+}
+
+func printLogsDeleter() {
+	logsDeleterMinutes := rand.Int31n(60)
+
+	fmt.Printf("%d 12 * * * /home/robert/executables/Linux/prod/x64/logs-deleter sweepAll\n", logsDeleterMinutes)
+}
+
+func printSynch() {
+	synchMinutes := rand.Int31n(60)
+	synchHours := rand.Int31n(4) + 13
+
+	fmt.Printf("%d %d * * * /usr/bin/zsh /home/robert/local-scripts/_Common/synch/run-nightly.sh\n", synchMinutes, synchHours)
 }
