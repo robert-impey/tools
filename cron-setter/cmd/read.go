@@ -1,40 +1,29 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
-import (
-	"fmt"
+/*
+Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
+*/
 
+import (
 	"github.com/spf13/cobra"
 )
 
 // readCmd represents the read command
 var readCmd = &cobra.Command{
 	Use:   "read",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Read the current crontab and extract managed tasks",
+	Long: `The contents of the crontab are read.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+The tasks that are managed by this tool are within delimiting comments.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("read called")
+		read()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(readCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func read() {
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// readCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// readCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
