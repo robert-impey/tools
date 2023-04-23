@@ -5,7 +5,10 @@ Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 */
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"log"
+	"os/exec"
 )
 
 // readCmd represents the read command
@@ -25,5 +28,9 @@ func init() {
 }
 
 func read() {
-
+	crontabL, err := exec.Command("crontab", "-l").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("The date is %s\n", crontabL)
 }
