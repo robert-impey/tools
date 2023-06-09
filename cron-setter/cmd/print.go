@@ -38,7 +38,11 @@ func print() {
 
 func printStayDeleted() {
 	fmt.Println("# Stay Deleted")
-	for i := 1; i < 11; i++ {
+	for i := 0; i < 11; i++ {
+		stayDeletedMinutes := rand.Int31n(60)
+		fmt.Printf("%d %d * * * /home/robert/executables/Linux/prod/x64/run-stay-deleted sweepNightly\n", stayDeletedMinutes, i)
+	}
+	for i := 18; i < 23; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
 		fmt.Printf("%d %d * * * /home/robert/executables/Linux/prod/x64/run-stay-deleted sweepNightly\n", stayDeletedMinutes, i)
 	}
