@@ -124,9 +124,9 @@ let findDefaultLocationsFile () =
         )
 
     if (File.Exists(name)) then
-        name
+        Some name
     else
-        raise (ApplicationException "No locations file found in the default location!")
+        None
 
 let readLocationsFile (locationsFile: string) =
     let f =
@@ -146,7 +146,7 @@ let main (args) =
         Option<bool>("--dry-run", (fun () -> false))
 
     let locationsFileOption =
-        Option<string>("--locations-file", findDefaultLocationsFile)
+        Option<string option>("--locations-file", findDefaultLocationsFile)
 
     let resetScriptDirectory =
         Path.Combine(System.Environment.GetEnvironmentVariable("USERPROFILE"), "autogen", "reset-perms")
@@ -170,13 +170,16 @@ let main (args) =
     rootCommand.AddOption(locationsFileOption)
     rootCommand.AddOption(errFileOption)
 
-    let handler (dryRun: bool) (locationsFile : string) (errFile : string option) =
-        match errFile with
-        | None -> eprintfn "No error file provided or found!"
-        | Some errFile' ->
-            let locations = readLocationsFile locationsFile
+    let handler (dryRun: bool) (locationsFile : string option) (errFile : string option) =
+        match locationsFile with
+        | None -> printfn "No locations file found in the default location - quitting"
+        | Some locationsFile' ->
+            match errFile with
+            | None -> eprintfn "No error file provided or found!"
+            | Some errFile' ->
+                let locations = readLocationsFile locationsFile'
 
-            searchLogsDirectory dryRun locations resetScriptDirectory errFile'
+                searchLogsDirectory dryRun locations resetScriptDirectory errFile'
 
     rootCommand.SetHandler(handler, dryRunOption, locationsFileOption, errFileOption)
 
