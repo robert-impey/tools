@@ -7,6 +7,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <fileapi.h>
 
 using namespace std;
 
@@ -35,11 +36,22 @@ public:
 		{
 			const fs::path location_path{ location };
 
+
+
 			try
 			{
-				if (fs::exists(location_path))
+				if (location.back() == ':')
 				{
-					location_paths.push_back(location_path);
+					auto drive_location = location + '\\';
+					auto drive_type = GetDriveTypeA(drive_location.c_str());
+
+				}
+				else
+				{
+					if (fs::is_directory(location_path))
+					{
+						location_paths.push_back(location_path);
+					}
 				}
 			}
 			catch (std::filesystem::filesystem_error e)
