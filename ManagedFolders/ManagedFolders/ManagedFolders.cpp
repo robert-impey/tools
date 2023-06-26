@@ -7,7 +7,7 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include <fileapi.h>
+//#include <fileapi.h>
 
 using namespace std;
 
@@ -43,7 +43,7 @@ public:
 				if (location.back() == ':')
 				{
 					auto drive_location = location + '\\';
-					auto drive_type = GetDriveTypeA(drive_location.c_str());
+					//auto drive_type = GetDriveTypeA(drive_location.c_str());
 
 				}
 				else
