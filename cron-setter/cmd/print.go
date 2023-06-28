@@ -35,7 +35,7 @@ func print(dev bool) {
 	printStayDeleted(dev)
 	printResetPerms(dev)
 	printLogsDeleter(dev)
-	printSynch()
+	printSynch(dev)
 }
 
 func printStayDeleted(dev bool) {
@@ -43,11 +43,13 @@ func printStayDeleted(dev bool) {
 	fmt.Println("# Stay Deleted")
 	for i := 0; i < 11; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n", stayDeletedMinutes, i, buildType)
+		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n",
+			stayDeletedMinutes, i, buildType)
 	}
 	for i := 18; i < 23; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n", stayDeletedMinutes, i, buildType)
+		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n",
+			stayDeletedMinutes, i, buildType)
 	}
 	fmt.Println()
 }
@@ -61,7 +63,8 @@ func printResetPerms(dev bool) {
 		flag = " --dev"
 	}
 
-	fmt.Printf("%d 11 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/reset-perms/reset-perms.sh%s\n", resetPermsMinutes, flag)
+	fmt.Printf("%d 11 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/reset-perms/reset-perms.sh%s\n",
+		resetPermsMinutes, flag)
 }
 
 func printLogsDeleter(dev bool) {
@@ -69,14 +72,22 @@ func printLogsDeleter(dev bool) {
 
 	buildType := getBuildType(dev)
 
-	fmt.Printf("%d 12 * * * /home/robert/executables/Linux/%s/x64/logs-deleter sweepAll\n", logsDeleterMinutes, buildType)
+	fmt.Printf("%d 12 * * * /home/robert/executables/Linux/%s/x64/logs-deleter sweepAll\n",
+		logsDeleterMinutes, buildType)
 }
 
-func printSynch() {
+func printSynch(dev bool) {
 	synchMinutes := rand.Int31n(60)
 	synchHours := rand.Int31n(4) + 13
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh /home/robert/local-scripts/_Common/synch/run-nightly.sh\n", synchMinutes, synchHours)
+	flag := ""
+
+	if dev {
+		flag = " --dev"
+	}
+
+	fmt.Printf("%d %d * * * /usr/bin/zsh /home/robert/local-scripts/_Common/synch/run-nightly.sh%s\n",
+		synchMinutes, synchHours, flag)
 }
 
 func getBuildType(dev bool) string {
