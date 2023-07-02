@@ -7,7 +7,10 @@ Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 	"math/rand"
+	"os/user"
+	"path/filepath"
 )
 
 // printCmd represents the print command
@@ -39,20 +42,34 @@ func print(dev bool) {
 }
 
 func printStayDeleted(dev bool) {
-	buildType := getBuildType(dev)
+	runStayDeleted := getRunStayDeleted(dev)
 	fmt.Println("# Stay Deleted")
 	for i := 0; i < 11; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n",
-			stayDeletedMinutes, i, buildType)
+		fmt.Printf("%d %d * * * %s sweepNightly\n",
+			stayDeletedMinutes, i, runStayDeleted)
 	}
 	fmt.Println()
 	for i := 18; i <= 23; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * /home/robert/executables/Linux/%s/x64/run-stay-deleted sweepNightly\n",
-			stayDeletedMinutes, i, buildType)
+		fmt.Printf("%d %d * * * %s sweepNightly\n",
+			stayDeletedMinutes, i, runStayDeleted)
 	}
 	fmt.Println()
+}
+
+func getRunStayDeleted(dev bool) string {
+	executablesDir := getExecutablesDir(dev)
+	return filepath.Join(executablesDir, "run-stay-deleted")
+}
+
+func getExecutablesDir(dev bool) string {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(nil)
+	}
+	buildType := getBuildType(dev)
+	return filepath.Join(user.HomeDir, "executables", "Linux", buildType, "x64")
 }
 
 func printResetPerms(dev bool) {
@@ -64,17 +81,35 @@ func printResetPerms(dev bool) {
 		flag = " --dev"
 	}
 
-	fmt.Printf("%d 11 * * * /usr/bin/zsh /home/robert/local-scripts/_Common/reset-perms/reset-perms.sh%s\n",
-		resetPermsMinutes, flag)
+	resetPermsScript := getResetPermsScript()
+	fmt.Printf("%d 11 * * * /usr/bin/zsh %s%s\n",
+		resetPermsMinutes, resetPermsScript, flag)
+}
+
+func getResetPermsScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
+}
+
+func getLocalScripts() string {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(nil)
+	}
+	return filepath.Join(user.HomeDir, "local-scripts")
 }
 
 func printLogsDeleter(dev bool) {
 	logsDeleterMinutes := rand.Int31n(60)
 
-	buildType := getBuildType(dev)
+	logsDeleter := getLogsDeleter(dev)
+	fmt.Printf("%d 12 * * * %s\n",
+		logsDeleterMinutes, logsDeleter)
+}
 
-	fmt.Printf("%d 12 * * * /home/robert/executables/Linux/%s/x64/logs-deleter sweepAll\n",
-		logsDeleterMinutes, buildType)
+func getLogsDeleter(dev bool) string {
+	executablesDir := getExecutablesDir(dev)
+	return filepath.Join(executablesDir, "logs-deleter")
 }
 
 func printSynch(dev bool) {
@@ -87,8 +122,14 @@ func printSynch(dev bool) {
 		flag = " --dev"
 	}
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh /home/robert/local-scripts/_Common/synch/run-nightly.sh%s\n",
-		synchMinutes, synchHours, flag)
+	synchScript := getSynchScript()
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n",
+		synchMinutes, synchHours, synchScript, flag)
+}
+
+func getSynchScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
 }
 
 func getBuildType(dev bool) string {
