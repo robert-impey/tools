@@ -50,7 +50,7 @@ func printStayDeleted(dev bool) {
 			stayDeletedMinutes, i, runStayDeleted)
 	}
 	fmt.Println()
-	for i := 18; i <= 23; i++ {
+	for i := 19; i <= 23; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
 		fmt.Printf("%d %d * * * %s sweepNightly\n",
 			stayDeletedMinutes, i, runStayDeleted)
