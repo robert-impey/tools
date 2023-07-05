@@ -103,7 +103,7 @@ func printLogsDeleter(dev bool) {
 	logsDeleterMinutes := rand.Int31n(60)
 
 	logsDeleter := getLogsDeleter(dev)
-	fmt.Printf("%d 12 * * * %s\n",
+	fmt.Printf("%d 12 * * * %s sweepAll\n",
 		logsDeleterMinutes, logsDeleter)
 }
 
