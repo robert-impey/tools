@@ -1,6 +1,3 @@
-// ManagedFolders.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -37,7 +34,7 @@ public:
 
 			try
 			{
-				if (fs::is_directory(location_path))
+				if (is_directory(location_path))
 				{
 					location_paths.push_back(location_path);
 				}
@@ -67,7 +64,7 @@ public:
 
 				try
 				{
-					if (fs::exists(located_folder_path))
+					if (exists(located_folder_path))
 					{
 						cout << located_folder_path << endl;
 					}
@@ -96,9 +93,9 @@ public:
 
 		auto synch_autogen_path{ autogen_path / "synch" };
 
-		if (!fs::exists(synch_autogen_path))
+		if (!exists(synch_autogen_path))
 		{
-			fs::create_directory(synch_autogen_path);
+			create_directory(synch_autogen_path);
 		}
 
 		generate_synch_location_pair_folders(synch_autogen_path);
@@ -132,8 +129,8 @@ private:
 					{
 						if (fs::exists(located_folder_path1) && fs::exists(located_folder_path2))
 						{
-							pair<fs::path, fs::path> a_pair{ located_folder_path1, located_folder_path2 };
-							pair<fs::path, fs::path> reversed_pair{ located_folder_path2, located_folder_path1 };
+							pair a_pair{ located_folder_path1, located_folder_path2 };
+							pair reversed_pair{ located_folder_path2, located_folder_path1 };
 
 							if (ranges::find(pairs, reversed_pair) != pairs.end())
 							{
@@ -162,9 +159,9 @@ private:
 
 			const fs::path sub_path1{ synch_autogen_path / clean_path1 };
 
-			if (!fs::exists(sub_path1))
+			if (!exists(sub_path1))
 			{
-				fs::create_directory(sub_path1);
+				create_directory(sub_path1);
 			}
 
 			for (auto& location_path2 : location_paths)
@@ -175,9 +172,9 @@ private:
 
 				const fs::path sub_path2{ sub_path1 / clean_path2 };
 
-				if (!fs::exists(sub_path2))
+				if (!exists(sub_path2))
 				{
-					fs::create_directory(sub_path2);
+					create_directory(sub_path2);
 				}
 
 				vector<string> common_folders;
@@ -186,7 +183,7 @@ private:
 					auto location_folder_path1{ location_path1 / folder };
 					auto location_folder_path2{ location_path2 / folder };
 
-					if (fs::exists(location_folder_path1) && fs::exists(location_folder_path2))
+					if (exists(location_folder_path1) && exists(location_folder_path2))
 					{
 						common_folders.push_back(folder);
 						generate_folder_synch_script(folder, sub_path2, location_path1, location_path2);
@@ -274,9 +271,9 @@ fs::path find_autogen_path()
 	fs::path userprofile_path{ userprofile_env };
 	fs::path autogen_path{ userprofile_path / "autogen" };
 
-	if (!fs::exists(autogen_path))
+	if (!exists(autogen_path))
 	{
-		fs::create_directory(autogen_path);
+		create_directory(autogen_path);
 	}
 
 	return autogen_path;
