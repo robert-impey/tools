@@ -14,16 +14,16 @@ namespace fs = std::filesystem;
 
 vector<string> read_all_non_empty_lines(const fs::path& path);
 fs::path find_autogen_path();
-string clean_path(string);
-void generate_folder_synch_script(const string, const fs::path&, const fs::path&, const fs::path&);
-void generate_all_folders_synch_script(const vector<string>, const fs::path&, const fs::path&, const fs::path&);
+string clean_path(const string&);
+void generate_folder_synch_script(const string&, const fs::path&, const fs::path&, const fs::path&);
+void generate_all_folders_synch_script(const vector<string>&, const fs::path&, const fs::path&, const fs::path&);
 
 class FolderManager
 {
 public:
-	FolderManager(string _local_scripts_env)
+	explicit FolderManager(const string& local_scripts_env)
 	{
-		local_scripts_dir = _local_scripts_env;
+		local_scripts_dir = local_scripts_env;
 
 		locations_file_path = local_scripts_dir / "_Common" / "locations.txt";
 		folders_file_path = local_scripts_dir / "_Common" / "folders.txt";
@@ -49,7 +49,7 @@ public:
 		}
 	}
 
-	void list()
+	void list() const
 	{
 		auto first{ true };
 		for (auto& location : locations)
@@ -82,11 +82,11 @@ public:
 
 	void list_pairs()
 	{
-		auto pairs = find_pairs();
+		const auto pairs = find_pairs();
 
-		for (auto& a_pair : pairs)
+		for (const auto& [fst, snd] : pairs)
 		{
-			cout << a_pair.first << " <-> " << a_pair.second << endl;
+			cout << fst << " <-> " << snd << endl;
 		}
 	}
 
@@ -109,7 +109,7 @@ private:
 	vector<string> locations, folders;
 	vector<fs::path> location_paths;
 
-	vector<pair<fs::path, fs::path>> find_pairs()
+	vector<pair<fs::path, fs::path>> find_pairs() const
 	{
 		vector<pair<fs::path, fs::path>> pairs;
 
@@ -135,7 +135,7 @@ private:
 							pair<fs::path, fs::path> a_pair{ located_folder_path1, located_folder_path2 };
 							pair<fs::path, fs::path> reversed_pair{ located_folder_path2, located_folder_path1 };
 
-							if (std::find(pairs.begin(), pairs.end(), reversed_pair) != pairs.end())
+							if (ranges::find(pairs, reversed_pair) != pairs.end())
 							{
 								continue;
 							}
@@ -154,7 +154,7 @@ private:
 		return pairs;
 	}
 
-	void generate_synch_location_pair_folders(fs::path synch_autogen_path)
+	void generate_synch_location_pair_folders(const fs::path& synch_autogen_path) const
 	{
 		for (auto& location_path1 : location_paths)
 		{
@@ -199,11 +199,11 @@ private:
 	}
 };
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
-	auto local_scripts_env{ getenv("LOCAL_SCRIPTS") };
+	const auto local_scripts_env{ getenv("LOCAL_SCRIPTS") };
 
-	if (local_scripts_env == NULL)
+	if (local_scripts_env == nullptr)
 	{
 		cerr << "LOCAL_SCRIPTS env var not set!" << endl;
 		return 1;
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 
 	if (argc >= 2)
 	{
-		string task{ argv[1] };
+		const string task{ argv[1] };
 
 		FolderManager folder_manager(local_scripts_env);
 
@@ -252,7 +252,7 @@ vector<string> read_all_non_empty_lines(const fs::path& path)
 	string line;
 	while (getline(file_stream, line))
 	{
-		if (line.size())
+		if (!line.empty())
 		{
 			lines.push_back(line);
 		}
@@ -264,9 +264,9 @@ vector<string> read_all_non_empty_lines(const fs::path& path)
 
 fs::path find_autogen_path()
 {
-	auto userprofile_env{ getenv("USERPROFILE") };
+	const auto userprofile_env{ getenv("USERPROFILE") };
 
-	if (userprofile_env == NULL)
+	if (userprofile_env == nullptr)
 	{
 		throw exception("USERPROFILE env var not set!");
 	}
@@ -282,16 +282,16 @@ fs::path find_autogen_path()
 	return autogen_path;
 }
 
-string clean_path(string path_str)
+string clean_path(const string& path_str)
 {
-	std::regex illegals{ "[:\\\\/ ]+" };
-	string replacement{ "_" };
+	const std::regex illegals{ "[:\\\\/ ]+" };
+	const string replacement{ "_" };
 
 	return std::regex_replace(path_str, illegals, replacement);
 }
 
 void generate_folder_synch_script(
-	const std::string folder,
+	const std::string& folder,
 	const fs::path& script_folder,
 	const fs::path& location_path1,
 	const fs::path& location_path2)
@@ -299,7 +299,7 @@ void generate_folder_synch_script(
 	ostringstream script_name;
 	script_name << folder << ".ps1";
 
-	fs::path script_path{ script_folder / script_name.str() };
+	const fs::path script_path{ script_folder / script_name.str() };
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
@@ -318,12 +318,12 @@ void generate_folder_synch_script(
 }
 
 void generate_all_folders_synch_script(
-	vector<string> folders,
+	const vector<string>& folders,
 	const fs::path& script_folder,
 	const fs::path& location_path1,
 	const fs::path& location_path2)
 {
-	fs::path script_path{ script_folder / "_all.ps1" };
+	const fs::path script_path{ script_folder / "_all.ps1" };
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
