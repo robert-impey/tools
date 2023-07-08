@@ -11,6 +11,7 @@ import (
 
 var Days int
 var DeleteEmpty bool
+var Verbose bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -39,4 +40,5 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().IntVarP(&Days, "days", "d", 30, "Days ago for cut off")
 	rootCmd.PersistentFlags().BoolVarP(&DeleteEmpty, "deleteEmpty", "e", false, "Delete empty log files")
+	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "Verbose output")
 }

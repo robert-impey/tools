@@ -27,10 +27,12 @@ func GetLogsDir() (string, error) {
 	return logsDir, nil
 }
 
-func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer) error {
+func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer, verbose bool) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
-	fmt.Fprintf(outWriter, "Searching %v for files older than %v\n", subPath, cutoff)
+	if verbose {
+		fmt.Fprintf(outWriter, "Searching %v for files older than %v\n", subPath, cutoff)
+	}
 
 	files, err := filepath.Glob(filepath.Join(subPath, "*"))
 	if err != nil {
@@ -50,7 +52,11 @@ func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer)
 		}
 	}
 
-	fmt.Fprintf(outWriter, "Found %d files to delete in %v\n", len(filesToDelete), subPath)
+	countFilesToDelete := len(filesToDelete)
+
+	if verbose || countFilesToDelete > 0 {
+		fmt.Fprintf(outWriter, "Found %d files to delete in %v\n", len(filesToDelete), subPath)
+	}
 
 	for _, fileToDelete := range filesToDelete {
 		var pathToDelete = filepath.Join(subPath, fileToDelete.Name())

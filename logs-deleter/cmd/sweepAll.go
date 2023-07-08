@@ -82,7 +82,7 @@ func sweepLogsDirWithLogs() {
 	err = sweepLogsDir(logsDir, outLogFile)
 	if err != nil {
 		fmt.Fprint(os.Stderr, errLogFile)
-	} else {
+	} else if Verbose {
 		fmt.Fprintf(outLogFile, "Success")
 	}
 }
@@ -99,7 +99,7 @@ func sweepLogsDir(logsDir string, outWriter io.Writer) error {
 			return err
 		}
 
-		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, outWriter)
+		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, outWriter, Verbose)
 		if err != nil {
 			return err
 		}
