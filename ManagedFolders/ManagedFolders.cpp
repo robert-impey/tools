@@ -23,16 +23,10 @@ void generate_all_folders_synch_script(const vector<string> &, const fs::path &,
 class FolderManager {
 public:
     explicit FolderManager(
-            const fs::path &_local_scripts_dir,
-            const fs::path &_locations_file_path,
-            const fs::path &_folders_file_path,
             vector<string> _locations,
             vector<string> _folders,
             vector<fs::path> _location_paths
     ) {
-        local_scripts_dir = _local_scripts_dir;
-        locations_file_path = _locations_file_path;
-        folders_file_path = _folders_file_path;
         locations = std::move(_locations);
         folders = std::move(_folders);
         location_paths = std::move(_location_paths);
@@ -84,7 +78,6 @@ public:
     }
 
 private:
-    fs::path local_scripts_dir, locations_file_path, folders_file_path;
     vector<string> locations, folders;
     vector<fs::path> location_paths;
 
@@ -333,9 +326,6 @@ FolderManager make_folder_manager(const string &local_scripts_env) {
     }
 
     FolderManager folder_manager(
-            local_scripts_dir,
-            locations_file_path,
-            folders_file_path,
             locations,
             folders,
             location_paths);
