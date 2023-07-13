@@ -23,18 +23,18 @@ void generate_all_folders_synch_script(const vector<string> &, const fs::path &,
 class FolderManager {
 public:
     explicit FolderManager(
-            vector<string> _locations,
-            vector<string> _folders,
-            vector<fs::path> _location_paths
+            vector<string> locations,
+            vector<string> folders,
+            vector<fs::path> location_paths
     ) {
-        locations = std::move(_locations);
-        folders = std::move(_folders);
-        location_paths = std::move(_location_paths);
+        _locations = std::move(locations);
+        _folders = std::move(folders);
+        _location_paths = std::move(location_paths);
     }
 
     void list() const {
         auto first{true};
-        for (auto &location: locations) {
+        for (auto &location: _locations) {
             if (first)
                 first = false;
             else
@@ -42,7 +42,7 @@ public:
 
             const fs::path location_path{location};
 
-            for (auto &folder: folders) {
+            for (auto &folder: _folders) {
                 const fs::path located_folder_path{location_path / folder};
 
                 try {
@@ -78,15 +78,15 @@ public:
     }
 
 private:
-    vector<string> locations, folders;
-    vector<fs::path> location_paths;
+    vector<string> _locations, _folders;
+    vector<fs::path> _location_paths;
 
     vector<pair<fs::path, fs::path>> find_pairs() const {
         vector<pair<fs::path, fs::path>> pairs;
 
-        for (auto &folder: folders) {
-            for (auto &location1: locations) {
-                for (auto &location2: locations) {
+        for (auto &folder: _folders) {
+            for (auto &location1: _locations) {
+                for (auto &location2: _locations) {
                     if (location1 == location2)
                         continue;
 
@@ -119,7 +119,7 @@ private:
     }
 
     void generate_synch_location_pair_folders(const fs::path &synch_autogen_path) const {
-        for (auto &location_path1: location_paths) {
+        for (auto &location_path1: _location_paths) {
             const string clean_path1 = clean_path(location_path1.string());
 
             const fs::path sub_path1{synch_autogen_path / clean_path1};
@@ -128,7 +128,7 @@ private:
                 create_directory(sub_path1);
             }
 
-            for (auto &location_path2: location_paths) {
+            for (auto &location_path2: _location_paths) {
                 if (location_path1 == location_path2) continue;
 
                 const string clean_path2 = clean_path(location_path2.string());
@@ -140,7 +140,7 @@ private:
                 }
 
                 vector<string> common_folders;
-                for (auto &folder: folders) {
+                for (auto &folder: _folders) {
                     auto location_folder_path1{location_path1 / folder};
                     auto location_folder_path2{location_path2 / folder};
 
