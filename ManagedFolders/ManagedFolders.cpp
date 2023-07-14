@@ -47,7 +47,7 @@ public:
 
                 try {
                     if (exists(located_folder_path)) {
-                        cout << located_folder_path << endl;
+                        cout << located_folder_path.string() << endl;
                     }
                 }
                 catch (std::filesystem::filesystem_error e) {
