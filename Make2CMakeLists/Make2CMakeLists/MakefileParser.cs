@@ -32,8 +32,8 @@ internal static class MakefileParser
         return new Makefile
         {
             CppStandard = standard.Value,
-            Src = src,
-            Target = target
+            Src = src.ToString(),
+            Target = target.ToString()
         };
     }
 

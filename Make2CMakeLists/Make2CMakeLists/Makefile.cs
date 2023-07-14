@@ -3,6 +3,6 @@
 internal record Makefile
 {
     public int CppStandard { get; init; }
-    public string Src { get; init; }
-    public string Target { get; init; }
+    public required string Src { get; init; }
+    public required string Target { get; init; }
 }
