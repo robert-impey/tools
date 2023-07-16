@@ -236,6 +236,14 @@ string clean_path(const string &path_str) {
     return std::regex_replace(path_str, illegals, replacement);
 }
 
+void add_script_file_params(ofstream &script_file)
+{
+    script_file << "param(" << endl;
+    script_file << "    [Parameter (Mandatory = $False)]" << endl;
+    script_file << "    [switch]$logged = $False" << endl;
+    script_file << ")" << endl << endl;
+}
+
 void generate_folder_synch_script(
         const std::string &folder,
         const fs::path &script_folder,
@@ -251,10 +259,7 @@ void generate_folder_synch_script(
 
     script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
 
-    script_file << "param(" << endl;
-    script_file << "    [Parameter (Mandatory = $False)]" << endl;
-    script_file << "    [switch]$logged = $False" << endl;
-    script_file << ")" << endl << endl;
+    add_script_file_params(script_file);
 
     script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
@@ -279,6 +284,8 @@ void generate_all_folders_synch_script(
 
     script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
 
+    add_script_file_params(script_file);
+
     script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
     script_file << "$folders = ";
@@ -300,7 +307,7 @@ void generate_all_folders_synch_script(
 
     script_file << "foreach($folder in $folders)" << endl;
     script_file << "{" << endl;
-    script_file << "    Synch $folder $src $dst" << endl;
+    script_file << "    Synch $folder $src $dst $logged" << endl;
     script_file << "}" << endl;
 
     script_file.close();
