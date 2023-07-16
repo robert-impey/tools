@@ -251,13 +251,18 @@ void generate_folder_synch_script(
 
     script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
 
+    script_file << "param(" << endl;
+    script_file << "    [Parameter (Mandatory = $False)]" << endl;
+    script_file << "    [switch]$logged = $False" << endl;
+    script_file << ")" << endl << endl;
+
     script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
     script_file << "$folder = \"" << folder << "\"" << endl << endl;
     script_file << "$src = " << location_path1 << endl;
     script_file << "$dst = " << location_path2 << endl << endl;
 
-    script_file << "Synch $folder $src $dst" << endl;
+    script_file << "Synch $folder $src $dst $logged" << endl;
 
     script_file.close();
 }
