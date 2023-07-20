@@ -61,7 +61,7 @@ public:
         const auto pairs = find_pairs();
 
         for (const auto &[fst, snd]: pairs) {
-            cout << fst << " <-> " << snd << endl;
+            cout << fst.string() << " <-> " << snd.string() << endl;
         }
     }
 
@@ -233,7 +233,11 @@ string clean_path(const string &path_str) {
     const std::regex illegals{"[:\\\\/ ]+"};
     const string replacement{"_"};
 
-    return std::regex_replace(path_str, illegals, replacement);
+    const string all_legal { std::regex_replace(path_str, illegals, replacement) };
+
+    const std::regex trailing_underscore { "_$"};
+
+    return std::regex_replace( all_legal, trailing_underscore, "");
 }
 
 void add_script_file_params(ofstream &script_file)
@@ -264,8 +268,8 @@ void generate_folder_synch_script(
     script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
 
     script_file << "$folder = \"" << folder << "\"" << endl << endl;
-    script_file << "$src = " << location_path1 << endl;
-    script_file << "$dst = " << location_path2 << endl << endl;
+    script_file << "$src = " << location_path1.string() << endl;
+    script_file << "$dst = " << location_path2.string() << endl << endl;
 
     script_file << "Synch $folder $src $dst $logged" << endl;
 
@@ -302,8 +306,8 @@ void generate_all_folders_synch_script(
 
     script_file << endl << endl;
 
-    script_file << "$src = " << location_path1 << endl;
-    script_file << "$dst = " << location_path2 << endl << endl;
+    script_file << "$src = " << location_path1.string() << endl;
+    script_file << "$dst = " << location_path2.string() << endl << endl;
 
     script_file << "foreach($folder in $folders)" << endl;
     script_file << "{" << endl;
