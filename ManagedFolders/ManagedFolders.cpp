@@ -233,15 +233,14 @@ string clean_path(const string &path_str) {
     const std::regex illegals{"[:\\\\/ ]+"};
     const string replacement{"_"};
 
-    const string all_legal { std::regex_replace(path_str, illegals, replacement) };
+    const string all_legal{std::regex_replace(path_str, illegals, replacement)};
 
-    const std::regex trailing_underscore { "_$"};
+    const std::regex trailing_underscore{"_$"};
 
-    return std::regex_replace( all_legal, trailing_underscore, "");
+    return std::regex_replace(all_legal, trailing_underscore, "");
 }
 
-void add_script_file_params(ofstream &script_file)
-{
+void add_script_file_params(ofstream &script_file) {
     script_file << "param(" << endl;
     script_file << "    [Parameter (Mandatory = $False)]" << endl;
     script_file << "    [switch]$logged = $False" << endl;
