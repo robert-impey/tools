@@ -305,8 +305,8 @@ void generate_all_folders_synch_script(
 
     script_file << endl << endl;
 
-    script_file << "$src = " << location_path1.string() << endl;
-    script_file << "$dst = " << location_path2.string() << endl << endl;
+    script_file << "$src = " << location_path1 << endl;
+    script_file << "$dst = " << location_path2 << endl << endl;
 
     script_file << "foreach($folder in $folders)" << endl;
     script_file << "{" << endl;
