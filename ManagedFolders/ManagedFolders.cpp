@@ -39,7 +39,7 @@ public:
 
             if (first)
                 first = false;
-            else if (exists(location_path)) 
+            else if (exists(location_path))
                 cout << endl;
 
             for (auto &folder: _folders) {
@@ -58,7 +58,9 @@ public:
     }
 
     void list_pairs() {
-        const auto pairs = find_pairs();
+        auto pairs = find_pairs();
+
+        sort(pairs.begin(), pairs.end());
 
         for (const auto &[fst, snd]: pairs) {
             cout << fst.string() << " <-> " << snd.string() << endl;
