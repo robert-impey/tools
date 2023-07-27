@@ -58,9 +58,7 @@ public:
     }
 
     void list_pairs() {
-        auto pairs = find_pairs();
-
-        sort(pairs.begin(), pairs.end());
+        const auto pairs = find_pairs();
 
         for (const auto &[fst, snd]: pairs) {
             cout << fst.string() << " <-> " << snd.string() << endl;
@@ -116,6 +114,8 @@ private:
                 }
             }
         }
+
+        sort(pairs.begin(), pairs.end());
 
         return pairs;
     }
