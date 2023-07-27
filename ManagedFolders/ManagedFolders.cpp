@@ -35,12 +35,12 @@ public:
     void list() const {
         auto first{true};
         for (auto &location: _locations) {
+            const fs::path location_path{location};
+
             if (first)
                 first = false;
-            else
+            else if (exists(location_path)) 
                 cout << endl;
-
-            const fs::path location_path{location};
 
             for (auto &folder: _folders) {
                 const fs::path located_folder_path{location_path / folder};
