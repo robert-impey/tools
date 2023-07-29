@@ -50,7 +50,7 @@ public:
                         cout << located_folder_path.string() << endl;
                     }
                 }
-                catch (std::filesystem::filesystem_error e) {
+                catch (std::filesystem::filesystem_error &e) {
                     std::cerr << e.what() << endl;
                 }
             }
@@ -108,7 +108,7 @@ private:
                             pairs.push_back(a_pair);
                         }
                     }
-                    catch (std::filesystem::filesystem_error e) {
+                    catch (std::filesystem::filesystem_error &e) {
                         std::cerr << e.what() << endl;
                     }
                 }
@@ -342,7 +342,7 @@ FolderManager make_folder_manager(const string &local_scripts_env) {
                 location_paths.push_back(location_path);
             }
         }
-        catch (std::filesystem::filesystem_error e) {
+        catch (std::filesystem::filesystem_error &e) {
             std::cerr << e.what() << endl;
         }
     }
