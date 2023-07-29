@@ -152,7 +152,8 @@ private:
                     }
                 }
 
-                generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
+                if (!common_folders.empty())
+                    generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
             }
         }
     }
