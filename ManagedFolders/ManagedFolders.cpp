@@ -81,7 +81,7 @@ private:
     vector<string> _locations, _folders;
     vector<fs::path> _location_paths;
 
-    vector<pair<fs::path, fs::path>> find_pairs() const {
+    [[nodiscard]] vector<pair<fs::path, fs::path>> find_pairs() const {
         vector<pair<fs::path, fs::path>> pairs;
 
         for (auto &folder: _folders) {
@@ -271,7 +271,7 @@ void generate_folder_synch_script(
 
     add_script_file_params(script_file);
 
-    script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
+    script_file << R"(Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1")" << endl << endl;
 
     script_file << "$folder = \"" << folder << "\"" << endl << endl;
     script_file << "$src = " << location_path1 << endl;
@@ -296,7 +296,7 @@ void generate_all_folders_synch_script(
 
     add_script_file_params(script_file);
 
-    script_file << "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"" << endl << endl;
+    script_file << R"(Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1")" << endl << endl;
 
     script_file << "$folders = ";
 
