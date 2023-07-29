@@ -152,7 +152,9 @@ private:
                     }
                 }
 
-                if (!common_folders.empty())
+                if (common_folders.empty())
+                    fs::remove(sub_path2);
+                else
                     generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
             }
         }
