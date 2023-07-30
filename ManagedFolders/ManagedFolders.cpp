@@ -6,8 +6,6 @@
 #include <utility>
 #include <vector>
 
-#pragma warning(disable: 4996)
-
 using namespace std;
 
 namespace fs = std::filesystem;
@@ -157,23 +155,33 @@ private:
                 if (common_folders.empty()) {
                     if (fs::is_empty(sub_path2))
                         fs::remove(sub_path2);
-                }
-                else
+                } else
                     generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
             }
         }
     }
 };
 
-FolderManager make_folder_manager(const string &);
+FolderManager make_folder_manager(const fs::path &);
+
+fs::path get_env_folder(const char *var_name) {
+#pragma warning( push )
+#pragma warning(disable: 4996)
+    const auto env_var{getenv(var_name)};
+#pragma warning( pop )
+
+    if (env_var == nullptr) {
+        std::stringstream err_msg;
+        err_msg << var_name << " env var not set!";
+        throw exception{err_msg.str().c_str()};
+    }
+    const fs::path env_folder{env_var};
+
+    return env_folder;
+}
 
 int main(const int argc, char *argv[]) {
-    const auto local_scripts_env{getenv("LOCAL_SCRIPTS")};
-
-    if (local_scripts_env == nullptr) {
-        cerr << "LOCAL_SCRIPTS env var not set!" << endl;
-        return 1;
-    }
+    const auto local_scripts_env{get_env_folder("LOCAL_SCRIPTS")};
 
     if (argc >= 2) {
         const string task{argv[1]};
@@ -222,13 +230,9 @@ vector<string> read_all_non_empty_lines(const fs::path &path) {
 }
 
 fs::path find_autogen_path() {
-    const auto userprofile_env{getenv("USERPROFILE")};
 
-    if (userprofile_env == nullptr) {
-        throw exception("USERPROFILE env var not set!");
-    }
+    const auto userprofile_path{get_env_folder("USERPROFILE")};
 
-    fs::path userprofile_path{userprofile_env};
     fs::path autogen_path{userprofile_path / "autogen"};
 
     if (!exists(autogen_path)) {
@@ -325,9 +329,7 @@ void generate_all_folders_synch_script(
     script_file.close();
 }
 
-FolderManager make_folder_manager(const string &local_scripts_env) {
-    fs::path local_scripts_dir{local_scripts_env};
-
+FolderManager make_folder_manager(const fs::path &local_scripts_dir) {
     auto locations_file_path{local_scripts_dir / "_Common" / "locations.txt"};
     auto folders_file_path{local_scripts_dir / "_Common" / "folders.txt"};
 
