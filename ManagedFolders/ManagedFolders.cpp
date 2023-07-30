@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#pragma warning(disable: 4996)
+
 using namespace std;
 
 namespace fs = std::filesystem;
