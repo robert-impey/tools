@@ -44,23 +44,23 @@ func print(dev bool) {
 func printStayDeleted(dev bool) {
 	runStayDeleted := getRunStayDeleted(dev)
 	fmt.Println("# Stay Deleted")
-	for i := 0; i < 11; i++ {
-		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * %s sweepNightly\n",
-			stayDeletedMinutes, i, runStayDeleted)
-	}
-	fmt.Println()
-	for i := 19; i <= 23; i++ {
-		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * %s sweepNightly\n",
-			stayDeletedMinutes, i, runStayDeleted)
-	}
-	fmt.Println()
+	printStayDeletedRun(runStayDeleted, 0, 2)
+	printStayDeletedRun(runStayDeleted, 6, 11)
+	printStayDeletedRun(runStayDeleted, 19, 23)
 }
 
 func getRunStayDeleted(dev bool) string {
 	executablesDir := getExecutablesDir(dev)
 	return filepath.Join(executablesDir, "run-stay-deleted")
+}
+
+func printStayDeletedRun(runStayDeleted string, startHour int, endHour int) {
+	for i := startHour; i < endHour; i++ {
+		stayDeletedMinutes := rand.Int31n(60)
+		fmt.Printf("%d %d * * * %s sweepNightly\n",
+			stayDeletedMinutes, i, runStayDeleted)
+	}
+	fmt.Println()
 }
 
 func getExecutablesDir(dev bool) string {
@@ -113,9 +113,8 @@ func getLogsDeleter(dev bool) string {
 }
 
 func printSynch(dev bool) {
-	synchMinutes := rand.Int31n(60)
-	synchHours := rand.Int31n(4) + 13
-
+	fmt.Println()
+	fmt.Println("# Synch")
 	flag := ""
 
 	if dev {
@@ -123,6 +122,15 @@ func printSynch(dev bool) {
 	}
 
 	synchScript := getSynchScript()
+
+	printSynchLine(2, 4, synchScript, flag)
+	printSynchLine(13, 4, synchScript, flag)
+}
+
+func printSynchLine(earliestHour int32, hoursRange int32, synchScript string, flag string) {
+	synchMinutes := rand.Int31n(60)
+	synchHours := rand.Int31n(hoursRange) + earliestHour
+
 	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n",
 		synchMinutes, synchHours, synchScript, flag)
 }
