@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
             string file { argv[2] };
 
             if (test_file_starts_with_shebang(file)) {
+                cout << file << " starts with a shebang! Updating..." << endl;
                 fs::path path { file };
                 update_path(path);
             } else {
