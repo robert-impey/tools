@@ -3,3 +3,5 @@ CMakeFiles
 cmake_install.cmake
 Makefile
 make_scripts_executable
+.cmake
+make_scripts_executable.cbp
