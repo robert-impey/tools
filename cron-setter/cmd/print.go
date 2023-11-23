@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"os/user"
 	"path/filepath"
+	"time"
 )
 
 // printCmd represents the print command
@@ -32,10 +33,16 @@ func init() {
 }
 
 func print(dev bool) {
+	printHeaderComment()
 	printStayDeleted(dev)
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
+}
+
+func printHeaderComment() {
+	now := time.Now().UTC()
+	fmt.Printf("# Cron tasks created by cron-setter on %s\n\n", now.Format("2006-01-02"))
 }
 
 func printStayDeleted(dev bool) {
