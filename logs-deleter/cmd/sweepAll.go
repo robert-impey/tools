@@ -1,15 +1,13 @@
+package cmd
+
 /*
 Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 */
-package cmd
 
 import (
 	"errors"
 	"fmt"
-	"hash/maphash"
 	"io"
-	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,8 +15,6 @@ import (
 	"github.com/spf13/cobra"
 	"robertimpey.com/tools/logs-deleter/lib"
 )
-
-var Sleep int32
 
 // sweepAllCmd represents the sweepAll command
 var sweepAllCmd = &cobra.Command{
@@ -36,18 +32,9 @@ This command logs its output.`,
 
 func init() {
 	rootCmd.AddCommand(sweepAllCmd)
-	sweepAllCmd.Flags().Int32VarP(&Sleep, "sleep", "s", 0,
-		"The maximum number of seconds to sleep before starting. A random time during the period is chosen.")
 }
 
 func sweepLogsDirWithLogs() {
-	if Sleep > 0 {
-		r := rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
-		wait := r.Int31n(Sleep)
-		log.Printf("Waiting %d seconds...", wait)
-		time.Sleep(time.Duration(wait) * time.Second)
-	}
-
 	logsDir, err := lib.GetLogsDir()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
