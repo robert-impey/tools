@@ -11,11 +11,11 @@ import (
 )
 
 func GetLogsDir() (string, error) {
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		return "", err
 	}
-	var logsDir = filepath.Join(user.HomeDir, "logs")
+	var logsDir = filepath.Join(currentUser.HomeDir, "logs")
 
 	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(logsDir, os.ModePerm)
