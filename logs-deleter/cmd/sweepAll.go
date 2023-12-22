@@ -54,20 +54,26 @@ func sweepLogsDirWithLogs() {
 	outLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.log", timeStr))
 	errLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.err", timeStr))
 
-	outLogFile, err := os.Create(outLogFileName)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return
-	}
-	errLogFile, err := os.Create(errLogFileName)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return
+	outLogFile := os.Stdout
+	errLogFile := os.Stderr
+	if !DeleteEmpty {
+		outLogFile, err = os.Create(outLogFileName)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return
+		}
+
+		errLogFile, err = os.Create(errLogFileName)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return
+		}
 	}
 
-	err = sweepLogsDir(logsDir, outLogFile)
-	if err != nil {
-		fmt.Fprint(os.Stderr, errLogFile)
+	sweepErr := sweepLogsDir(logsDir, outLogFile)
+
+	if sweepErr != nil {
+		fmt.Fprint(errLogFile, sweepErr)
 	} else if Verbose {
 		fmt.Fprintf(outLogFile, "Success")
 	}
