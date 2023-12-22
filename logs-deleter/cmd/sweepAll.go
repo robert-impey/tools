@@ -23,7 +23,6 @@ var sweepAllCmd = &cobra.Command{
 	Long: `Sweep all the log directories.
 
 Find files that are older than an expiry.
-Optionally wait a random number of seconds before starting.
 This command logs its output.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sweepLogsDirWithLogs()
