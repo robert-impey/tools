@@ -68,12 +68,12 @@ func printStayDeletedRun(runStayDeleted string, startHour int, endHour int) {
 }
 
 func getExecutablesDir(dev bool) string {
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatal(nil)
 	}
 	buildType := getBuildType(dev)
-	return filepath.Join(user.HomeDir, "executables", "Linux", buildType, "x64")
+	return filepath.Join(currentUser.HomeDir, "executables", "Linux", buildType, "x64")
 }
 
 func printResetPerms(dev bool) {
@@ -96,11 +96,11 @@ func getResetPermsScript() string {
 }
 
 func getLocalScripts() string {
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatal(nil)
 	}
-	return filepath.Join(user.HomeDir, "local-scripts")
+	return filepath.Join(currentUser.HomeDir, "local-scripts")
 }
 
 func printLogsDeleter(dev bool) {
