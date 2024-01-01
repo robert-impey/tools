@@ -1,13 +1,13 @@
+package cmd
+
 /*
 Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 */
-package cmd
 
 import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"os/user"
 	"path"
@@ -30,21 +30,11 @@ A random delay can be set before starting the sweep.`,
 	},
 }
 
-var Sleep int32
-
 func init() {
 	rootCmd.AddCommand(sweepNightlyCmd)
-	sweepNightlyCmd.Flags().Int32VarP(&Sleep, "sleep", "s", 0,
-		"The maximum number of seconds to sleep before starting. A random time during the period is chosen.")
 }
 
 func sweepNightly() {
-	if Sleep > 0 {
-		wait := rand.Int31n(Sleep)
-		log.Printf("Sleeping for %d seconds...\n", wait)
-		time.Sleep(time.Duration(wait) * time.Second)
-	}
-
 	localScriptsDirectory, err := getLocalScriptsDirectory()
 	if err != nil {
 		log.Fatalln(err)

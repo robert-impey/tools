@@ -3,7 +3,7 @@ module robertimpey.com/tools/run-stay-deleted
 go 1.21
 
 require (
-	github.com/robert-impey/staydeleted v0.0.0-20230715091405-1d61d68a184e
+	github.com/robert-impey/staydeleted v0.0.0-20231129203720-6cc00adfb43b
 	github.com/spf13/cobra v1.8.0
 )
 
