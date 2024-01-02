@@ -1,47 +1,29 @@
 // From https://docs.rs/clap/latest/clap/_derive/_tutorial/chapter_0/index.html
 
-use std::path::PathBuf;
-
-use clap::{Parser, Subcommand};
+use clap::{Parser};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    /// Optional name to operate on
-    name: Option<String>,
+    /// Optional type of file to search for
+    file_type: Option<String>,
 
-    /// Sets a custom config file
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
+    directory: Option<String>,
 
     /// Turn debugging information on
     #[arg(short, long, action = clap::ArgAction::Count)]
     debug: u8,
-
-    #[command(subcommand)]
-    command: Option<Commands>,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    /// does testing things
-    Test {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
-    },
 }
 
 fn main() {
     let cli = Cli::parse();
 
-    // You can check the value provided by positional arguments, or option arguments
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {name}");
+    if let Some(name) = cli.file_type.as_deref() {
+        println!("Value for file_type: {name}");
     }
 
-    if let Some(config_path) = cli.config.as_deref() {
-        println!("Value for config: {}", config_path.display());
+    if let Some(name) = cli.directory.as_deref() {
+        println!("Value for directory: {name}");
     }
 
     // You can see how many times a particular flag or argument occurred
@@ -52,19 +34,4 @@ fn main() {
         2 => println!("Debug mode is on"),
         _ => println!("Don't be crazy"),
     }
-
-    // You can check for the existence of subcommands, and if found use their
-    // matches just as you would the top level cmd
-    match &cli.command {
-        Some(Commands::Test { list }) => {
-            if *list {
-                println!("Printing testing lists...");
-            } else {
-                println!("Not printing testing lists...");
-            }
-        }
-        None => {}
-    }
-
-    // Continued program logic goes here...
 }
