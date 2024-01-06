@@ -1,6 +1,7 @@
 // From https://docs.rs/clap/latest/clap/_derive/_tutorial/chapter_0/index.html
 
 use clap::{Parser};
+use walkdir::WalkDir;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -24,6 +25,10 @@ fn main() {
 
     if let Some(name) = cli.directory.as_deref() {
         println!("Value for directory: {name}");
+
+        for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
+            println!("{}", entry.path().display());
+        }
     }
 
     // You can see how many times a particular flag or argument occurred
