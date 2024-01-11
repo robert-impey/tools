@@ -10,10 +10,6 @@ struct Cli {
     file_type: Option<String>,
 
     directory: Option<String>,
-
-    /// Turn debugging information on
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
 }
 
 fn main() {
@@ -29,14 +25,5 @@ fn main() {
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
             println!("{}", entry.path().display());
         }
-    }
-
-    // You can see how many times a particular flag or argument occurred
-    // Note, only flags can have multiple occurrences
-    match cli.debug {
-        0 => println!("Debug mode is off"),
-        1 => println!("Debug mode is kind of on"),
-        2 => println!("Debug mode is on"),
-        _ => println!("Don't be crazy"),
     }
 }
