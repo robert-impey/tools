@@ -21,7 +21,13 @@ fn main() {
         println!("Value for directory: {name}");
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
-            println!("{}", entry.path().display());
+            let path = entry.path();
+
+            if path.is_dir() {
+                println!("Directory {}", path.display())
+            } else {
+                println!("File {}", path.display())
+            }
         }
     }
 }
