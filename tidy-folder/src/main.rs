@@ -26,7 +26,9 @@ fn main() {
             if path.is_dir() {
                 println!("Directory {}", path.display())
             } else {
-                println!("File {}", path.display())
+                println!("File {}", path.display());
+                let parent = path.parent().unwrap();
+                println!("Parent {}", parent.display());
             }
         }
     }
