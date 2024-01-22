@@ -36,6 +36,7 @@ fn main() {
             }
         }
 
+        let mut matching_stems: Vec<DirEntry> = Vec::new();
         for (dir, files) in dirs_and_files {
             println!("Dir: {}", dir);
             for file in files.iter().cloned() {
@@ -80,6 +81,7 @@ fn main() {
                                                                 } else {
                                                                     if other_file_stem_string.starts_with(file_stem_str) {
                                                                         println!("\t\t\t\tFile stem match!");
+                                                                        matching_stems.push(other_file);
                                                                     } else {
                                                                         println!("\t\t\t\t{} does not start with {}", other_file_stem_string, file_stem_str);
                                                                     }
@@ -101,6 +103,11 @@ fn main() {
                     None => println!("\t\tNo file stem")
                 }
             }
+        }
+
+        println!("Matching stems:");
+        for matching_stem in matching_stems {
+            println!("Matching stem {}", matching_stem.path().display());
         }
     }
 }
