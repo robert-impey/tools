@@ -41,6 +41,10 @@ fn main() {
             for file in files {
                 let path = file.path();
                 println!("\tFile: {}", path.display());
+                match path.file_stem() {
+                    Some(file_stem) => println!("\t\tFile stem: {:?}", file_stem),
+                    None => println!("\t\tNo file stem")
+                }
             }
         }
     }
