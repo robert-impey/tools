@@ -17,7 +17,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./tidy-folder
     steps:
     - uses: actions/checkout@v3
     - name: Build
