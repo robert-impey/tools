@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use clap::{Parser};
-use walkdir::WalkDir;
+use walkdir::{DirEntry, WalkDir};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -21,11 +21,10 @@ fn main() {
     if let Some(name) = cli.directory.as_deref() {
         println!("Value for directory: {name}");
 
-        let mut dirs_and_files: HashMap<String, Vec<String>>  = HashMap::new();
+        let mut dirs_and_files: HashMap<String, Vec<DirEntry>>  = HashMap::new();
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
             let path = entry.path();
-            let path_str = path.to_str().unwrap().to_string();
 
             if path.is_file() {
                 let parent = path.parent().unwrap();
@@ -33,14 +32,15 @@ fn main() {
 
                 dirs_and_files.entry(parent_str)
                     .or_insert_with(Vec::new)
-                    .push(path_str);
+                    .push(entry);
             }
         }
 
         for (dir, files) in dirs_and_files {
             println!("Dir: {}", dir);
             for file in files {
-                println!("\tFile: {}", file);
+                let path = file.path();
+                println!("\tFile: {}", path.display());
             }
         }
     }
