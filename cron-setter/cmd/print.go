@@ -50,7 +50,7 @@ func printStayDeleted(dev bool) {
 	fmt.Println("# Stay Deleted")
 	printStayDeletedRun(runStayDeleted, 0, 2)
 	printStayDeletedRun(runStayDeleted, 6, 11)
-	printStayDeletedRun(runStayDeleted, 19, 23)
+	printStayDeletedRun(runStayDeleted, 19, 24)
 }
 
 func getRunStayDeleted(dev bool) string {
