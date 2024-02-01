@@ -1,4 +1,4 @@
-module robertimpey.com/tools/cron-setter
+module github.com/robert-impey/tools/cron-setter
 
 go 1.21
 

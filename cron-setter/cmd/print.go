@@ -23,7 +23,7 @@ var printCmd = &cobra.Command{
 Optionally, this can use the development versions of the commands.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dev, _ := cmd.Flags().GetBool("dev")
-		print(dev)
+		printAllTasks(dev)
 	},
 }
 
@@ -32,7 +32,7 @@ func init() {
 	printCmd.Flags().BoolP("dev", "d", false, "add dev versions to cron")
 }
 
-func print(dev bool) {
+func printAllTasks(dev bool) {
 	printHeaderComment()
 	printStayDeleted(dev)
 	printResetPerms(dev)

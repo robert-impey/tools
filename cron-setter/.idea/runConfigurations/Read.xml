@@ -4,7 +4,7 @@
     <working_directory value="$PROJECT_DIR$" />
     <parameters value="read" />
     <kind value="PACKAGE" />
-    <package value="robertimpey.com/tools/cron-setter" />
+    <package value="github.com/robert-impey/tools/cron-setter" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <method v="2" />
