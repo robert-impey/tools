@@ -17,9 +17,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./cron-setter
+
     steps:
     - uses: actions/checkout@v4
 
