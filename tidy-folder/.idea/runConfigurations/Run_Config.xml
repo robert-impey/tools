@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Foo Config" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-    <option name="command" value="run --package tidy-folder --bin tidy-folder -- foo C:\Users\rober\OneDrive\config\_Common\Notepad++" />
+  <configuration default="false" name="Run Config" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="command" value="run --package tidy-folder --bin tidy-folder -- C:\Users\rober\OneDrive\config\_Common\Notepad++" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <envs />
     <option name="emulateTerminal" value="true" />
