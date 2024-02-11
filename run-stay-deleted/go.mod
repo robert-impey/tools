@@ -1,4 +1,4 @@
-module robertimpey.com/tools/run-stay-deleted
+module github.com/robert-impey/tools/run-stay-deleted
 
 go 1.21
 
