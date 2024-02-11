@@ -7,10 +7,10 @@ Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 import (
 	"errors"
 	"fmt"
+	"github.com/robert-impey/tools/logs-deleter/lib"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
-	"robertimpey.com/tools/logs-deleter/lib"
 )
 
 var Tool string

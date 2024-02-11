@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/robert-impey/tools/logs-deleter/lib"
 	"github.com/spf13/cobra"
-	"robertimpey.com/tools/logs-deleter/lib"
 )
 
 // sweepAllCmd represents the sweepAll command
