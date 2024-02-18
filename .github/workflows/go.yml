@@ -5,13 +5,13 @@ name: Go
 
 on:
   push:
-    branches: 
-      - prod
-      - dev
+    branches:
+      - "master"
+      - "dev"
   pull_request:
     branches:
-      - prod
-      - dev
+      - "master"
+      - "dev"
 
 jobs:
 

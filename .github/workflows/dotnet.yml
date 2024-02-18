@@ -5,11 +5,13 @@ name: .NET
 
 on:
   push:
-    - prod
-    - dev
+    branches:
+      - "master"
+      - "dev"
   pull_request:
-    - prod
-    - dev
+    branches:
+      - "master"
+      - "dev"
 
 jobs:
   build:
