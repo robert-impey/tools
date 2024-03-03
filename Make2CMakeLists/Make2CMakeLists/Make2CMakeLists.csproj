@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
-    <PublishAot>true</PublishAot>
     <UseAppHost>true</UseAppHost>
   </PropertyGroup>
 
