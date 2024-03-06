@@ -14,6 +14,17 @@
             }
         }
 
+        if (OperatingSystem.IsLinux())
+        {
+            var home = Environment.GetEnvironmentVariable("HOME");
+
+            if (home is not null)
+            {
+                commonLocalScriptsPathParts.Add(home);
+                commonLocalScriptsPathParts.Add("local-scripts");
+            }
+        }
+
         if (commonLocalScriptsPathParts.Count == 0)
         {
             throw new ApplicationException("Unable to find the local scripts folder!");
@@ -43,9 +54,14 @@
             locationsPathParts.Add("Windows");
         }
 
+        if (OperatingSystem.IsLinux())
+        {
+            locationsPathParts.Add("linux");
+        }
+
         locationsPathParts.Add("locations.txt");
 
-        string locationsPath = Path.Join(locationsPathParts.ToArray());
+        var locationsPath = Path.Join(locationsPathParts.ToArray());
 
         if (Path.Exists(locationsPath))
         {
