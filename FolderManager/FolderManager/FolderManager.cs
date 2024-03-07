@@ -9,6 +9,11 @@
                 return new WindowsFolderManager();
             }
 
+            if (OperatingSystem.IsLinux())
+            {
+                return new LinuxFolderManager();
+            }
+
             throw new ApplicationException("No folder manager for your operating system!");
         }
 
