@@ -2,7 +2,7 @@
 
 public class LinuxFolderManager : FolderManager
 {
-    public override string GetLocalScriptsFolder()
+    protected override string GetLocalScriptsFolder()
     {
         var localScriptsPathParts = new List<string>();
 
@@ -22,5 +22,5 @@ public class LinuxFolderManager : FolderManager
         return Path.Join(localScriptsPathParts.ToArray());
     }
 
-    public override string GetLocationsFile() => GetLocationsFile("linux");
+    protected override string GetLocationsFile() => GetLocationsFile("linux");
 }
