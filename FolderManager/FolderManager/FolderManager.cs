@@ -84,4 +84,18 @@ public abstract class FolderManager
 
         return managedFolders;
     }
+
+    public string? GetBuildScriptToRun()
+    {
+        var localScriptsFolder = GetLocalScriptsFolder();
+
+        var buildScriptToRun = Path.Join(localScriptsFolder, Environment.MachineName, "Build.ps1");
+
+        if (File.Exists(buildScriptToRun))
+        {
+            return buildScriptToRun;
+        }
+
+        return null;
+    }
 }
