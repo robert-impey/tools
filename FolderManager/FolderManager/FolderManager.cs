@@ -89,7 +89,18 @@ public abstract class FolderManager
     {
         var localScriptsFolder = GetLocalScriptsFolder();
 
-        var buildScriptToRun = Path.Join(localScriptsFolder, Environment.MachineName, "Build.ps1");
+        var machineLocalScriptsFolder = Path.Join(localScriptsFolder, Environment.MachineName);
+
+        const string buildScript = "Build.ps1";
+        
+        var buildScriptToRun = Path.Join(machineLocalScriptsFolder, Environment.UserName, buildScript);
+        
+        if (File.Exists(buildScriptToRun))
+        {
+            return buildScriptToRun;
+        }
+        
+        buildScriptToRun = Path.Join(machineLocalScriptsFolder, buildScript);
 
         if (File.Exists(buildScriptToRun))
         {
