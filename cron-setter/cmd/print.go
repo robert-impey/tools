@@ -49,7 +49,7 @@ func printStayDeleted(dev bool) {
 	runStayDeleted := getRunStayDeleted(dev)
 	fmt.Println("# Stay Deleted")
 	printStayDeletedRun(runStayDeleted, 0, 2)
-	printStayDeletedRun(runStayDeleted, 6, 11)
+	printStayDeletedRun(runStayDeleted, 8, 11)
 	printStayDeletedRun(runStayDeleted, 19, 24)
 }
 
