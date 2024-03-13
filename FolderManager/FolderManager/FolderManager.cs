@@ -36,7 +36,7 @@ public abstract class FolderManager
         return Path.Join(locationsPathParts.ToArray());
     }
 
-    public async Task<IEnumerable<string>> GetManagedFolders()
+    public async Task<Dictionary<string, List<string>>> GetManagedFolders()
     {
         var foldersPath = GetFoldersFile();
 
@@ -65,22 +65,24 @@ public abstract class FolderManager
             throw new ApplicationException($"Unable to read {locationsPath}!");
         }
 
-        var managedFolders = new List<string>();
+        var managedFolders = new Dictionary<string, List<string>>();
 
         foreach (var location in locations)
         {
+            var locationFolders = new List<string>();
+
             foreach (var folder in folders)
             {
                 var managedFolderPath = Path.Combine(location, folder);
 
                 if (Directory.Exists(managedFolderPath))
                 {
-                    managedFolders.Add(managedFolderPath);
+                    locationFolders.Add(managedFolderPath);
                 }
             }
-        }
 
-        managedFolders.Sort();
+            managedFolders[location] = locationFolders;
+        }
 
         return managedFolders;
     }
