@@ -5,10 +5,8 @@ var locations = managedFolders.Keys.ToArray();
 Array.Sort(locations);
 
 var havePrinted = false;
-for (var i = 0; i < locations.Length; i++)
+foreach (var location in locations)
 {
-    var location = locations[i];
-
     var foldersInLocation = managedFolders[location].ToArray();
 
     if (foldersInLocation.Length == 0)
