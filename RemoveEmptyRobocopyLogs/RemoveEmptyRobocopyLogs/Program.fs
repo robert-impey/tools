@@ -4,15 +4,17 @@ open System.IO
 
 printfn "Looking for Robocopy Log Files"
 
-let logsDirectory =
-    Path.Combine(System.Environment.GetEnvironmentVariable("HOME"), "logs", "synch")
+let folderManager = FolderManager.FolderManager.GetFolderManager()
 
-printfn "Synch logs directory: %s" logsDirectory
+let synchLogsDirectory =
+    Path.Combine(folderManager.GetLogsFolder(), "synch")
+
+printfn "Synch logs directory: %s" synchLogsDirectory
 
 let synchLogsDirMessage =
-    if Directory.Exists(logsDirectory) then
-        $"synch logs directory %s{logsDirectory} exists"
+    if Directory.Exists(synchLogsDirectory) then
+        $"synch logs directory %s{synchLogsDirectory} exists"
     else
-        $"Synch logs directory %s{logsDirectory} does not exist"
+        $"Synch logs directory %s{synchLogsDirectory} does not exist"
 
 printfn $"%s{synchLogsDirMessage}"

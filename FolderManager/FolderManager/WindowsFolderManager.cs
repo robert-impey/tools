@@ -22,4 +22,9 @@ public class WindowsFolderManager : FolderManager
     }
 
     protected override string GetLocationsFile() => GetLocationsFile("Windows");
+
+    protected override string GetHomeFolder()
+    {
+        return Environment.GetEnvironmentVariable("USERPROFILE") ?? throw new ApplicationException("USERPROFILE environment variable not set!");
+    }
 }

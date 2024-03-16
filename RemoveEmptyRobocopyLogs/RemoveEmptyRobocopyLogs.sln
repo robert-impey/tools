@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RemoveEmptyRobocopyLogs", "RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs.fsproj", "{700AB7A8-8207-4CC8-8A24-F2A979423028}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "RemoveEmptyRobocopyLogs", "RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs.fsproj", "{700AB7A8-8207-4CC8-8A24-F2A979423028}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager", "..\FolderManager\FolderManager\FolderManager.csproj", "{8F2BF9C4-77AB-4BB1-AFE9-6A2B81E4068D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager.Test", "..\FolderManager\FolderManager.Test\FolderManager.Test.csproj", "{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{700AB7A8-8207-4CC8-8A24-F2A979423028}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{700AB7A8-8207-4CC8-8A24-F2A979423028}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{700AB7A8-8207-4CC8-8A24-F2A979423028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F2BF9C4-77AB-4BB1-AFE9-6A2B81E4068D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2BF9C4-77AB-4BB1-AFE9-6A2B81E4068D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F2BF9C4-77AB-4BB1-AFE9-6A2B81E4068D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F2BF9C4-77AB-4BB1-AFE9-6A2B81E4068D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

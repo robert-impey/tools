@@ -19,6 +19,7 @@ public abstract class FolderManager
 
     protected abstract string GetLocationsFile();
     protected abstract string GetLocalScriptsFolder();
+    protected abstract string GetHomeFolder();
 
     public string GetCommonLocalScriptsFolder() => Path.Join(GetLocalScriptsFolder(), "_Common");
 
@@ -111,4 +112,6 @@ public abstract class FolderManager
 
         return null;
     }
+
+    public string GetLogsFolder() => Path.Combine(GetHomeFolder(), "logs");
 }

@@ -23,4 +23,9 @@ public class LinuxFolderManager : FolderManager
     }
 
     protected override string GetLocationsFile() => GetLocationsFile("linux");
+
+    protected override string GetHomeFolder()
+    {
+        return Environment.GetEnvironmentVariable("HOME") ?? throw new ApplicationException("HOME environment variable not set!");
+    }
 }
