@@ -1,4 +1,4 @@
-module github.com/robert-impey/generate-synch-scripts
+module github.com/robert-impey/tools/generate-synch-scripts
 
 go 1.21
 

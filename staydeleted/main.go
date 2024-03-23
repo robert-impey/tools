@@ -14,7 +14,7 @@ package main
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import "github.com/robert-impey/staydeleted/cmd"
+import "github.com/robert-impey/tools/staydeleted/cmd"
 
 func main() {
 	cmd.Execute()

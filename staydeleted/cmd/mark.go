@@ -16,9 +16,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/robert-impey/staydeleted/sdlib"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/robert-impey/tools/staydeleted/sdlib"
+	"github.com/spf13/cobra"
 )
 
 var Keep bool

@@ -7,9 +7,10 @@ Copyright © 2022 Robert Impey robert.impey@hotmail.co.uk
 import (
 	"bufio"
 	"fmt"
-	"github.com/robert-impey/staydeleted/sdlib"
 	"os"
 	"strings"
+
+	"github.com/robert-impey/tools/staydeleted/sdlib"
 
 	"github.com/spf13/cobra"
 )

@@ -19,7 +19,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/robert-impey/staydeleted/sdlib"
+	"github.com/robert-impey/tools/staydeleted/sdlib"
 	"github.com/spf13/cobra"
 )
 

@@ -1,4 +1,4 @@
-module github.com/robert-impey/staydeleted
+module github.com/robert-impey/tools/staydeleted
 
 go 1.21
 
