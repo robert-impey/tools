@@ -86,13 +86,19 @@ func sweepNightly(find bool) error {
 			log.Fatalln(err)
 		}
 		nightlyErr = nil
-
 	} else {
 		_, err = os.Stat(machineLSNightly)
-		if err != nil {
-			log.Fatalln(err)
+		if err == nil {
+			nightlyFile, err = filepath.Abs(machineLSNightly)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			nightlyErr = nil
 		}
-		nightlyFile, err = filepath.Abs(machineLSNightly)
+	}
+
+	if nightlyFile == "" {
+		nightlyFile, err = getManagedFoldersFile()
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -100,7 +106,7 @@ func sweepNightly(find bool) error {
 	}
 
 	if nightlyErr != nil {
-		return nightlyErr
+		log.Fatalln(nightlyErr)
 	}
 
 	fmt.Printf("Using %s\n", nightlyFile)
@@ -173,4 +179,20 @@ func getLocalScriptsDirectory() (string, error) {
 	}
 
 	return absLocalScriptsDir, nil
+}
+
+func getManagedFoldersFile() (string, error) {
+	theUser, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	managedFoldersFile := path.Join(theUser.HomeDir, "autogen", "managed-folders.txt")
+
+	_, err = os.Stat(managedFoldersFile)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Abs(managedFoldersFile)
 }
