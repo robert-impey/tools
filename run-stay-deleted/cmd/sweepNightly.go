@@ -25,30 +25,40 @@ var sweepNightlyCmd = &cobra.Command{
 	Long: `The list of directories to sweep can be saved in a text file.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		sweepNightly()
+		find, err := cmd.PersistentFlags().GetBool("Find")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		err = sweepNightly(find)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sweepNightlyCmd)
+
+	sweepNightlyCmd.PersistentFlags().BoolP("Find", "f", false,
+		"Just find the file to sweep from and quit")
 }
 
-func sweepNightly() {
+func sweepNightly(find bool) error {
 	localScriptsDirectory, err := getLocalScriptsDirectory()
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	machineLSDir := path.Join(localScriptsDirectory, hostname)
 
 	machineLSDirStat, err := os.Stat(machineLSDir)
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	if !machineLSDirStat.IsDir() {
@@ -90,10 +100,14 @@ func sweepNightly() {
 	}
 
 	if nightlyErr != nil {
-		log.Fatalln(nightlyErr)
+		return nightlyErr
 	}
 
 	fmt.Printf("Using %s\n", nightlyFile)
+
+	if find {
+		return nil
+	}
 
 	const toolName = "staydeleted"
 	var logsDir = filepath.Join(userInfo.HomeDir, "logs", toolName)
@@ -101,7 +115,7 @@ func sweepNightly() {
 	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(logsDir, os.ModePerm)
 		if err != nil {
-			log.Fatalln(err)
+			return err
 		}
 	}
 
@@ -111,14 +125,16 @@ func sweepNightly() {
 
 	outLogFile, err := os.Create(outLogFileName)
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 	errLogFile, err := os.Create(errLogFileName)
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
-	sdlib.SweepFrom(nightlyFile, 12, outLogFile, errLogFile, false)
+	err = sdlib.SweepFrom(nightlyFile, 12, outLogFile, errLogFile, false)
+
+	return err
 }
 
 func getLocalScriptsDirectory() (string, error) {
