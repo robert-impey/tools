@@ -4,6 +4,12 @@ var managedFolders = await folderManager.GetManagedFolders();
 var locations = managedFolders.Keys.ToArray();
 Array.Sort(locations);
 
+var autogenFolder = folderManager.GetAutogenFolder();
+
+var managedFoldersFile = Path.Combine(autogenFolder, "managed-folders.txt");
+
+using var outputFile = new StreamWriter(managedFoldersFile, false);
+
 var havePrinted = false;
 foreach (var location in locations)
 {
@@ -16,14 +22,14 @@ foreach (var location in locations)
 
     if (havePrinted)
     {
-        Console.WriteLine();
+        outputFile.WriteLine();
     }
 
     Array.Sort(foldersInLocation);
 
     foreach (var folder in foldersInLocation)
     {
-        Console.WriteLine(folder);
+        outputFile.WriteLine(folder);
     }
 
     havePrinted = true;

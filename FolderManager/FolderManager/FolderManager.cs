@@ -23,6 +23,18 @@ public abstract class FolderManager
 
     public string GetCommonLocalScriptsFolder() => Path.Join(GetLocalScriptsFolder(), "_Common");
 
+    public string GetAutogenFolder(bool ensureExists = true)
+    {
+        var autogenFolder = Path.Join(GetHomeFolder(), "autogen");
+
+        if (ensureExists && !Directory.Exists(autogenFolder))
+        {
+            Directory.CreateDirectory(autogenFolder);
+        }
+
+        return autogenFolder;
+    }
+
     public string GetFoldersFile() => Path.Join(GetCommonLocalScriptsFolder(), "folders.txt");
 
     protected string GetLocationsFile(string operatingSystemPathPart)
@@ -95,14 +107,14 @@ public abstract class FolderManager
         var machineLocalScriptsFolder = Path.Join(localScriptsFolder, Environment.MachineName);
 
         const string buildScript = "Build.ps1";
-        
+
         var buildScriptToRun = Path.Join(machineLocalScriptsFolder, Environment.UserName, buildScript);
-        
+
         if (File.Exists(buildScriptToRun))
         {
             return buildScriptToRun;
         }
-        
+
         buildScriptToRun = Path.Join(machineLocalScriptsFolder, buildScript);
 
         if (File.Exists(buildScriptToRun))
