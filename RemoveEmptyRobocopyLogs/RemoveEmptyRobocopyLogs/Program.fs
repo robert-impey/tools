@@ -1,10 +1,10 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-
-open System.IO
+﻿open System.IO
+open FolderManager
+open Microsoft.Extensions.FileSystemGlobbing
 
 printfn "Looking for Robocopy Log Files"
 
-let folderManager = FolderManager.FolderManager.GetFolderManager()
+let folderManager = FolderManager.GetFolderManager()
 
 let synchLogsDirectory =
     Path.Combine(folderManager.GetLogsFolder(), "synch")
@@ -18,3 +18,9 @@ let synchLogsDirMessage =
         $"Synch logs directory %s{synchLogsDirectory} does not exist"
 
 printfn $"%s{synchLogsDirMessage}"
+
+let matcher = Matcher()
+matcher.AddIncludePatterns(seq { "*.log"});
+let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory);
+
+printfn "There are %d log files" (Seq.length matchingFiles)
