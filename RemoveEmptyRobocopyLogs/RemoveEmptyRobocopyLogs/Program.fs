@@ -31,14 +31,15 @@ printfn "There are %d log files" (Seq.length matchingFiles)
 
 let fileHasCopies (fileName: string) =
     let mutable foundCopiesLine = false
-    for line in File.ReadAllLines fileName do 
-        let lineRegex = new Regex("\s*Files :\s+\d+\s+(\d+)\s+")
+    let lineRegex = new Regex("\s*Files :\s+\d+\s+(\d+)\s+")
 
-        let matches = lineRegex.Matches(line)
+    for line in File.ReadAllLines fileName do
+        if not foundCopiesLine then
+            let matches = lineRegex.Matches(line)
 
-        if matches.Count > 0 then
-            if "0" <> matches[0].Groups[1].Value then
-                foundCopiesLine <- true
+            if matches.Count > 0 then
+                if "0" <> matches[0].Groups[1].Value then
+                    foundCopiesLine <- true
 
     foundCopiesLine
 
