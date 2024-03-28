@@ -3,11 +3,12 @@
 open System.IO
 open System.Text.RegularExpressions
 
+let lineRegex = new Regex("\s*Files :\s+\d+\s+(\d+)\s+")
+
 //let line = "    Files :      5117         0      5117         0         0         0"
 //let line = "    Files :      5117         123      5117         0         0         0"
 let fileHasCopies (fileName: string) =
     let mutable foundCopiesLine = false
-    let lineRegex = new Regex("\s*Files :\s+\d+\s+(\d+)\s+")
 
     for line in File.ReadAllLines fileName do
         if not foundCopiesLine then
