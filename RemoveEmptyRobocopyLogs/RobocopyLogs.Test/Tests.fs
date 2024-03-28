@@ -12,7 +12,3 @@ let ``No files Copied`` () =
 let ``Files Copied`` () =
     let line = "    Files :      5117         123      5117         0         0         0"
     Assert.True(isFilesCopiedLine line)
-
-[<Fact>]
-let ``Always fails`` () =
-    Assert.True(false)
