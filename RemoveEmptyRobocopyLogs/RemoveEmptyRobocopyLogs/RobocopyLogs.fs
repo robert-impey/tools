@@ -5,8 +5,6 @@ open System.Text.RegularExpressions
 
 let lineRegex = new Regex("\s*Files :\s+\d+\s+(\d+)\s+")
 
-//let line = "    Files :      5117         0      5117         0         0         0"
-//let line = "    Files :      5117         123      5117         0         0         0"
 let isFilesCopiedLine (line: string) =
     let matches = lineRegex.Matches(line)
     

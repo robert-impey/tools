@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager", "..\FolderM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager.Test", "..\FolderManager\FolderManager.Test\FolderManager.Test.csproj", "{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RobocopyLogs.Test", "RobocopyLogs.Test\RobocopyLogs.Test.fsproj", "{71D99744-3C38-4F2A-8018-DC85593F9DE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79F8E6B1-F22B-42C9-B418-A6BF7DB42D46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D99744-3C38-4F2A-8018-DC85593F9DE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D99744-3C38-4F2A-8018-DC85593F9DE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D99744-3C38-4F2A-8018-DC85593F9DE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D99744-3C38-4F2A-8018-DC85593F9DE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
