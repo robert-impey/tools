@@ -14,7 +14,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build_tidy_folder:
     runs-on: ubuntu-latest
     defaults:
       run:
