@@ -33,11 +33,30 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  build_stay_deleted:
+  build_generate_synch_scripts:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./staydeleted
+        working-directory: ./generate-synch-scripts
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+  build_logs_deleter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./logs-deleter
     steps:
       - uses: actions/checkout@v4
 
@@ -57,6 +76,25 @@ jobs:
     defaults:
       run:
         working-directory: ./run-stay-deleted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+  build_stay_deleted:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./staydeleted
     steps:
       - uses: actions/checkout@v4
 
