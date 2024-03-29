@@ -1,6 +1,10 @@
-﻿var folderManager = FolderManager.FolderManager.GetFolderManager();
+﻿using RunBuildScripts;
 
-var buildScriptToRun = folderManager.GetBuildScriptToRun();
+var folderManager = FolderManager.FolderManager.GetFolderManager();
+
+var buildScriptRunner = new BuildScriptRunner(folderManager);
+
+var buildScriptToRun = buildScriptRunner.GetBuildScriptToRun();
 
 if (string.IsNullOrEmpty(buildScriptToRun))
 {

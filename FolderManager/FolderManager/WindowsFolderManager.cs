@@ -2,7 +2,7 @@
 
 public class WindowsFolderManager : FolderManager
 {
-    protected override string GetLocalScriptsFolder()
+    public override string GetLocalScriptsFolder()
     {
         var localScriptsPathParts = new List<string>();
 
