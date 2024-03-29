@@ -2,6 +2,8 @@
 
 public class LinuxFolderManager : FolderManager
 {
+    public override string PowerShellExe => "/snap/bin/pwsh";
+
     public override string GetLocalScriptsFolder()
     {
         var localScriptsPathParts = new List<string>();

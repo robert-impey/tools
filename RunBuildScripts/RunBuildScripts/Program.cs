@@ -15,7 +15,8 @@ else
 {
     Console.WriteLine($"Running {buildScriptToRun}");
 
-    Process p = new Process();
-    p.StartInfo.FileName = buildScriptToRun;
+    var p = new Process();
+    p.StartInfo.FileName = folderManager.PowerShellExe;
+    p.StartInfo.ArgumentList.Add(buildScriptToRun);
     p.Start();
 }

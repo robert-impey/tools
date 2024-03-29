@@ -100,7 +100,7 @@ public abstract class FolderManager
         return managedFolders;
     }
 
-    
-
     public string GetLogsFolder() => Path.Combine(GetHomeFolder(), "logs");
+
+    public abstract string PowerShellExe { get; }
 }

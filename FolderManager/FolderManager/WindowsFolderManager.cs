@@ -2,6 +2,8 @@
 
 public class WindowsFolderManager : FolderManager
 {
+    public override string PowerShellExe => "PowerShell";
+
     public override string GetLocalScriptsFolder()
     {
         var localScriptsPathParts = new List<string>();
