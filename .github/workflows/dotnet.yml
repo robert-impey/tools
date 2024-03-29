@@ -54,12 +54,12 @@ jobs:
         - name: Test
           run: dotnet test --no-build --verbosity normal
 
-  build_run_build_scripts:
+  build_generate_build_scripts:
 
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./RunBuildScripts
+        working-directory: ./GenerateBuildScripts
         
     steps:
     - uses: actions/checkout@v3
