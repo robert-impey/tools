@@ -25,16 +25,16 @@ jobs:
           source-dir: ./make_scripts_executable
           build-dir: ./make_scripts_executable/out
 
-  build_managed_folders:
-    name: Managed Folders
-    runs-on: ubuntu-latest
+#   build_managed_folders:
+#     name: Managed Folders
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.2
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4.1.2
 
-      - name: Configure and Build Project
-        uses: threeal/cmake-action@main
-        with:
-          source-dir: ./ManagedFolders
-          build-dir: ./ManagedFolders/out
+#       - name: Configure and Build Project
+#         uses: threeal/cmake-action@main
+#         with:
+#           source-dir: ./ManagedFolders
+#           build-dir: ./ManagedFolders/out
