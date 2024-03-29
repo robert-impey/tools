@@ -1,14 +1,14 @@
 name: CMake
 
 on:
-    push:
-      branches:
-        - "master"
-        - "dev"
-    pull_request:
-      branches:
-        - "master"
-        - "dev"
+  push:
+    branches:
+      - "master"
+      - "dev"
+  pull_request:
+    branches:
+      - "master"
+      - "dev"
 
 jobs:
   build_make_scripts_executable:
@@ -22,5 +22,19 @@ jobs:
       - name: Configure and Build Project
         uses: threeal/cmake-action@main
         with:
-            source-dir: ./make_scripts_executable
-            build-dir: ./make_scripts_executable/out
+          source-dir: ./make_scripts_executable
+          build-dir: ./make_scripts_executable/out
+
+  build_managed_folders:
+    name: Managed Folders
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+
+      - name: Configure and Build Project
+        uses: threeal/cmake-action@main
+        with:
+          source-dir: ./ManagedFolders
+          build-dir: ./ManagedFolders/out
