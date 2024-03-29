@@ -1,4 +1,5 @@
 ﻿using RunBuildScripts;
+using System.Diagnostics;
 
 var folderManager = FolderManager.FolderManager.GetFolderManager();
 
@@ -13,4 +14,8 @@ if (string.IsNullOrEmpty(buildScriptToRun))
 else
 {
     Console.WriteLine($"Running {buildScriptToRun}");
+
+    Process p = new Process();
+    p.StartInfo.FileName = buildScriptToRun;
+    p.Start();
 }
