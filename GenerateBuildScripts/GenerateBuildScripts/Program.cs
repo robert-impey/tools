@@ -6,6 +6,13 @@ var buildScriptFinder = new BuildScriptFinder(folderManager);
 
 var buildScriptToCopy = buildScriptFinder.GetBuildScriptToCopy();
 
+var destination = buildScriptFinder.GetBuildScriptDestination();
+
+if (File.Exists(destination))
+{
+    File.Delete(destination);
+}
+
 if (string.IsNullOrEmpty(buildScriptToCopy))
 {
     Console.WriteLine("No build script found. Quitting...");
@@ -14,7 +21,5 @@ else
 {
     Console.WriteLine($"Found {buildScriptToCopy}");
 
-    var destination = buildScriptFinder.GetBuildScriptDestination();
-
-    File.Copy(buildScriptToCopy, destination, overwrite: true);
+    File.Copy(buildScriptToCopy, destination);
 }
