@@ -2,8 +2,8 @@
   <configuration default="false" name="sweepFrom nightly.txt" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="staydeleted" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="sweepFrom C:\Users\rober\OneDrive\local-scripts\cynane\staydeleted\nightly.txt" />
-    <kind value="PACKAGE" />
+    <parameters value="sweepFrom C:\Users\rober\autogen\managed-folders.txt" />
+    <kind value="DIRECTORY" />
     <package value="github.com/robert-impey/staydeleted" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />

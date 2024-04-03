@@ -3,7 +3,7 @@
     <module name="run-stay-deleted" />
     <working_directory value="$PROJECT_DIR$" />
     <parameters value="sweepNightly -f" />
-    <kind value="PACKAGE" />
+    <kind value="DIRECTORY" />
     <package value="github.com/robert-impey/tools/run-stay-deleted" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />

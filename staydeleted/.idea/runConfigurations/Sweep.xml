@@ -3,7 +3,7 @@
     <module name="staydeleted" />
     <working_directory value="$PROJECT_DIR$" />
     <parameters value="sweep $ContentRoot$" />
-    <kind value="PACKAGE" />
+    <kind value="DIRECTORY" />
     <package value="github.com/robert-impey/staydeleted" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />

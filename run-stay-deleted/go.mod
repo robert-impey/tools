@@ -1,6 +1,6 @@
 module github.com/robert-impey/tools/run-stay-deleted
 
-go 1.21
+go 1.22
 
 require (
 	github.com/robert-impey/tools/staydeleted v0.0.0-20240325231839-47a626718e6c
