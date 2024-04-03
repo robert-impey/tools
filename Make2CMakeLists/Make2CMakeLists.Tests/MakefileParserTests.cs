@@ -14,7 +14,9 @@ public class MakefileParserTests
 
         makefile.Should().NotBeNull();
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         makefile.CppStandard.Should().Be(11);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         makefile.Src.Should().Be("thread_process_demo.cpp");
         makefile.Target.Should().Be("thread_process_demo");
     }
