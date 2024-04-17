@@ -2,6 +2,26 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../BricksAndMortar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../CgpForAnn" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../CodingExperiments" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../MaxFunc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../MetOfficeDataAnalysis" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../ThinkStats2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../async-python-foundations-applied-concepts-2422322" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../coding-tests" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../coelacanth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../coursera" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../data-analysis" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../datasciencecoursera" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../jbmaze-code" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../learnpythonthehardway.org" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mathematics" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../practice-it-rust-file-manipulation-3082491" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../run-cli-tests" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../tidy-folder" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../tree-sorter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../university" vcs="Git" />
   </component>
 </project>

@@ -173,7 +173,7 @@ fs::path get_env_folder(const char *var_name) {
     if (env_var == nullptr) {
         std::stringstream err_msg;
         err_msg << var_name << " env var not set!";
-        throw exception{err_msg.str().c_str()};
+        throw runtime_error{err_msg.str()};
     }
     const fs::path env_folder{env_var};
 
