@@ -57,6 +57,40 @@ public:
         }
     }
 
+    void list_write() {
+        auto autogen_path = find_autogen_path();
+
+        const fs::path managed_folders_path{ autogen_path / "managed-folders.txt" };
+
+        ofstream managed_folders_file;
+        managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
+
+        managed_folders_file << "# AUTOGEN'D - DO NOT EDIT!" << endl;
+
+        auto first{ true };
+        for (auto& location : _locations) {
+            const fs::path location_path{ location };
+
+            if (first)
+                first = false;
+            else if (exists(location_path))
+                managed_folders_file << endl;
+
+            for (auto& folder : _folders) {
+                const fs::path located_folder_path{ location_path / folder };
+
+                try {
+                    if (exists(located_folder_path)) {
+                        managed_folders_file << located_folder_path.string() << endl;
+                    }
+                }
+                catch (std::filesystem::filesystem_error& e) {
+                    std::cerr << e.what() << endl;
+                }
+            }
+        }
+    }
+
     void list_pairs() {
         const auto pairs = find_pairs();
 
@@ -190,6 +224,12 @@ int main(const int argc, char *argv[]) {
 
         if (task == "list") {
             folder_manager.list();
+
+            return 0;
+        }
+
+        if (task == "list_write") {
+            folder_manager.list_write();
 
             return 0;
         }
