@@ -60,31 +60,31 @@ public:
     void list_write() {
         auto autogen_path = find_autogen_path();
 
-        const fs::path managed_folders_path{ autogen_path / "managed-folders.txt" };
+        const fs::path managed_folders_path{autogen_path / "managed-folders.txt"};
 
         ofstream managed_folders_file;
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
         managed_folders_file << "# AUTOGEN'D - DO NOT EDIT!" << endl;
 
-        auto first{ true };
-        for (auto& location : _locations) {
-            const fs::path location_path{ location };
+        auto first{true};
+        for (auto &location: _locations) {
+            const fs::path location_path{location};
 
             if (first)
                 first = false;
             else if (exists(location_path))
                 managed_folders_file << endl;
 
-            for (auto& folder : _folders) {
-                const fs::path located_folder_path{ location_path / folder };
+            for (auto &folder: _folders) {
+                const fs::path located_folder_path{location_path / folder};
 
                 try {
                     if (exists(located_folder_path)) {
                         managed_folders_file << located_folder_path.string() << endl;
                     }
                 }
-                catch (std::filesystem::filesystem_error& e) {
+                catch (std::filesystem::filesystem_error &e) {
                     std::cerr << e.what() << endl;
                 }
             }
@@ -131,7 +131,8 @@ private:
                     const fs::path located_folder_path2{location2_path / folder};
 
                     try {
-                        if (fs::exists(located_folder_path1) && fs::exists(located_folder_path2)) {
+                        if (fs::exists(located_folder_path1)
+                            && fs::exists(located_folder_path2)) {
                             pair a_pair{located_folder_path1, located_folder_path2};
                             pair reversed_pair{located_folder_path2, located_folder_path1};
 
@@ -182,7 +183,11 @@ private:
 
                     if (exists(location_folder_path1) && exists(location_folder_path2)) {
                         common_folders.push_back(folder);
-                        generate_folder_synch_script(folder, sub_path2, location_path1, location_path2);
+                        generate_folder_synch_script(
+                                folder,
+                                sub_path2,
+                                location_path1,
+                                location_path2);
                     }
                 }
 
@@ -190,7 +195,11 @@ private:
                     if (fs::is_empty(sub_path2))
                         fs::remove(sub_path2);
                 } else
-                    generate_all_folders_synch_script(common_folders, sub_path2, location_path1, location_path2);
+                    generate_all_folders_synch_script(
+                            common_folders,
+                            sub_path2,
+                            location_path1,
+                            location_path2);
             }
         }
     }
