@@ -36,6 +36,7 @@ func printAllTasks(dev bool) {
 	printHeaderComment()
 	printStayDeleted(dev)
 	printListManagedFolders(dev)
+	printBuild(dev)
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
@@ -162,4 +163,22 @@ func printListManagedFolders(dev bool) {
 func getListManagedFolders(dev bool) string {
 	executablesDir := getExecutablesDir(dev)
 	return filepath.Join(executablesDir, "ListManagedFolders")
+}
+
+func printBuild(dev bool) {
+	flag := ""
+
+	if dev {
+		flag = " --dev"
+	}
+
+	script := getBuildScript()
+	minutes := rand.Int31n(60)
+
+	fmt.Printf("%d 7 * * * /snap/bin/pwsh %s%s\n", minutes, script, flag)
+}
+
+func getBuildScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
 }
