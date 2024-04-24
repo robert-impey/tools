@@ -67,8 +67,8 @@ public:
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
         auto now { std::time(0)};
-        managed_folders_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
-        managed_folders_file << "# DO NOT EDIT!" << endl << endl;
+        managed_folders_file << "# AUTOGEN'D at " << std::ctime(&now);
+        managed_folders_file << "# DO NOT EDIT!" << endl;
 
         auto first{true};
         for (auto &location: _locations) {
