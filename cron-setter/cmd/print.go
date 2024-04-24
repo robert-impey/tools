@@ -35,6 +35,7 @@ func init() {
 func printAllTasks(dev bool) {
 	printHeaderComment()
 	printStayDeleted(dev)
+	printListManagedFolders(dev)
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
@@ -149,4 +150,16 @@ func getBuildType(dev bool) string {
 		return "dev"
 	}
 	return "prod"
+}
+
+func printListManagedFolders(dev bool) {
+	minutes := rand.Int31n(60)
+
+	exe := getListManagedFolders(dev)
+	fmt.Printf("%d 6 * * * %s\n", minutes, exe)
+}
+
+func getListManagedFolders(dev bool) string {
+	executablesDir := getExecutablesDir(dev)
+	return filepath.Join(executablesDir, "ListManagedFolders")
 }
