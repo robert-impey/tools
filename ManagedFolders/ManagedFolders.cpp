@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <ctime>
 
 using namespace std;
 
@@ -58,14 +59,16 @@ public:
     }
 
     void list_write() {
-        auto autogen_path = find_autogen_path();
+        auto autogen_path {find_autogen_path()};
 
         const fs::path managed_folders_path{autogen_path / "managed-folders.txt"};
 
         ofstream managed_folders_file;
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
-        managed_folders_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl;
+        auto now { std::time(0)};
+        managed_folders_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
+        managed_folders_file << "# DO NOT EDIT!" << endl << endl;
 
         auto first{true};
         for (auto &location: _locations) {
@@ -100,7 +103,7 @@ public:
     }
 
     void generate_synch_scripts() {
-        auto autogen_path = find_autogen_path();
+        auto autogen_path { find_autogen_path()};
 
         auto synch_autogen_path{autogen_path / "synch"};
 
@@ -350,7 +353,9 @@ void generate_folder_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    script_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl << endl;
+    auto now {std::time(0)};
+    script_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
+    script_file << "# DO NOT EDIT!" << endl << endl;
 
     add_script_file_params(script_file);
 
@@ -375,7 +380,9 @@ void generate_all_folders_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    script_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl << endl;
+    auto now {std::time(0)};
+    script_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
+    script_file << "# DO NOT EDIT!" << endl << endl;
 
     add_script_file_params(script_file);
 
@@ -407,12 +414,18 @@ void generate_all_folders_synch_script(
 }
 
 fs::path find_locations_file_path(const fs::path& local_scripts_dir) {
-#ifdef _WIN32 || _WIN64
-    auto os_folder = "Windows";
-#elif __linux__ || __unix || __unix__
-    auto os_folder = "linux";
+#ifdef _WIN32
+    auto os_folder { "Windows"};
+#elif _WIN64
+    auto os_folder { "Windows" };
+#elif __linux__
+    auto os_folder { "linux"};
+#elif __unix
+    auto os_folder { "linux"};
+#elif __unix__
+    auto os_folder { "linux"};
 #else
-    return "Other";
+    auto os_folder = "Other";
 #endif
 
     auto locations_file_path{ local_scripts_dir / "_Common" / os_folder / "locations.txt" };
