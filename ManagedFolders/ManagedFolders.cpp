@@ -207,29 +207,58 @@ private:
 
 FolderManager make_folder_manager(const fs::path &);
 
-fs::path get_env_folder(const char *var_name) {
+fs::path get_home_folder() {
 #pragma warning( push )
 #pragma warning(disable: 4996)
-    const auto env_var{getenv(var_name)};
+    const auto user_profile{getenv("USERPROFILE")};
 #pragma warning( pop )
 
-    if (env_var == nullptr) {
-        std::stringstream err_msg;
-        err_msg << var_name << " env var not set!";
-        throw runtime_error{err_msg.str()};
-    }
-    const fs::path env_folder{env_var};
+    if (user_profile != nullptr) {
+        const fs::path user_profile_folder{user_profile};
 
-    return env_folder;
+        return user_profile_folder;
+    }
+
+#pragma warning( push )
+#pragma warning(disable: 4996)
+    const auto home{getenv("HOME")};
+#pragma warning( pop )
+
+    if (home != nullptr) {
+        const fs::path home_folder{home};
+
+        return home_folder;
+    }
+
+    throw runtime_error{"Unable to find the home folder!"};
+}
+
+fs::path find_local_scripts_path() {
+#pragma warning( push )
+#pragma warning(disable: 4996)
+    const auto local_scripts_env_var{getenv("LOCAL_SCRIPTS")};
+#pragma warning( pop )
+
+    if (local_scripts_env_var != nullptr) {
+        const fs::path local_scripts_path{local_scripts_env_var};
+
+        return local_scripts_path;
+    }
+
+    const auto home_folder_path{get_home_folder()};
+
+    fs::path local_scripts_path{home_folder_path / "local-scripts"};
+
+    return local_scripts_path;
 }
 
 int main(const int argc, char *argv[]) {
-    const auto local_scripts_env{get_env_folder("LOCAL_SCRIPTS")};
+    const auto local_scripts_path{find_local_scripts_path()};
 
     if (argc >= 2) {
         const string task{argv[1]};
 
-        auto folder_manager = make_folder_manager(local_scripts_env);
+        auto folder_manager = make_folder_manager(local_scripts_path);
 
         if (task == "list") {
             folder_manager.list();
@@ -279,10 +308,9 @@ vector<string> read_all_non_empty_lines(const fs::path &path) {
 }
 
 fs::path find_autogen_path() {
+    const auto home_folder_path{get_home_folder()};
 
-    const auto userprofile_path{get_env_folder("USERPROFILE")};
-
-    fs::path autogen_path{userprofile_path / "autogen"};
+    fs::path autogen_path{home_folder_path / "autogen"};
 
     if (!exists(autogen_path)) {
         create_directory(autogen_path);
