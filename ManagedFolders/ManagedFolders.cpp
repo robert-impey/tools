@@ -65,7 +65,7 @@ public:
         ofstream managed_folders_file;
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
-        managed_folders_file << "# AUTOGEN'D - DO NOT EDIT!" << endl;
+        managed_folders_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl;
 
         auto first{true};
         for (auto &location: _locations) {
@@ -350,7 +350,7 @@ void generate_folder_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
+    script_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl << endl;
 
     add_script_file_params(script_file);
 
@@ -375,7 +375,7 @@ void generate_all_folders_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    script_file << "# AUTOGEN'D - DO NOT EDIT!" << endl << endl;
+    script_file << "# AUTOGEN'D at " << std::chrono::system_clock::now() << " - DO NOT EDIT!" << endl << endl;
 
     add_script_file_params(script_file);
 
