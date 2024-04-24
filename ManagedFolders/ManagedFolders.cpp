@@ -406,8 +406,22 @@ void generate_all_folders_synch_script(
     script_file.close();
 }
 
+fs::path find_locations_file_path(const fs::path& local_scripts_dir) {
+#ifdef _WIN32 || _WIN64
+    auto os_folder = "Windows";
+#elif __linux__ || __unix || __unix__
+    auto os_folder = "linux";
+#else
+    return "Other";
+#endif
+
+    auto locations_file_path{ local_scripts_dir / "_Common" / os_folder / "locations.txt" };
+
+    return locations_file_path;
+}
+
 FolderManager make_folder_manager(const fs::path &local_scripts_dir) {
-    auto locations_file_path{local_scripts_dir / "_Common" / "locations.txt"};
+    auto locations_file_path{ find_locations_file_path(local_scripts_dir) };
     auto folders_file_path{local_scripts_dir / "_Common" / "folders.txt"};
 
     auto locations = read_all_non_empty_lines(locations_file_path);
