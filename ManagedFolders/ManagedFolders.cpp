@@ -33,29 +33,8 @@ public:
         _location_paths = std::move(location_paths);
     }
 
-    void list() const {
-        auto first{true};
-        for (auto &location: _locations) {
-            const fs::path location_path{location};
-
-            if (first)
-                first = false;
-            else if (exists(location_path))
-                cout << endl;
-
-            for (auto &folder: _folders) {
-                const fs::path located_folder_path{location_path / folder};
-
-                try {
-                    if (exists(located_folder_path)) {
-                        cout << located_folder_path.string() << endl;
-                    }
-                }
-                catch (std::filesystem::filesystem_error &e) {
-                    std::cerr << e.what() << endl;
-                }
-            }
-        }
+    void list() {
+        list_write(cout);
     }
 
     void list_write() {
@@ -70,36 +49,26 @@ public:
         managed_folders_file << "# AUTOGEN'D at " << std::ctime(&now);
         managed_folders_file << "# DO NOT EDIT!" << endl;
 
-        auto first{true};
-        for (auto &location: _locations) {
-            const fs::path location_path{location};
-
-            if (first)
-                first = false;
-            else if (exists(location_path))
-                managed_folders_file << endl;
-
-            for (auto &folder: _folders) {
-                const fs::path located_folder_path{location_path / folder};
-
-                try {
-                    if (exists(located_folder_path)) {
-                        managed_folders_file << located_folder_path.string() << endl;
-                    }
-                }
-                catch (std::filesystem::filesystem_error &e) {
-                    std::cerr << e.what() << endl;
-                }
-            }
-        }
+        list_write(managed_folders_file);
     }
 
     void list_pairs() {
-        const auto pairs = find_pairs();
+        list_pairs_write(cout);
+    }
 
-        for (const auto &[fst, snd]: pairs) {
-            cout << fst.string() << " <-> " << snd.string() << endl;
-        }
+    void list_pairs_write() {
+        auto autogen_path{ find_autogen_path() };
+
+        const fs::path managed_folders_pairs_path{ autogen_path / "managed-folders-pairs.txt" };
+
+        ofstream managed_folders_pairs_file;
+        managed_folders_pairs_file.open(managed_folders_pairs_path, ios::out | ios::trunc);
+
+        auto now{ std::time(0) };
+        managed_folders_pairs_file << "# AUTOGEN'D at " << std::ctime(&now);
+        managed_folders_pairs_file << "# DO NOT EDIT!" << endl;
+
+        list_pairs_write(managed_folders_pairs_file);
     }
 
     void generate_synch_scripts() {
@@ -156,6 +125,39 @@ private:
         sort(pairs.begin(), pairs.end());
 
         return pairs;
+    }
+
+    void list_write(ostream& out) {
+        auto first{ true };
+        for (auto& location : _locations) {
+            const fs::path location_path{ location };
+
+            if (first)
+                first = false;
+            else if (exists(location_path))
+                out << endl;
+
+            for (auto& folder : _folders) {
+                const fs::path located_folder_path{ location_path / folder };
+
+                try {
+                    if (exists(located_folder_path)) {
+                        out << located_folder_path.string() << endl;
+                    }
+                }
+                catch (std::filesystem::filesystem_error& e) {
+                    std::cerr << e.what() << endl;
+                }
+            }
+        }
+    }
+
+    void list_pairs_write(ostream& out) {
+        const auto pairs = find_pairs();
+
+        for (const auto& [fst, snd] : pairs) {
+            out << fst.string() << " <-> " << snd.string() << endl;
+        }
     }
 
     void generate_synch_location_pair_folders(const fs::path &synch_autogen_path) const {
@@ -277,6 +279,12 @@ int main(const int argc, char *argv[]) {
 
         if (task == "list_pairs") {
             folder_manager.list_pairs();
+
+            return 0;
+        }
+
+        if (task == "list_pairs_write") {
+            folder_manager.list_pairs_write();
 
             return 0;
         }
