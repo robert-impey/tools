@@ -169,7 +169,7 @@ func printBuild(dev bool) {
 	flag := ""
 
 	if dev {
-		flag = " --dev"
+		flag = " --dev=1"
 	}
 
 	script := getBuildScript()
