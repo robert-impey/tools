@@ -21,6 +21,8 @@ void generate_folder_synch_script(const string &, const fs::path &, const fs::pa
 
 void generate_all_folders_synch_script(const vector<string> &, const fs::path &, const fs::path &, const fs::path &);
 
+void write_autogen_header(ostream& out);
+
 class FolderManager {
 public:
     explicit FolderManager(
@@ -45,9 +47,7 @@ public:
         ofstream managed_folders_file;
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
-        auto now { std::time(0)};
-        managed_folders_file << "# AUTOGEN'D at " << std::ctime(&now);
-        managed_folders_file << "# DO NOT EDIT!" << endl;
+        write_autogen_header(managed_folders_file);
 
         list_write(managed_folders_file);
     }
@@ -64,9 +64,7 @@ public:
         ofstream managed_folders_pairs_file;
         managed_folders_pairs_file.open(managed_folders_pairs_path, ios::out | ios::trunc);
 
-        auto now{ std::time(0) };
-        managed_folders_pairs_file << "# AUTOGEN'D at " << std::ctime(&now);
-        managed_folders_pairs_file << "# DO NOT EDIT!" << endl;
+        write_autogen_header(managed_folders_pairs_file);
 
         list_pairs_write(managed_folders_pairs_file);
     }
@@ -361,9 +359,7 @@ void generate_folder_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    auto now {std::time(0)};
-    script_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
-    script_file << "# DO NOT EDIT!" << endl << endl;
+    write_autogen_header(script_file);
 
     add_script_file_params(script_file);
 
@@ -388,9 +384,7 @@ void generate_all_folders_synch_script(
     ofstream script_file;
     script_file.open(script_path, ios::out | ios::trunc);
 
-    auto now {std::time(0)};
-    script_file << "# AUTOGEN'D at " << std::ctime(&now) << endl;
-    script_file << "# DO NOT EDIT!" << endl << endl;
+    write_autogen_header(script_file);
 
     add_script_file_params(script_file);
 
@@ -469,4 +463,10 @@ FolderManager make_folder_manager(const fs::path &local_scripts_dir) {
             location_paths);
 
     return folder_manager;
+}
+
+void write_autogen_header(ostream& out) {
+    auto now { std::time(nullptr)};
+    out << "# AUTOGEN'D at " << std::ctime(&now);
+    out << "# DO NOT EDIT!" << endl << endl;
 }
