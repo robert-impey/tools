@@ -154,15 +154,21 @@ func getBuildType(dev bool) string {
 }
 
 func printListManagedFolders(dev bool) {
+	flag := ""
+
+	if dev {
+		flag = " --dev"
+	}
+
+	script := getListManagedFoldersScript()
 	minutes := rand.Int31n(60)
 
-	exe := getListManagedFolders(dev)
-	fmt.Printf("%d 6 * * * %s\n", minutes, exe)
+	fmt.Printf("%d 6 * * * /snap/bin/pwsh %s%s\n", minutes, script, flag)
 }
 
-func getListManagedFolders(dev bool) string {
-	executablesDir := getExecutablesDir(dev)
-	return filepath.Join(executablesDir, "ListManagedFolders")
+func getListManagedFoldersScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "List-ManagedFolders.ps1")
 }
 
 func printBuild(dev bool) {
