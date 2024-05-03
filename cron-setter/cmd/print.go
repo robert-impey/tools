@@ -80,9 +80,9 @@ func getFlag(dev bool) string {
 	return ""
 }
 
-func getResetPermsScript() string {
+func getBuildScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
+	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
 }
 
 func getListManagedFoldersScript() string {
@@ -90,14 +90,14 @@ func getListManagedFoldersScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "List-ManagedFolders.ps1")
 }
 
+func getResetPermsScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
+}
+
 func getSynchScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
-}
-
-func getBuildScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
 }
 
 func printHeaderComment() {
@@ -134,8 +134,8 @@ func printCronSetter(dev bool) {
 	minutes := rand.Int31n(60)
 
 	exe := getExecutable("cron-setter", dev)
-	fmt.Printf("%d 23 * * * %s\n",
-		minutes, exe)
+	fmt.Printf("%d 23 * * * %s%s | /usr/bin/crontab -\n",
+		minutes, exe, getFlag(dev))
 }
 
 func printResetPerms(dev bool) {
