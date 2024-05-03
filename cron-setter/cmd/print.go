@@ -81,15 +81,9 @@ func getExecutablesDir(dev bool) string {
 func printResetPerms(dev bool) {
 	resetPermsMinutes := rand.Int31n(60)
 
-	flag := ""
-
-	if dev {
-		flag = " --dev"
-	}
-
 	resetPermsScript := getResetPermsScript()
 	fmt.Printf("%d 11 * * * /usr/bin/zsh %s%s\n",
-		resetPermsMinutes, resetPermsScript, flag)
+		resetPermsMinutes, resetPermsScript, getFlag(dev))
 }
 
 func getResetPermsScript() string {
@@ -121,12 +115,8 @@ func getLogsDeleter(dev bool) string {
 func printSynch(dev bool) {
 	fmt.Println()
 	fmt.Println("# Synch")
-	flag := ""
 
-	if dev {
-		flag = " --dev"
-	}
-
+	flag := getFlag(dev)
 	synchScript := getSynchScript()
 
 	printSynchLine(2, 4, synchScript, flag)
@@ -154,16 +144,10 @@ func getBuildType(dev bool) string {
 }
 
 func printListManagedFolders(dev bool) {
-	flag := ""
-
-	if dev {
-		flag = " --dev"
-	}
-
 	script := getListManagedFoldersScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d 6 * * * /snap/bin/pwsh %s%s\n", minutes, script, flag)
+	fmt.Printf("%d 6 * * * /snap/bin/pwsh %s%s\n", minutes, script, getFlag(dev))
 }
 
 func getListManagedFoldersScript() string {
@@ -172,19 +156,21 @@ func getListManagedFoldersScript() string {
 }
 
 func printBuild(dev bool) {
-	flag := ""
-
-	if dev {
-		flag = " --dev"
-	}
-
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d 7 * * * /snap/bin/pwsh %s%s\n", minutes, script, flag)
+	fmt.Printf("%d 7 * * * /snap/bin/pwsh %s%s\n", minutes, script, getFlag(dev))
 }
 
 func getBuildScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
+}
+
+func getFlag(dev bool) string {
+	if dev {
+		return " --dev"
+	}
+
+	return ""
 }
