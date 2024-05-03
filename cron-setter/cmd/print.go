@@ -40,7 +40,9 @@ func printAllTasks(dev bool) {
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
-	printCronSetter(dev)
+
+	// This just deletes the crontab
+	//printCronSetter(dev)
 }
 
 func getExecutable(name string, dev bool) string {
