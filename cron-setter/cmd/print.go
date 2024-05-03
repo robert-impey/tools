@@ -40,33 +40,12 @@ func printAllTasks(dev bool) {
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
+	printCronSetter(dev)
 }
 
-func printHeaderComment() {
-	now := time.Now().UTC()
-	fmt.Printf("# Cron tasks created by cron-setter on %s\n\n", now.Format("2006-01-02"))
-}
-
-func printStayDeleted(dev bool) {
-	runStayDeleted := getRunStayDeleted(dev)
-	fmt.Println("# Stay Deleted")
-	printStayDeletedRun(runStayDeleted, 0, 2)
-	printStayDeletedRun(runStayDeleted, 8, 11)
-	printStayDeletedRun(runStayDeleted, 19, 24)
-}
-
-func getRunStayDeleted(dev bool) string {
+func getExecutable(name string, dev bool) string {
 	executablesDir := getExecutablesDir(dev)
-	return filepath.Join(executablesDir, "run-stay-deleted")
-}
-
-func printStayDeletedRun(runStayDeleted string, startHour int, endHour int) {
-	for i := startHour; i < endHour; i++ {
-		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * %s sweepNightly\n",
-			stayDeletedMinutes, i, runStayDeleted)
-	}
-	fmt.Println()
+	return filepath.Join(executablesDir, name)
 }
 
 func getExecutablesDir(dev bool) string {
@@ -78,19 +57,6 @@ func getExecutablesDir(dev bool) string {
 	return filepath.Join(currentUser.HomeDir, "executables", "Linux", buildType, "x64")
 }
 
-func printResetPerms(dev bool) {
-	resetPermsMinutes := rand.Int31n(60)
-
-	resetPermsScript := getResetPermsScript()
-	fmt.Printf("%d 11 * * * /usr/bin/zsh %s%s\n",
-		resetPermsMinutes, resetPermsScript, getFlag(dev))
-}
-
-func getResetPermsScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
-}
-
 func getLocalScripts() string {
 	currentUser, err := user.Current()
 	if err != nil {
@@ -99,17 +65,85 @@ func getLocalScripts() string {
 	return filepath.Join(currentUser.HomeDir, "local-scripts")
 }
 
+func getBuildType(dev bool) string {
+	if dev {
+		return "dev"
+	}
+	return "prod"
+}
+
+func getFlag(dev bool) string {
+	if dev {
+		return " --dev"
+	}
+
+	return ""
+}
+
+func getResetPermsScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
+}
+
+func getListManagedFoldersScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "List-ManagedFolders.ps1")
+}
+
+func getSynchScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
+}
+
+func getBuildScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
+}
+
+func printHeaderComment() {
+	now := time.Now().UTC()
+	fmt.Printf("# Cron tasks created by cron-setter on %s\n\n", now.Format("2006-01-02"))
+}
+
+func printStayDeleted(dev bool) {
+	runStayDeleted := getExecutable("run-stay-deleted", dev)
+	fmt.Println("# Stay Deleted")
+	printStayDeletedRun(runStayDeleted, 0, 2)
+	printStayDeletedRun(runStayDeleted, 8, 11)
+	printStayDeletedRun(runStayDeleted, 19, 23)
+}
+
+func printStayDeletedRun(runStayDeleted string, startHour int, endHour int) {
+	for i := startHour; i < endHour; i++ {
+		stayDeletedMinutes := rand.Int31n(60)
+		fmt.Printf("%d %d * * * %s sweepNightly\n",
+			stayDeletedMinutes, i, runStayDeleted)
+	}
+	fmt.Println()
+}
+
 func printLogsDeleter(dev bool) {
 	logsDeleterMinutes := rand.Int31n(60)
 
-	logsDeleter := getLogsDeleter(dev)
+	exe := getExecutable("logs-deleter", dev)
 	fmt.Printf("%d 12 * * * %s sweepAll\n",
-		logsDeleterMinutes, logsDeleter)
+		logsDeleterMinutes, exe)
 }
 
-func getLogsDeleter(dev bool) string {
-	executablesDir := getExecutablesDir(dev)
-	return filepath.Join(executablesDir, "logs-deleter")
+func printCronSetter(dev bool) {
+	minutes := rand.Int31n(60)
+
+	exe := getExecutable("cron-setter", dev)
+	fmt.Printf("%d 23 * * * %s\n",
+		minutes, exe)
+}
+
+func printResetPerms(dev bool) {
+	resetPermsMinutes := rand.Int31n(60)
+
+	resetPermsScript := getResetPermsScript()
+	fmt.Printf("%d 11 * * * /usr/bin/zsh %s%s\n",
+		resetPermsMinutes, resetPermsScript, getFlag(dev))
 }
 
 func printSynch(dev bool) {
@@ -131,18 +165,6 @@ func printSynchLine(earliestHour int32, hoursRange int32, synchScript string, fl
 		synchMinutes, synchHours, synchScript, flag)
 }
 
-func getSynchScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
-}
-
-func getBuildType(dev bool) string {
-	if dev {
-		return "dev"
-	}
-	return "prod"
-}
-
 func printListManagedFolders(dev bool) {
 	script := getListManagedFoldersScript()
 	minutes := rand.Int31n(60)
@@ -150,27 +172,9 @@ func printListManagedFolders(dev bool) {
 	fmt.Printf("%d 6 * * * /snap/bin/pwsh %s%s\n", minutes, script, getFlag(dev))
 }
 
-func getListManagedFoldersScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "List-ManagedFolders.ps1")
-}
-
 func printBuild(dev bool) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
 	fmt.Printf("%d 7 * * * /snap/bin/pwsh %s%s\n", minutes, script, getFlag(dev))
-}
-
-func getBuildScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
-}
-
-func getFlag(dev bool) string {
-	if dev {
-		return " --dev"
-	}
-
-	return ""
 }
