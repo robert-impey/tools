@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 const cmdLineTemplate = "%v %v/%v/ %v/%v"
@@ -112,7 +113,8 @@ func parseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 }
 
 func writeAllDirs(scriptsInfo *ScriptsInfo) error {
-	fmt.Printf("Generating scripts in %v\n", scriptsInfo.dir)
+	now := time.Now().UTC()
+	fmt.Printf("Generating scripts in %v on %s\n", scriptsInfo.dir, now.Format("2006-01-02"))
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
 	fmt.Printf("Destination: %v\n", scriptsInfo.dst)
