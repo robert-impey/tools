@@ -1,0 +1,8 @@
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/home/robert/local-scripts/_Common/synch/rsync-excluded.txt
+robert@merneith.robertimpey.com:~
+/home/robert
+
+config
+data
+executables
+local-scripts

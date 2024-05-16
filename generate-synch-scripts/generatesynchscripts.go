@@ -113,8 +113,7 @@ func parseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 }
 
 func writeAllDirs(scriptsInfo *ScriptsInfo) error {
-	now := time.Now().UTC()
-	fmt.Printf("Generating scripts in %v on %s\n", scriptsInfo.dir, now.Format("2006-01-02"))
+	fmt.Printf("Generating scripts in %v\n", scriptsInfo.dir)
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
 	fmt.Printf("Destination: %v\n", scriptsInfo.dst)
@@ -151,8 +150,10 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 		}
 	}
 
-	scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n\n"
+	scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n"
 
+	now := time.Now().UTC()
+	scriptContents += fmt.Sprintf("# Generated on %s\n\n", now.Format("2006-01-02"))
 	scriptContents += "date\n\n"
 
 	for _, dir := range scriptsInfo.dirs {
@@ -205,7 +206,8 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 				}
 			}
 
-			scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n\n"
+			scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n"
+			scriptContents += fmt.Sprintf("# Generated on %s\n\n", now.Format("2006-01-02"))
 
 			scriptContents += "date\n\n"
 

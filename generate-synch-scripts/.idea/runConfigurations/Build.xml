@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Build" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="generate-synch-scripts" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="merneith.txt" />
+    <kind value="PACKAGE" />
+    <package value="github.com/robert-impey/tools/generate-synch-scripts" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
