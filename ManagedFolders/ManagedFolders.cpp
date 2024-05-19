@@ -11,9 +11,10 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-vector<string> read_all_non_empty_lines(const fs::path &path);
+vector<string> read_all_non_empty_lines(const fs::path &);
 
 fs::path find_autogen_path();
+fs::path find_tool_autogen_path(const string &);
 
 string clean_path(const string &);
 
@@ -21,7 +22,7 @@ void generate_folder_synch_script(const string &, const fs::path &, const fs::pa
 
 void generate_all_folders_synch_script(const vector<string> &, const fs::path &, const fs::path &, const fs::path &);
 
-void write_autogen_header(ostream& out);
+void write_autogen_header(ostream &);
 
 class FolderManager {
 public:
@@ -70,15 +71,13 @@ public:
     }
 
     void generate_synch_scripts() {
-        auto autogen_path { find_autogen_path()};
-
-        auto synch_autogen_path{autogen_path / "synch"};
-
-        if (!exists(synch_autogen_path)) {
-            create_directory(synch_autogen_path);
-        }
+        auto synch_autogen_path{ find_tool_autogen_path( "synch")};
 
         generate_synch_location_pair_folders(synch_autogen_path);
+    }
+
+    void generate_synch_windows_config_script() {
+        auto synch_autogen_path{ find_tool_autogen_path("synch") };
     }
 
 private:
@@ -292,6 +291,12 @@ int main(const int argc, char *argv[]) {
 
             return 0;
         }
+
+        if (task == "generate_synch_windows_config_script") {
+            folder_manager.generate_synch_windows_config_script();
+
+            return 0;
+        }
     }
 
     cerr << "Please tell me what to do!" << endl;
@@ -326,6 +331,18 @@ fs::path find_autogen_path() {
     }
 
     return autogen_path;
+}
+
+fs::path find_tool_autogen_path(const string& tool) {
+    const auto autogen_path{ find_autogen_path() };
+
+    fs::path tool_autogen_path{ autogen_path / tool };
+
+    if (!exists(tool_autogen_path)) {
+        create_directory(tool_autogen_path);
+    }
+
+    return tool_autogen_path;
 }
 
 string clean_path(const string &path_str) {
