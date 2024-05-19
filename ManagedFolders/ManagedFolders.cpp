@@ -78,6 +78,7 @@ public:
 
     void generate_synch_windows_config_script() {
         auto synch_autogen_path{ find_tool_autogen_path("synch") };
+        generate_synch_windows_config_script(synch_autogen_path);
     }
 
 private:
@@ -204,6 +205,10 @@ private:
                             location_path2);
             }
         }
+    }
+
+    void generate_synch_windows_config_script(const fs::path& synch_autogen_path) const {
+        cerr << "generate_synch_windows_config_script" << endl;
     }
 };
 
