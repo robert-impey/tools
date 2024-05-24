@@ -208,7 +208,7 @@ private:
     }
 
     void generate_synch_windows_config_script(const fs::path& synch_autogen_path) const {
-        cerr << "generate_synch_windows_config_script" << endl;
+        cout << "generate_synch_windows_config_script" << endl;
     }
 };
 
