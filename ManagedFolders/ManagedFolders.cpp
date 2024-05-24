@@ -16,6 +16,8 @@ vector<string> read_all_non_empty_lines(const fs::path &);
 fs::path find_autogen_path();
 fs::path find_tool_autogen_path(const string &);
 
+fs::path find_local_scripts_path();
+
 string clean_path(const string &);
 
 void generate_folder_synch_script(const string &, const fs::path &, const fs::path &, const fs::path &);
@@ -79,7 +81,9 @@ public:
     void generate_synch_windows_config_script() {
         auto synch_autogen_path{ find_tool_autogen_path("synch") };
 
-        generate_synch_windows_config_script(synch_autogen_path);
+        auto files_file{ find_windows_config_files_file() };
+
+        generate_synch_windows_config_script(synch_autogen_path, files_file);
     }
 
 private:
@@ -208,7 +212,7 @@ private:
         }
     }
 
-    void generate_synch_windows_config_script(const fs::path& synch_autogen_path) const {
+    void generate_synch_windows_config_script(const fs::path& synch_autogen_path, const fs::path& files_file) const {
         cout << "generate_synch_windows_config_script" << endl;
 
         auto script_name{ "config-Windows.ps1" };
@@ -219,6 +223,25 @@ private:
         script_file.open(script_path, ios::out | ios::trunc);
 
         write_autogen_header(script_file);
+
+        cout << "Reading " << files_file << endl;
+    }
+
+    fs::path find_windows_config_files_file() {
+        auto local_scripts_path{ find_local_scripts_path() };
+
+        const auto computer_name{ getenv("ComputerName") };
+
+        if (computer_name != nullptr) {
+            const fs::path computer_specific_files_file { local_scripts_path / computer_name / "synch" / "config-Windows" / "files.txt" };
+
+            if (fs::exists(computer_specific_files_file))
+                return computer_specific_files_file;
+        }
+
+        fs::path common_files_file{ local_scripts_path / "_Common" / "synch" / "config-Windows" / "files.txt"};
+
+        return common_files_file;
     }
 };
 
