@@ -78,6 +78,7 @@ public:
 
     void generate_synch_windows_config_script() {
         auto synch_autogen_path{ find_tool_autogen_path("synch") };
+
         generate_synch_windows_config_script(synch_autogen_path);
     }
 
@@ -209,6 +210,15 @@ private:
 
     void generate_synch_windows_config_script(const fs::path& synch_autogen_path) const {
         cout << "generate_synch_windows_config_script" << endl;
+
+        auto script_name{ "config-Windows.ps1" };
+
+        const fs::path script_path{ synch_autogen_path / script_name };
+
+        ofstream script_file;
+        script_file.open(script_path, ios::out | ios::trunc);
+
+        write_autogen_header(script_file);
     }
 };
 
