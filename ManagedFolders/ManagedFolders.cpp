@@ -13,10 +13,14 @@ namespace fs = std::filesystem;
 
 vector<string> read_all_non_empty_lines(const fs::path &);
 
+fs::path get_home_folder();
+
 fs::path find_autogen_path();
 fs::path find_tool_autogen_path(const string &);
 
 fs::path find_local_scripts_path();
+
+fs::path find_config_path();
 
 string clean_path(const string &);
 
@@ -25,6 +29,8 @@ void generate_folder_synch_script(const string &, const fs::path &, const fs::pa
 void generate_all_folders_synch_script(const vector<string> &, const fs::path &, const fs::path &, const fs::path &);
 
 void write_autogen_header(ostream &);
+
+void write_powershell_command(ostream&, string);
 
 class FolderManager {
 public:
@@ -225,6 +231,26 @@ private:
         write_autogen_header(script_file);
 
         cout << "Reading " << files_file << endl;
+
+        auto home_folder{get_home_folder()};
+
+        auto files = read_all_non_empty_lines(files_file);
+
+        auto config_path = find_config_path();
+
+        auto common_windows_config_path{ config_path / "_Common" / "Windows"};
+
+        for (auto& file  : files)
+        {
+            ostringstream command1;
+            command1 << "ROBOCOPY " << home_folder << " " << common_windows_config_path << " /xo " << file;
+            write_powershell_command(script_file, command1.str());
+
+            ostringstream command2;
+            command2 << "ROBOCOPY " << common_windows_config_path << " " <<   home_folder << " /xo " << file;
+            
+            write_powershell_command(script_file, command2.str());
+        }
     }
 
     fs::path find_windows_config_files_file() {
@@ -290,6 +316,25 @@ fs::path find_local_scripts_path() {
     fs::path local_scripts_path{home_folder_path / "local-scripts"};
 
     return local_scripts_path;
+}
+
+fs::path find_config_path() {
+#pragma warning( push )
+#pragma warning(disable: 4996)
+    const auto config_env_var{ getenv("CONFIG") };
+#pragma warning( pop )
+
+    if (config_env_var != nullptr) {
+        const fs::path config_path{ config_env_var };
+
+        return config_path;
+    }
+
+    const auto home_folder_path{ get_home_folder() };
+
+    fs::path config_path{ home_folder_path / "config" };
+
+    return config_path;
 }
 
 int main(const int argc, char *argv[]) {
@@ -524,4 +569,9 @@ void write_autogen_header(ostream& out) {
     auto now { std::time(nullptr)};
     out << "# AUTOGEN'D at " << std::ctime(&now);
     out << "# DO NOT EDIT!" << endl << endl;
+}
+
+void write_powershell_command(ostream& out, string command) {
+    out << "# " << command << endl;
+    out << command << endl;
 }
