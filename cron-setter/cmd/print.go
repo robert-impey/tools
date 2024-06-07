@@ -94,7 +94,7 @@ func getListManagedFoldersScript() string {
 
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "reset-perms", "reset-perms.sh")
+	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
 }
 
 func getSynchScript() string {
