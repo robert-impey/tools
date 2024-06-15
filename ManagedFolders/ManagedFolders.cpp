@@ -84,7 +84,7 @@ public:
         generate_synch_location_pair_folders(synch_autogen_path);
     }
 
-    void generate_synch_windows_config_script() {
+    static void generate_synch_windows_config_script() {
         auto synch_autogen_path{ find_tool_autogen_path("synch") };
 
         auto files_file{ find_windows_config_files_file() };
