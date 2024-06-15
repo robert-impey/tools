@@ -218,7 +218,7 @@ private:
         }
     }
 
-    void generate_synch_windows_config_script(const fs::path& synch_autogen_path, const fs::path& files_file) const {
+    static void generate_synch_windows_config_script(const fs::path& synch_autogen_path, const fs::path& files_file) {
         cout << "generate_synch_windows_config_script" << endl;
 
         auto script_name{ "config-Windows.ps1" };
@@ -253,7 +253,7 @@ private:
         }
     }
 
-    fs::path find_windows_config_files_file() {
+    static fs::path find_windows_config_files_file() {
         auto local_scripts_path{ find_local_scripts_path() };
 
         const auto computer_name{ getenv("ComputerName") };
