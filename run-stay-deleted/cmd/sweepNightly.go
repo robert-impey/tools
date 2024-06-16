@@ -70,6 +70,9 @@ func sweepNightly(find bool) error {
 	}
 
 	userInfo, err := user.Current()
+	if err != nil {
+		return err
+	}
 
 	userMachineLSDir := path.Join(absMachineLSDir, userInfo.Username)
 
@@ -77,7 +80,6 @@ func sweepNightly(find bool) error {
 	machineLSNightly := path.Join(machineLSDir, "staydeleted", "nightly.txt")
 
 	nightlyFile := ""
-	nightlyErr := errors.New("No nightly file found!")
 
 	_, err = os.Stat(userMachineLSNightly)
 	if err == nil {
@@ -85,7 +87,6 @@ func sweepNightly(find bool) error {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		nightlyErr = nil
 	} else {
 		_, err = os.Stat(machineLSNightly)
 		if err == nil {
@@ -93,7 +94,6 @@ func sweepNightly(find bool) error {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			nightlyErr = nil
 		}
 	}
 
@@ -102,11 +102,6 @@ func sweepNightly(find bool) error {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		nightlyErr = nil
-	}
-
-	if nightlyErr != nil {
-		log.Fatalln(nightlyErr)
 	}
 
 	fmt.Printf("Using %s\n", nightlyFile)
@@ -160,11 +155,11 @@ func getLocalScriptsDirectory() (string, error) {
 		return absDir, nil
 	}
 
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		return "", err
 	}
-	localScriptsDir := filepath.Join(user.HomeDir, "local-scripts")
+	localScriptsDir := filepath.Join(currentUser.HomeDir, "local-scripts")
 	localScriptsDirStat, err := os.Stat(localScriptsDir)
 	if err != nil {
 		return "", err
