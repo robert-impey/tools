@@ -377,7 +377,7 @@ int main(const int argc, char *argv[]) {
         }
 
         if (task == "generate_synch_windows_config_script") {
-            folder_manager.generate_synch_windows_config_script();
+            FolderManager::generate_synch_windows_config_script();
 
             return 0;
         }
