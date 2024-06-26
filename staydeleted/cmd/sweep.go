@@ -75,8 +75,5 @@ func sweepPaths(paths []string, outWriter io.Writer, errWriter io.Writer) {
 		} else {
 			fmt.Fprintf(errWriter, "%v\n is not a directory!", path)
 		}
-		if err != nil {
-			fmt.Fprintf(errWriter, "%v\n", err)
-		}
 	}
 }

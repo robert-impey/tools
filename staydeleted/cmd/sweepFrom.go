@@ -74,8 +74,5 @@ func sweepFromPaths(paths []string, outWriter io.Writer, errWriter io.Writer) {
 				fmt.Fprintf(errWriter, "%v\n", err)
 			}
 		}
-		if err != nil {
-			fmt.Fprintf(errWriter, "%v\n", err)
-		}
 	}
 }
