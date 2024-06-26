@@ -6,41 +6,38 @@ package cmd
 import (
 	"fmt"
 	"github.com/robert-impey/tools/managed-folders/mflib"
-	"log"
-
 	"github.com/spf13/cobra"
+	"log"
 )
 
 // showCmd represents the show command
 var showCmd = &cobra.Command{
 	Use:   "show",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Show the environment",
+	Long:  `The managed folders tool expects folders and files to be in conventional places.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		localScriptsDirectory, err := mflib.GetLocalScriptsDirectory()
-		if err != nil {
-			log.Fatalln(err)
-		}
+		dir, err := mflib.GetLocalScriptsDirectory()
+		printVariable("Local Scripts Directory", dir, err)
 
-		fmt.Printf("Local Scripts Directory: %s\n", localScriptsDirectory)
+		dir, err = mflib.GetCommonLocalScriptsDirectory()
+		printVariable("Common Local Scripts Directory", dir, err)
+
+		dir, err = mflib.GetFoldersFile()
+		printVariable("Folders File", dir, err)
+
+		dir, err = mflib.GetLocationsFile()
+		printVariable("Locations File", dir, err)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(showCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func printVariable(name string, directory string, err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// showCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// showCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	fmt.Printf("%s: %s\n", name, directory)
 }

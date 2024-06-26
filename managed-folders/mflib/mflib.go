@@ -1,10 +1,12 @@
 package mflib
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path"
 	"path/filepath"
+	"runtime"
 )
 
 func GetManagedFoldersFile() (string, error) {
@@ -59,4 +61,75 @@ func GetLocalScriptsDirectory() (string, error) {
 	}
 
 	return absLocalScriptsDir, nil
+}
+
+func GetCommonLocalScriptsDirectory() (string, error) {
+	localScriptsDirectory, err1 := GetLocalScriptsDirectory()
+	if err1 != nil {
+		return "", err1
+	}
+
+	commonDir := filepath.Join(localScriptsDirectory, "_Common")
+	commonDirStat, err2 := os.Stat(commonDir)
+	if err2 != nil {
+		return "", err2
+	}
+	if !commonDirStat.IsDir() {
+		return "", fmt.Errorf("%s is not a directory", commonDir)
+	}
+	absCommonLocalScriptsDir, err3 := filepath.Abs(commonDir)
+
+	if err3 != nil {
+		return "", err3
+	}
+	return absCommonLocalScriptsDir, nil
+}
+
+func GetFoldersFile() (string, error) {
+	commonLocalScriptsDirectory, err1 := GetCommonLocalScriptsDirectory()
+	if err1 != nil {
+		return "", err1
+	}
+
+	foldersFile := path.Join(commonLocalScriptsDirectory, "folders.txt")
+	_, err2 := os.Stat(foldersFile)
+
+	if err2 != nil {
+		return "", err2
+	}
+
+	foldersFileAbs, err3 := filepath.Abs(foldersFile)
+
+	if err3 != nil {
+		return "", err3
+	}
+
+	return foldersFileAbs, nil
+}
+
+func GetLocationsFile() (string, error) {
+	commonLocalScriptsDirectory, err1 := GetCommonLocalScriptsDirectory()
+	if err1 != nil {
+		return "", err1
+	}
+
+	osFolder := "linux"
+	if runtime.GOOS == "windows" {
+		osFolder = "Windows"
+	}
+	
+	locationsFile := path.Join(commonLocalScriptsDirectory, osFolder, "locations.txt")
+	_, err2 := os.Stat(locationsFile)
+
+	if err2 != nil {
+		return "", err2
+	}
+
+	locationsFileAbs, err3 := filepath.Abs(locationsFile)
+
+	if err3 != nil {
+		return "", err3
+	}
+
+	return locationsFileAbs, nil
 }
