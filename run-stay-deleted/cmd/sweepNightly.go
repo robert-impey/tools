@@ -7,6 +7,7 @@ Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 import (
 	"errors"
 	"fmt"
+	"github.com/robert-impey/tools/managed-folders/mflib"
 	"log"
 	"os"
 	"os/user"
@@ -98,7 +99,7 @@ func sweepNightly(find bool) error {
 	}
 
 	if nightlyFile == "" {
-		nightlyFile, err = getManagedFoldersFile()
+		nightlyFile, err = mflib.GetManagedFoldersFile()
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -174,20 +175,4 @@ func getLocalScriptsDirectory() (string, error) {
 	}
 
 	return absLocalScriptsDir, nil
-}
-
-func getManagedFoldersFile() (string, error) {
-	theUser, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-
-	managedFoldersFile := path.Join(theUser.HomeDir, "autogen", "managed-folders.txt")
-
-	_, err = os.Stat(managedFoldersFile)
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Abs(managedFoldersFile)
 }
