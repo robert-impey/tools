@@ -26,16 +26,13 @@ var listCmd = &cobra.Command{
 	Short: "List the managed folders on this machine",
 	Long:  `List the managed folders on this machine`,
 	Run: func(cmd *cobra.Command, args []string) {
-		managedFoldersFile, err1 := mflib.GetManagedFoldersFile()
-		folders, err2 := getFolders()
-		locations, err3 := getLocations()
+		folders, err1 := getFolders()
+		locations, err2 := getLocations()
 
-		err := errors.Join(err1, err2, err3)
+		err := errors.Join(err1, err2)
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		fmt.Printf("%s\n\n", managedFoldersFile)
 
 		for i, location := range locations {
 			havePrinted := false
@@ -102,7 +99,7 @@ func getDistinctSortedLine(fileName string) ([]string, error) {
 
 	lines := mapset.NewSet[string]()
 	for input.Scan() {
-		line := strings.Trim(input.Text(), " /\\")
+		line := strings.TrimRight(input.Text(), " /\\")
 		if len(line) > 0 {
 			lines.Add(line)
 		}
