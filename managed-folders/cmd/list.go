@@ -16,9 +16,12 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
+
+var write bool
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -26,6 +29,29 @@ var listCmd = &cobra.Command{
 	Short: "List the managed folders on this machine",
 	Long:  `List the managed folders on this machine`,
 	Run: func(cmd *cobra.Command, args []string) {
+		var output os.File
+
+		if write {
+			managedFoldersFile, err := mflib.GetManagedFoldersFile()
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			mfOut, err := os.Create(managedFoldersFile)
+
+			output = *mfOut
+
+			if err != nil {
+				log.Fatalln(err)
+			}
+			fmt.Fprintln(&output, "# AUTOGEN'D - DO NOT EDIT!")
+			
+			now := time.Now().UTC()
+			fmt.Fprintf(&output, "# Generated on %s\n\n", now.Format("2006-01-02"))
+		} else {
+			output = *os.Stdout
+		}
+
 		folders, err1 := getFolders()
 		locations, err2 := getLocations()
 
@@ -54,13 +80,13 @@ var listCmd = &cobra.Command{
 					log.Fatalln(err)
 				}
 
-				fmt.Println(absLocatedFolder)
+				fmt.Fprintln(&output, absLocatedFolder)
 
 				havePrinted = true
 			}
 
 			if havePrinted && i < len(locations)-1 {
-				fmt.Println()
+				fmt.Fprintln(&output)
 			}
 		}
 	},
@@ -68,6 +94,8 @@ var listCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+
+	listCmd.Flags().BoolVarP(&write, "write", "w", false, "Write the managed folders file")
 }
 
 func getFolders() ([]string, error) {
