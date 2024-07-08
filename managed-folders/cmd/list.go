@@ -32,7 +32,7 @@ var listCmd = &cobra.Command{
 		var output os.File
 
 		if write {
-			managedFoldersFile, err := mflib.GetManagedFoldersFile()
+			managedFoldersFile, err := mflib.GetManagedFoldersFileName()
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -45,7 +45,7 @@ var listCmd = &cobra.Command{
 				log.Fatalln(err)
 			}
 			fmt.Fprintln(&output, "# AUTOGEN'D - DO NOT EDIT!")
-			
+
 			now := time.Now().UTC()
 			fmt.Fprintf(&output, "# Generated on %s\n\n", now.Format("2006-01-02"))
 		} else {

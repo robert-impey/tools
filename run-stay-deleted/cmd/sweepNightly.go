@@ -99,7 +99,7 @@ func sweepNightly(find bool) error {
 	}
 
 	if nightlyFile == "" {
-		nightlyFile, err = mflib.GetManagedFoldersFile()
+		nightlyFile, err = mflib.GetManagedFoldersFileName()
 		if err != nil {
 			log.Fatalln(err)
 		}

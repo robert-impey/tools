@@ -9,20 +9,15 @@ import (
 	"runtime"
 )
 
-func GetManagedFoldersFile() (string, error) {
+func GetManagedFoldersFileName() (string, error) {
 	theUser, err := user.Current()
 	if err != nil {
 		return "", err
 	}
 
-	managedFoldersFile := path.Join(theUser.HomeDir, "autogen", "managed-folders.txt")
+	managedFoldersFileName := path.Join(theUser.HomeDir, "autogen", "managed-folders.txt")
 
-	_, err = os.Stat(managedFoldersFile)
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Abs(managedFoldersFile)
+	return managedFoldersFileName, nil
 }
 
 func GetLocalScriptsDirectory() (string, error) {
@@ -117,7 +112,7 @@ func GetLocationsFile() (string, error) {
 	if runtime.GOOS == "windows" {
 		osFolder = "Windows"
 	}
-	
+
 	locationsFile := path.Join(commonLocalScriptsDirectory, osFolder, "locations.txt")
 	_, err2 := os.Stat(locationsFile)
 
