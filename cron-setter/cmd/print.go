@@ -40,9 +40,6 @@ func printAllTasks(dev bool) {
 	printResetPerms(dev)
 	printLogsDeleter(dev)
 	printSynch(dev)
-
-	// This just deletes the crontab
-	//printCronSetter(dev)
 }
 
 func getExecutable(name string, dev bool) string {
@@ -130,14 +127,6 @@ func printLogsDeleter(dev bool) {
 	exe := getExecutable("logs-deleter", dev)
 	fmt.Printf("%d 12 * * * %s sweepAll\n",
 		logsDeleterMinutes, exe)
-}
-
-func printCronSetter(dev bool) {
-	minutes := rand.Int31n(60)
-
-	exe := getExecutable("cron-setter", dev)
-	fmt.Printf("%d 23 * * * %s%s | /usr/bin/crontab -\n",
-		minutes, exe, getFlag(dev))
 }
 
 func printResetPerms(dev bool) {
