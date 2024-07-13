@@ -84,11 +84,6 @@ func getBuildScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
 }
 
-func getListManagedFoldersScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "List-ManagedFolders.ps1")
-}
-
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
@@ -157,10 +152,10 @@ func printSynchLine(earliestHour int32, hoursRange int32, synchScript string, fl
 }
 
 func printListManagedFolders(dev bool) {
-	script := getListManagedFoldersScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d 6 * * * /snap/bin/pwsh %s%s\n", minutes, script, getFlag(dev))
+	exe := getExecutable("managed-folders", dev)
+	fmt.Printf("%d 6 * * * %s list -w\n", minutes, exe)
 }
 
 func printBuild(dev bool) {
