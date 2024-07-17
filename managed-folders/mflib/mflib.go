@@ -157,6 +157,11 @@ func GetFoldersFile() (string, error) {
 }
 
 func GetLocationsFile() (string, error) {
+	localScriptsDirectory, err := GetLocalScriptsDirectory()
+	if err != nil {
+		return "", err
+	}
+
 	commonLocalScriptsDirectory, err1 := GetCommonLocalScriptsDirectory()
 	if err1 != nil {
 		return "", err1
@@ -180,5 +185,49 @@ func GetLocationsFile() (string, error) {
 		return "", err3
 	}
 
-	return locationsFileAbs, nil
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	machineLSDir := path.Join(localScriptsDirectory, hostname)
+
+	_, err = os.Stat(machineLSDir)
+
+	if os.IsNotExist(err) {
+		return locationsFileAbs, nil
+	}
+
+	userInfo, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	userMachineLSDir := path.Join(machineLSDir, userInfo.Username)
+
+	userMachineLocations := path.Join(userMachineLSDir, "locations.txt")
+
+	_, err = os.Stat(userMachineLocations)
+	if err == nil {
+		absUserMachineLocations, err := filepath.Abs(userMachineLocations)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		return absUserMachineLocations, nil
+	}
+
+	machineLSLocations := path.Join(machineLSDir, "locations.txt")
+	absMachineLSLocations, err := filepath.Abs(machineLSLocations)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	_, err = os.Stat(absMachineLSLocations)
+
+	if os.IsNotExist(err) {
+		return locationsFileAbs, nil
+	}
+
+	return absMachineLSLocations, nil
 }
