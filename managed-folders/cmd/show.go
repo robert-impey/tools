@@ -1,7 +1,8 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
+
+/*
+Copyright © 2024 Robert Impey robert.impey@hotmail.co.uk
+*/
 
 import (
 	"fmt"
