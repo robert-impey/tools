@@ -2,6 +2,7 @@ package mflib
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path"
@@ -81,6 +82,11 @@ func GetCommonLocalScriptsDirectory() (string, error) {
 }
 
 func GetFoldersFile() (string, error) {
+	localScriptsDirectory, err := GetLocalScriptsDirectory()
+	if err != nil {
+		return "", err
+	}
+
 	commonLocalScriptsDirectory, err1 := GetCommonLocalScriptsDirectory()
 	if err1 != nil {
 		return "", err1
@@ -99,7 +105,51 @@ func GetFoldersFile() (string, error) {
 		return "", err3
 	}
 
-	return foldersFileAbs, nil
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	machineLSDir := path.Join(localScriptsDirectory, hostname)
+
+	_, err = os.Stat(machineLSDir)
+
+	if os.IsNotExist(err) {
+		return foldersFileAbs, nil
+	}
+
+	userInfo, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	userMachineLSDir := path.Join(machineLSDir, userInfo.Username)
+
+	userMachineFolders := path.Join(userMachineLSDir, "folders.txt")
+
+	_, err = os.Stat(userMachineFolders)
+	if err == nil {
+		absUserMachineFolders, err := filepath.Abs(userMachineFolders)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		return absUserMachineFolders, nil
+	}
+
+	machineLSFolders := path.Join(machineLSDir, "folders.txt")
+	absMachineLSFolders, err := filepath.Abs(machineLSFolders)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	_, err = os.Stat(absMachineLSFolders)
+
+	if os.IsNotExist(err) {
+		return foldersFileAbs, nil
+	}
+
+	return absMachineLSFolders, nil
 }
 
 func GetLocationsFile() (string, error) {
