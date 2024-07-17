@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Cron Setter | Print Dev" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="Cron Setter | Print | Dev" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/cron-setter" />
     <parameters value="print --dev" />
