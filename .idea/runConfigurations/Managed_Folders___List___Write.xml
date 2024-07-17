@@ -2,7 +2,7 @@
   <configuration default="false" name="Managed Folders | List | Write" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/managed-folders" />
-    <parameters value="list -w" />
+    <parameters value="list --write" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/managed-folders" />
     <directory value="$PROJECT_DIR$" />

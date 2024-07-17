@@ -47,7 +47,7 @@ var listCmd = &cobra.Command{
 			fmt.Fprintln(&output, "# AUTOGEN'D - DO NOT EDIT!")
 
 			now := time.Now().UTC()
-			fmt.Fprintf(&output, "# Generated on %s\n\n", now.Format("2006-01-02"))
+			fmt.Fprintf(&output, "# Generated at %s\n\n", now.Format("2006-01-02 15:04:05"))
 		} else {
 			output = *os.Stdout
 		}
