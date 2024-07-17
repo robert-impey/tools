@@ -1,5 +1,9 @@
 package mflib
 
+/*
+Copyright © 2024 Robert Impey robert.impey@hotmail.co.uk
+*/
+
 import (
 	"fmt"
 	"log"
