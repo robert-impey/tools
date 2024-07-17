@@ -1,7 +1,8 @@
+package cmd
+
 /*
 Copyright © 2024 Robert Impey robert.impey@hotmail.co.uk
 */
-package cmd
 
 import (
 	"os"
