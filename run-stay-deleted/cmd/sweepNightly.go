@@ -26,7 +26,7 @@ var sweepNightlyCmd = &cobra.Command{
 	Long: `The list of directories to sweep can be saved in a text file.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		find, err := cmd.PersistentFlags().GetBool("Find")
+		find, err := cmd.PersistentFlags().GetBool("find")
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -40,7 +40,7 @@ var sweepNightlyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(sweepNightlyCmd)
 
-	sweepNightlyCmd.PersistentFlags().BoolP("Find", "f", false,
+	sweepNightlyCmd.PersistentFlags().BoolP("find", "f", false,
 		"Just find the file to sweep from and quit")
 }
 

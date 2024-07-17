@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Stay Deleted | Sweep Nightly | File" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="Run Stay Deleted | Sweep Nightly | Find" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/run-stay-deleted" />
-    <parameters value="sweepNightly -f" />
+    <parameters value="sweepNightly --find" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/run-stay-deleted" />
     <directory value="$PROJECT_DIR$" />
