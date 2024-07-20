@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use clap::{Parser};
+
+use clap::Parser;
 use walkdir::{DirEntry, WalkDir};
 
 #[derive(Parser)]
@@ -32,45 +33,36 @@ fn main() {
             for file in files.iter().cloned() {
                 let path = file.path();
 
-                match path.file_stem() {
-                    Some(file_stem) =>
-                        {
-                            let file_stem_str = file_stem.to_str().unwrap();
+                let file_stem = path.file_stem().unwrap();
 
-                            match path.extension() {
-                                Some(extension) => {
-                                    let extension_string = extension.to_str().unwrap();
+                let file_stem_str = file_stem.to_str().unwrap();
 
-                                    for other_file in files.iter().cloned() {
-                                        let other_path = other_file.path();
+                match path.extension() {
+                    Some(extension) => {
+                        let extension_string = extension.to_str().unwrap();
 
-                                        match other_path.file_stem() {
-                                            Some(other_file_stem) =>
-                                                {
-                                                    let other_file_stem_string = other_file_stem.to_str().unwrap();
+                        for other_file in files.iter().cloned() {
+                            let other_path = other_file.path();
 
-                                                    match other_path.extension() {
-                                                        Some(other_extension) => {
-                                                            let other_extension_str = other_extension.to_str().unwrap();
+                            let other_file_stem = other_path.file_stem().unwrap();
+                            let other_file_stem_string = other_file_stem.to_str().unwrap();
 
-                                                            if extension_string == other_extension_str {
-                                                                if other_file_stem_string != file_stem_str {
-                                                                    if other_file_stem_string.starts_with(file_stem_str) {
-                                                                        matching_stems.push((file.clone(), other_file));
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        None => ()
-                                                    }
-                                                }
-                                            None => ()
+                            match other_path.extension() {
+                                Some(other_extension) => {
+                                    let other_extension_str = other_extension.to_str().unwrap();
+
+                                    if extension_string == other_extension_str {
+                                        if other_file_stem_string != file_stem_str {
+                                            if other_file_stem_string.starts_with(file_stem_str) {
+                                                matching_stems.push((file.clone(), other_file));
+                                            }
                                         }
                                     }
                                 }
                                 None => ()
                             }
                         }
+                    }
                     None => ()
                 }
             }
