@@ -12,8 +12,6 @@ fn main() {
     let cli = Cli::parse();
 
     if let Some(name) = cli.directory.as_deref() {
-        println!("Value for directory: {name}");
-
         let mut dirs_and_files: HashMap<String, Vec<DirEntry>> = HashMap::new();
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
@@ -78,11 +76,14 @@ fn main() {
             }
         }
 
-        println!("Matching stems:");
-        for (file, other_file) in matching_stems {
-            println!("Matching stems in {}", file.path().parent().unwrap().display());
-            println!("\t{}", file.file_name().to_str().unwrap());
-            println!("\t{}", other_file.file_name().to_str().unwrap());
+        if !matching_stems.is_empty() {
+            println!("Value for directory: {name}");
+            println!("Matching stems:");
+            for (file, other_file) in matching_stems {
+                println!("Matching stems in {}", file.path().parent().unwrap().display());
+                println!("\t{}", file.file_name().to_str().unwrap());
+                println!("\t{}", other_file.file_name().to_str().unwrap());
+            }
         }
     }
 }
