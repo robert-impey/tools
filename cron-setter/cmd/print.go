@@ -53,10 +53,13 @@ func printAllTasks(dev bool) {
 	printSynch(13, 4, dev)
 	fmt.Println()
 
-	printStayDeletedRun(19, 21, dev)
+	printStayDeletedRun(17, 19, dev)
 
-	printBuild(23, dev)
-	printResetPerms(23, dev)
+	printBuild(19, dev)
+	printResetPerms(20, dev)
+	fmt.Println()
+
+	printStayDeletedRun(21, 24, dev)
 }
 
 func printHeaderComment() {
