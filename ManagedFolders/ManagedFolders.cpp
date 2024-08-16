@@ -577,6 +577,5 @@ void write_autogen_header(ostream &out) {
 }
 
 void write_powershell_command(ostream &out, string command) {
-    out << "# " << command << endl;
     out << command << endl;
 }
