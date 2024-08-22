@@ -106,7 +106,7 @@ func getFlag(dev bool) string {
 
 func getBuildScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
+	return filepath.Join(localScriptsDir, "_Common", "build", "zsh-cron-runner.sh")
 }
 
 func getResetPermsScript() string {
@@ -167,5 +167,5 @@ func printBuild(hour int, dev bool) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * /snap/bin/pwsh %s%s\n", minutes, hour, script, getFlag(dev))
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, getFlag(dev))
 }
