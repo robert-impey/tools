@@ -1,4 +1,4 @@
-﻿using RunBuildScripts;
+﻿using GenerateBuildScripts;
 
 var folderManager = FolderManager.FolderManager.GetFolderManager();
 

@@ -1,30 +1,23 @@
-﻿namespace RunBuildScripts;
+﻿namespace GenerateBuildScripts;
 
-internal class BuildScriptFinder
+internal class BuildScriptFinder(FolderManager.FolderManager folderManager)
 {
-    private readonly FolderManager.FolderManager _folderManager;
-
-    private const string buildScript = "Build.ps1";
-
-    public BuildScriptFinder(FolderManager.FolderManager folderManager)
-    {
-        _folderManager = folderManager;
-    }
+    private const string BuildScript = "Build.ps1";
 
     public string? GetBuildScriptToCopy()
     {
-        var localScriptsFolder = _folderManager.GetLocalScriptsFolder();
+        var localScriptsFolder = folderManager.GetLocalScriptsFolder();
 
         var machineLocalScriptsFolder = Path.Join(localScriptsFolder, Environment.MachineName);
 
-        var buildScriptToCopy = Path.Join(machineLocalScriptsFolder, Environment.UserName, buildScript);
+        var buildScriptToCopy = Path.Join(machineLocalScriptsFolder, Environment.UserName, BuildScript);
 
         if (File.Exists(buildScriptToCopy))
         {
             return buildScriptToCopy;
         }
 
-        buildScriptToCopy = Path.Join(machineLocalScriptsFolder, buildScript);
+        buildScriptToCopy = Path.Join(machineLocalScriptsFolder, BuildScript);
 
         if (File.Exists(buildScriptToCopy))
         {
@@ -36,8 +29,8 @@ internal class BuildScriptFinder
 
     public string GetBuildScriptDestination()
     {
-        var autogenFolder = _folderManager.GetAutogenFolder();
+        var autogenFolder = folderManager.GetAutogenFolder();
 
-        return Path.Join(autogenFolder, buildScript);
+        return Path.Join(autogenFolder, BuildScript);
     }
 }
