@@ -109,6 +109,11 @@ func getBuildScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "build", "zsh-cron-runner.sh")
 }
 
+func getListManagedFoldersScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "list-managed-folders.sh")
+}
+
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
@@ -159,8 +164,9 @@ func printSynch(earliestHour int32, hoursRange int32, dev bool) {
 func printListManagedFolders(hour int, dev bool) {
 	minutes := rand.Int31n(60)
 
-	exe := getExecutable("managed-folders", dev)
-	fmt.Printf("%d %d * * * %s list -w\n", minutes, hour, exe)
+	flag := getFlag(dev)
+	script := getListManagedFoldersScript()
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, flag)
 }
 
 func printBuild(hour int, dev bool) {
