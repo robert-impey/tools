@@ -10,6 +10,9 @@ var managedFoldersFile = Path.Combine(autogenFolder, "managed-folders.txt");
 
 using var outputFile = new StreamWriter(managedFoldersFile, false);
 
+await outputFile.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!\n"
+                                + $"# Written {DateTime.UtcNow:u}\n");
+
 var havePrinted = false;
 foreach (var location in locations)
 {
@@ -22,14 +25,14 @@ foreach (var location in locations)
 
     if (havePrinted)
     {
-        outputFile.WriteLine();
+        await outputFile.WriteLineAsync();
     }
 
     Array.Sort(foldersInLocation);
 
     foreach (var folder in foldersInLocation)
     {
-        outputFile.WriteLine(folder);
+        await outputFile.WriteLineAsync(folder);
     }
 
     havePrinted = true;
