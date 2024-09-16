@@ -39,9 +39,6 @@ func printAllTasks(dev bool) {
 	printSynch(2, 4, dev)
 	fmt.Println()
 
-	printListManagedFolders(6, dev)
-	fmt.Println()
-
 	printStayDeletedRun(7, 9, dev)
 
 	printBuild(9, dev)
