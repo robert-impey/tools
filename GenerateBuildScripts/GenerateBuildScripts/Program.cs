@@ -1,27 +1,19 @@
 ﻿using FolderManager;
 using GenerateBuildScripts;
-using NLog;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        LogManager.Setup().LoadConfiguration(builder =>
-        {
-            var logFile = LogsFileFinder.CreateLogsFile("build", "GenerateBuildScripts");
-            builder.ForLogger().WriteToFile(fileName: logFile);
-        });
+        var logger = LogsFileFinder.GetLogger("build", "GenerateBuildScripts") ?? throw new ApplicationException("Unable to create a logger!");
 
-        var logger = LogManager.GetCurrentClassLogger();
-
-        var folderManager = FolderManager.FolderManager.GetFolderManager(logger as Microsoft.Extensions.Logging.ILogger);
+        var folderManager = FolderManager.FolderManager.GetFolderManager(logger);
 
         var buildScriptFinder = new BuildScriptFinder(folderManager);
 
         var buildScriptToCopy = buildScriptFinder.GetBuildScriptToCopy();
 
         var destination = buildScriptFinder.GetBuildScriptDestination();
-
 
         if (File.Exists(destination))
         {

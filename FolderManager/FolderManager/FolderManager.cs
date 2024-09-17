@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using NLog;
 
 namespace FolderManager;
 
@@ -16,7 +15,15 @@ public abstract class FolderManager
     {
         if (logger is null)
         {
-            logger = NullLogger.Instance;
+            var config = new NLog.Config.LoggingConfiguration();
+
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+
+            LogManager.Configuration = config;
+
+            logger = LogManager.GetCurrentClassLogger();
         }
 
         if (OperatingSystem.IsWindows())
@@ -66,7 +73,14 @@ public abstract class FolderManager
         return autogenFolder;
     }
 
-    public string GetFoldersFile() => Path.Join(GetCommonLocalScriptsFolder(), "folders.txt");
+    public string GetFoldersFile()
+    {
+        var foldersFile = Path.Join(GetCommonLocalScriptsFolder(), "folders.txt");
+        
+        _logger.Info($"Folders file: {foldersFile}");
+
+        return foldersFile;
+    }
 
     protected string GetLocationsFile(string operatingSystemPathPart)
     {
@@ -77,7 +91,11 @@ public abstract class FolderManager
             "locations.txt"
         };
 
-        return Path.Join(locationsPathParts.ToArray());
+        var locationsFile = Path.Join(locationsPathParts.ToArray());
+
+        _logger.Info($"Locations file: {locationsFile}");
+
+        return locationsFile;
     }
 
     public async Task<Dictionary<string, List<string>>> GetManagedFolders()
