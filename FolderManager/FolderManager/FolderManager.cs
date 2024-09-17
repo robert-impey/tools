@@ -1,17 +1,32 @@
-﻿namespace FolderManager;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace FolderManager;
 
 public abstract class FolderManager
 {
-    public static FolderManager GetFolderManager()
+    protected readonly ILogger _logger;
+
+    protected FolderManager(ILogger logger)
     {
+        _logger = logger;
+    }
+
+    public static FolderManager GetFolderManager(ILogger? logger = null)
+    {
+        if (logger is null)
+        {
+            logger = NullLogger.Instance;
+        }
+
         if (OperatingSystem.IsWindows())
         {
-            return new WindowsFolderManager();
+            return new WindowsFolderManager(logger);
         }
 
         if (OperatingSystem.IsLinux())
         {
-            return new LinuxFolderManager();
+            return new LinuxFolderManager(logger);
         }
 
         throw new ApplicationException("No folder manager for your operating system!");
@@ -19,13 +34,29 @@ public abstract class FolderManager
 
     protected abstract string GetLocationsFile();
     public abstract string GetLocalScriptsFolder();
-    protected abstract string GetHomeFolder();
+    protected static string HomeFolder
+    {
+        get
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                return Environment.GetEnvironmentVariable("USERPROFILE") ?? throw new ApplicationException("USERPROFILE environment variable not set!");
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                return Environment.GetEnvironmentVariable("HOME") ?? throw new ApplicationException("HOME environment variable not set!");
+            }
+
+            throw new ApplicationException("No home folder for your operating system!");
+        }
+    }
 
     public string GetCommonLocalScriptsFolder() => Path.Join(GetLocalScriptsFolder(), "_Common");
 
     public string GetAutogenFolder(bool ensureExists = true)
     {
-        var autogenFolder = Path.Join(GetHomeFolder(), "autogen");
+        var autogenFolder = Path.Join(HomeFolder, "autogen");
 
         if (ensureExists && !Directory.Exists(autogenFolder))
         {
@@ -100,7 +131,7 @@ public abstract class FolderManager
         return managedFolders;
     }
 
-    public string GetLogsFolder() => Path.Combine(GetHomeFolder(), "logs");
+    public static string LogsFolder => Path.Combine(HomeFolder, "logs");
 
     public abstract string PowerShellExe { get; }
 }

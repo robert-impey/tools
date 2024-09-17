@@ -1,11 +1,20 @@
-﻿using GenerateBuildScripts;
+﻿using FolderManager;
+using GenerateBuildScripts;
 using NLog;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        var folderManager = FolderManager.FolderManager.GetFolderManager();
+        LogManager.Setup().LoadConfiguration(builder =>
+        {
+            var logFile = LogsFileFinder.CreateLogsFile("build", "GenerateBuildScripts");
+            builder.ForLogger().WriteToFile(fileName: logFile);
+        });
+
+        var logger = LogManager.GetCurrentClassLogger();
+
+        var folderManager = FolderManager.FolderManager.GetFolderManager(logger as Microsoft.Extensions.Logging.ILogger);
 
         var buildScriptFinder = new BuildScriptFinder(folderManager);
 
@@ -13,16 +22,6 @@ internal class Program
 
         var destination = buildScriptFinder.GetBuildScriptDestination();
 
-        LogManager.Setup().LoadConfiguration(builder =>
-        {
-            var synchLogsDirectory = Path.Combine(folderManager.GetLogsFolder(), "build");
-            var timeString = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
-            var fileName = $"{timeString}-GenerateBuildScripts.log";
-            var logFile = Path.Combine(synchLogsDirectory, fileName);
-            builder.ForLogger().WriteToFile(fileName: logFile);
-        });
-
-        var logger = LogManager.GetCurrentClassLogger();
 
         if (File.Exists(destination))
         {

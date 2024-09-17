@@ -1,6 +1,8 @@
-﻿namespace FolderManager;
+﻿using Microsoft.Extensions.Logging;
 
-public class LinuxFolderManager : FolderManager
+namespace FolderManager;
+
+public class LinuxFolderManager(ILogger logger) : FolderManager(logger)
 {
     public override string PowerShellExe => "/snap/bin/pwsh";
 
@@ -25,9 +27,4 @@ public class LinuxFolderManager : FolderManager
     }
 
     protected override string GetLocationsFile() => GetLocationsFile("linux");
-
-    protected override string GetHomeFolder()
-    {
-        return Environment.GetEnvironmentVariable("HOME") ?? throw new ApplicationException("HOME environment variable not set!");
-    }
 }

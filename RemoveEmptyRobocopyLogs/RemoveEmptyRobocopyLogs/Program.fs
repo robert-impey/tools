@@ -6,10 +6,8 @@ open RobocopyLogs
 
 printfn "Looking for Robocopy Log Files"
 
-let folderManager = FolderManager.GetFolderManager()
-
 let synchLogsDirectory =
-    Path.Combine(folderManager.GetLogsFolder(), "synch")
+    Path.Combine(FolderManager.LogsFolder, "synch")
 
 printfn "Synch logs directory: %s" synchLogsDirectory
 
