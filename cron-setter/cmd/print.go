@@ -6,12 +6,13 @@ Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"log"
 	"math/rand"
 	"os/user"
 	"path/filepath"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 // printCmd represents the print command
@@ -93,8 +94,11 @@ func getBuildType(dev bool) string {
 	return "prod"
 }
 
-func getFlag(dev bool) string {
+func getFlag(dev bool, singleDash bool) string {
 	if dev {
+		if singleDash {
+			return " -dev"
+		}
 		return " --dev"
 	}
 
@@ -144,11 +148,11 @@ func printResetPerms(hour int, dev bool) {
 
 	resetPermsScript := getResetPermsScript()
 	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n",
-		resetPermsMinutes, hour, resetPermsScript, getFlag(dev))
+		resetPermsMinutes, hour, resetPermsScript, getFlag(dev, false))
 }
 
 func printSynch(earliestHour int32, hoursRange int32, dev bool) {
-	flag := getFlag(dev)
+	flag := getFlag(dev, false)
 	synchScript := getSynchScript()
 
 	synchMinutes := rand.Int31n(60)
@@ -161,7 +165,7 @@ func printSynch(earliestHour int32, hoursRange int32, dev bool) {
 func printListManagedFolders(hour int, dev bool) {
 	minutes := rand.Int31n(60)
 
-	flag := getFlag(dev)
+	flag := getFlag(dev, true)
 	script := getListManagedFoldersScript()
 	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, flag)
 }
@@ -170,5 +174,5 @@ func printBuild(hour int, dev bool) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, getFlag(dev))
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, getFlag(dev, true))
 }
