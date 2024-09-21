@@ -103,6 +103,31 @@ public abstract class FolderManager(ILogger logger)
 
     private string SearchForFile(string fileName, string defaultFile)
     {
+        var localScriptsDirectory = GetLocalScriptsFolder();
+
+        var machineLsDir = Path.Join(localScriptsDirectory, Environment.MachineName);
+
+        if (Path.Exists(machineLsDir))
+        {
+            var userMachineLsDir = Path.Join(machineLsDir, Environment.UserName);
+
+            if (Path.Exists(userMachineLsDir))
+            {
+                var userMachineFile = Path.Join(userMachineLsDir, fileName);
+                
+                if (Path.Exists(userMachineFile))
+                {
+                    return userMachineFile;
+                }
+            }
+
+            var machineFile = Path.Join(machineLsDir, fileName);
+            if (Path.Exists(machineFile))
+            {
+                return machineFile;
+            }
+        }
+
         return defaultFile;
     }
     
