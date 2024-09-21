@@ -2,24 +2,17 @@
 
 namespace FolderManager;
 
-public abstract class FolderManager
+public abstract class FolderManager(ILogger logger)
 {
-    protected readonly ILogger _logger;
-
-    protected FolderManager(ILogger logger)
-    {
-        _logger = logger;
-    }
-
     public static FolderManager GetFolderManager(ILogger? logger = null)
     {
         if (logger is null)
         {
             var config = new NLog.Config.LoggingConfiguration();
 
-            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            var logConsole = new NLog.Targets.ConsoleTarget("logconsole");
 
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
 
             LogManager.Configuration = config;
 
@@ -77,7 +70,7 @@ public abstract class FolderManager
     {
         var foldersFile = Path.Join(GetCommonLocalScriptsFolder(), "folders.txt");
         
-        _logger.Info($"Folders file: {foldersFile}");
+        logger.Info($"Folders file: {foldersFile}");
 
         return foldersFile;
     }
@@ -93,7 +86,7 @@ public abstract class FolderManager
 
         var locationsFile = Path.Join(locationsPathParts.ToArray());
 
-        _logger.Info($"Locations file: {locationsFile}");
+        logger.Info($"Locations file: {locationsFile}");
 
         return locationsFile;
     }
