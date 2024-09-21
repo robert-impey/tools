@@ -40,12 +40,14 @@ public abstract class FolderManager(ILogger logger)
         {
             if (OperatingSystem.IsWindows())
             {
-                return Environment.GetEnvironmentVariable("USERPROFILE") ?? throw new ApplicationException("USERPROFILE environment variable not set!");
+                return Environment.GetEnvironmentVariable("USERPROFILE") 
+                       ?? throw new ApplicationException("USERPROFILE environment variable not set!");
             }
 
             if (OperatingSystem.IsLinux())
             {
-                return Environment.GetEnvironmentVariable("HOME") ?? throw new ApplicationException("HOME environment variable not set!");
+                return Environment.GetEnvironmentVariable("HOME") 
+                       ?? throw new ApplicationException("HOME environment variable not set!");
             }
 
             throw new ApplicationException("No home folder for your operating system!");

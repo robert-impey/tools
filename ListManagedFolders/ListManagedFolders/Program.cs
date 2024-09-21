@@ -1,11 +1,13 @@
 ﻿using FolderManager;
-using NLog;
 
-internal class Program
+namespace ListManagedFolders;
+
+internal static class Program
 {
     private static async Task Main(string[] args)
     {
-        var logger = LogsFileFinder.GetLogger("managed-folders", "ListManagedFolders") ?? throw new ApplicationException("Unable to create a logger!");
+        var logger = LogsFileFinder.GetLogger("managed-folders", "ListManagedFolders") 
+                     ?? throw new ApplicationException("Unable to create a logger!");
 
         var folderManager = FolderManager.FolderManager.GetFolderManager(logger);
 
@@ -18,7 +20,7 @@ internal class Program
 
         var managedFoldersFile = Path.Combine(autogenFolder, "managed-folders.txt");
 
-        using var outputFile = new StreamWriter(managedFoldersFile, false);
+        await using var outputFile = new StreamWriter(managedFoldersFile, false);
 
         await outputFile.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!\n"
                                         + $"# Written {DateTime.UtcNow:u}\n");
