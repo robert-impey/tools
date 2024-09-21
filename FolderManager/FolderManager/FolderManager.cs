@@ -70,7 +70,11 @@ public abstract class FolderManager(ILogger logger)
 
     public string GetFoldersFile()
     {
-        var foldersFile = Path.Join(GetCommonLocalScriptsFolder(), "folders.txt");
+        const string fileName = "folders.txt";
+        
+        var defaultFoldersFile = Path.Join(GetCommonLocalScriptsFolder(), fileName);
+        
+        var foldersFile = SearchForFile(fileName, defaultFoldersFile);
         
         logger.Info($"Folders file: {foldersFile}");
 
@@ -79,20 +83,29 @@ public abstract class FolderManager(ILogger logger)
 
     protected string GetLocationsFile(string operatingSystemPathPart)
     {
+        const string fileName = "locations.txt";
+        
         var locationsPathParts = new List<string>
         {
             GetCommonLocalScriptsFolder(),
             operatingSystemPathPart,
-            "locations.txt"
+            fileName
         };
 
-        var locationsFile = Path.Join(locationsPathParts.ToArray());
+        var defaultLocationsFile = Path.Join(locationsPathParts.ToArray());
 
+        var locationsFile = SearchForFile(fileName, defaultLocationsFile);
+        
         logger.Info($"Locations file: {locationsFile}");
 
         return locationsFile;
     }
 
+    private string SearchForFile(string fileName, string defaultFile)
+    {
+        return defaultFile;
+    }
+    
     public async Task<Dictionary<string, List<string>>> GetManagedFolders()
     {
         var foldersPath = GetFoldersFile();
