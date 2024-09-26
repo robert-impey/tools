@@ -42,10 +42,10 @@ func printAllTasks(dev bool) {
 
 	printStayDeletedRun(7, 9, dev)
 
-	printBuild(9, dev)
+	printBuild(9)
 	printResetPerms(10, dev)
 	printLogsDeleter(11, dev)
-	printListManagedFolders(12, dev)
+	printListManagedFolders(12)
 	fmt.Println()
 
 	printSynch(13, 4, dev)
@@ -53,7 +53,7 @@ func printAllTasks(dev bool) {
 
 	printStayDeletedRun(17, 19, dev)
 
-	printBuild(19, dev)
+	printBuild(19)
 	printResetPerms(20, dev)
 	fmt.Println()
 
@@ -162,17 +162,16 @@ func printSynch(earliestHour int32, hoursRange int32, dev bool) {
 		synchMinutes, synchHours, synchScript, flag)
 }
 
-func printListManagedFolders(hour int, dev bool) {
+func printListManagedFolders(hour int) {
 	minutes := rand.Int31n(60)
 
-	flag := getFlag(dev, true)
 	script := getListManagedFoldersScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, flag)
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n", minutes, hour, script)
 }
 
-func printBuild(hour int, dev bool) {
+func printBuild(hour int) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n", minutes, hour, script, getFlag(dev, true))
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n", minutes, hour, script)
 }
