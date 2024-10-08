@@ -56,11 +56,11 @@ public abstract class FolderManager(ILogger logger)
 
     public string GetCommonLocalScriptsFolder() => Path.Join(GetLocalScriptsFolder(), "_Common");
 
-    public string GetAutogenFolder(bool ensureExists = true)
+    public string GetAutogenFolder()
     {
         var autogenFolder = Path.Join(HomeFolder, "autogen");
 
-        if (ensureExists && !Directory.Exists(autogenFolder))
+        if (!Directory.Exists(autogenFolder))
         {
             Directory.CreateDirectory(autogenFolder);
         }
