@@ -1,8 +1,8 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 
 namespace FolderManager;
 
-public class LinuxFolderManager(ILogger logger) : FolderManager(logger)
+public class LinuxFolderManager(ILogger<FolderManager> logger) : FolderManager(logger)
 {
     public override string PowerShellExe => "/snap/bin/pwsh";
 

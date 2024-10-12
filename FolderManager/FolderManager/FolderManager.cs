@@ -1,24 +1,11 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 
 namespace FolderManager;
 
-public abstract class FolderManager(ILogger logger)
+public abstract class FolderManager(ILogger<FolderManager> logger)
 {
-    public static FolderManager GetFolderManager(ILogger? logger = null)
+    public static FolderManager GetFolderManager(ILogger<FolderManager> logger)
     {
-        if (logger is null)
-        {
-            var config = new NLog.Config.LoggingConfiguration();
-
-            var logConsole = new NLog.Targets.ConsoleTarget("logconsole");
-
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
-
-            LogManager.Configuration = config;
-
-            logger = LogManager.GetCurrentClassLogger();
-        }
-
         if (OperatingSystem.IsWindows())
         {
             return new WindowsFolderManager(logger);
@@ -76,7 +63,7 @@ public abstract class FolderManager(ILogger logger)
         
         var foldersFile = SearchForFile(fileName, defaultFoldersFile);
         
-        logger.Info($"Folders file: {foldersFile}");
+        logger.LogInformation($"Folders file: {foldersFile}");
 
         return foldersFile;
     }
@@ -96,7 +83,7 @@ public abstract class FolderManager(ILogger logger)
 
         var locationsFile = SearchForFile(fileName, defaultLocationsFile);
         
-        logger.Info($"Locations file: {locationsFile}");
+        logger.LogInformation($"Locations file: {locationsFile}");
 
         return locationsFile;
     }

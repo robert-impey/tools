@@ -1,8 +1,8 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 
 namespace FolderManager;
 
-public class WindowsFolderManager(ILogger logger) : FolderManager(logger)
+public class WindowsFolderManager(ILogger<FolderManager> logger) : FolderManager(logger)
 {
     public override string PowerShellExe => "PowerShell";
 

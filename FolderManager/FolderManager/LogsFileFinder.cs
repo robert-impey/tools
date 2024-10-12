@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FolderManager;
 
@@ -12,16 +13,19 @@ public static class LogsFileFinder
         return Path.Combine(synchLogsDirectory, fileName);
     }
 
-    public static Logger GetLogger(string tool, string task)
+    public static ILogger<T> GetLogger<T>(string tool, string task)
     {
-        LogManager.Setup().LoadConfiguration(builder =>
-        {
-            var logFile = CreateLogsFile(tool, task);
-            builder.ForLogger().WriteToFile(fileName: logFile);
-        });
+        var logFile = CreateLogsFile(tool, task);
 
-        var logger = LogManager.GetCurrentClassLogger();
-
+        using var servicesProvider = new ServiceCollection()
+            .AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.AddConsole();
+            }).BuildServiceProvider();
+        
+        var logger = servicesProvider.GetRequiredService<ILogger<T>>();
+        
         return logger;
     }
 }

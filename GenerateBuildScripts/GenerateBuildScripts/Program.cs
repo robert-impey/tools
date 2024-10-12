@@ -1,11 +1,13 @@
 ﻿using FolderManager;
 using GenerateBuildScripts;
+using Microsoft.Extensions.Logging;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        var logger = LogsFileFinder.GetLogger("build", "GenerateBuildScripts") ?? throw new ApplicationException("Unable to create a logger!");
+        var logger = LogsFileFinder.GetLogger<FolderManager.FolderManager>("build", "GenerateBuildScripts") 
+                     ?? throw new ApplicationException("Unable to create a logger!");
 
         var folderManager = FolderManager.FolderManager.GetFolderManager(logger);
 
@@ -17,17 +19,17 @@ internal class Program
 
         if (File.Exists(destination))
         {
-            logger.Info($"Deleting {destination}");
+            logger.LogInformation($"Deleting {destination}");
             File.Delete(destination);
         }
 
         if (string.IsNullOrEmpty(buildScriptToCopy))
         {
-            logger.Info("No build script found. Quitting...");
+            logger.LogInformation("No build script found. Quitting...");
         }
         else
         {
-            logger.Info($"Found {buildScriptToCopy}");
+            logger.LogInformation($"Found {buildScriptToCopy}");
 
             File.Copy(buildScriptToCopy, destination);
         }

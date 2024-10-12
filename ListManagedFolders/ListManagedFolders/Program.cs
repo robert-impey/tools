@@ -6,7 +6,8 @@ internal static class Program
 {
     private static async Task Main(string[] args)
     {
-        var logger = LogsFileFinder.GetLogger("managed-folders", "ListManagedFolders") 
+        var logger = LogsFileFinder.GetLogger<FolderManager.FolderManager>(
+                         "managed-folders", "ListManagedFolders") 
                      ?? throw new ApplicationException("Unable to create a logger!");
 
         var folderManager = FolderManager.FolderManager.GetFolderManager(logger);

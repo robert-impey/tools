@@ -2,6 +2,7 @@
 open System.Linq
 open FolderManager
 open Microsoft.Extensions.FileSystemGlobbing
+open Microsoft.Extensions.Logging
 
 let findFilesWithShebang (scriptsDir: string) =
     let matcher = Matcher()
@@ -22,29 +23,23 @@ let main (args) =
     let handler (dryRun: bool) =
         let logger =
             if dryRun then
-                let config = NLog.Config.LoggingConfiguration ()
-
-                let logconsole = new NLog.Targets.ConsoleTarget("logconsole")
-
-                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole)
-
-                NLog.LogManager.Configuration = config |> ignore
-                
-                NLog.LogManager.GetCurrentClassLogger()
+                LoggerFactory.Create(fun builder ->
+                    builder.ClearProviders() |> ignore
+                    builder.AddConsole() |> ignore).CreateLogger<FolderManager>()
             else
-                LogsFileFinder.GetLogger("reset-perms", "ResetPerms")
+                LogsFileFinder.GetLogger<FolderManager>("reset-perms", "ResetPerms")
     
         let folderManager = FolderManager.GetFolderManager(logger)
     
         let filesWithShebang = findFilesWithShebang (folderManager.GetLocalScriptsFolder ())
         
         if dryRun then
-            logger.Info "DRY RUN!"
+            logger.LogInformation "DRY RUN!"
         
-        logger.Info $"Found {filesWithShebang.Count()} files with shebangs"
+        logger.LogInformation $"Found {filesWithShebang.Count()} files with shebangs"
         
         for file in filesWithShebang do
-            logger.Info file
+            logger.LogInformation file
 
     rootCommand.SetHandler(handler, dryRunOption)
 

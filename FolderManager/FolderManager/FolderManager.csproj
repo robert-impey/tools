@@ -8,7 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageReference Include="NLog" Version="5.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.logging\8.0.0\lib\net8.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog.Extensions.Logging">
+      <HintPath>..\..\..\..\.nuget\packages\nlog.extensions.logging\5.3.14\lib\net8.0\NLog.Extensions.Logging.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
