@@ -44,7 +44,13 @@ let main args =
         logger.LogInformation $"Found {filesWithShebang.Count()} files with shebangs"
         
         for file in filesWithShebang do
-            logger.LogInformation file
+            logger.LogInformation $"File with shebang: {file}"
+            
+            if not dryRun then
+                File.SetUnixFileMode(file,
+                     UnixFileMode.UserRead ||| UnixFileMode.UserWrite ||| UnixFileMode.UserExecute |||
+                     UnixFileMode.GroupRead ||| UnixFileMode.GroupExecute |||
+                     UnixFileMode.OtherRead ||| UnixFileMode.OtherExecute);
 
     rootCommand.SetHandler(handler, dryRunOption)
 
