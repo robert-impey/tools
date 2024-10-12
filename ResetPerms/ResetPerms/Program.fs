@@ -4,9 +4,16 @@ open System.Linq
 open FolderManager
 open Microsoft.Extensions.Logging
 
+let fileHasShebang (fileName: string) =
+    let firstLine = File.ReadAllLines fileName |> Seq.take 1 |> Seq.toArray
+    
+    match firstLine.Length with
+    | 1 -> firstLine.[0].StartsWith("#!")
+    | _ -> false
+
 let findFilesWithShebang (scriptsDir: string) =
     let matchingFiles = Directory.EnumerateFiles(scriptsDir, "*", SearchOption.AllDirectories)
-    matchingFiles
+    matchingFiles |> Seq.filter fileHasShebang
 
 [<EntryPoint>]
 let main args =
