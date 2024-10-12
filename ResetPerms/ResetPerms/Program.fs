@@ -1,17 +1,15 @@
 ﻿open System.CommandLine
+open System.IO
 open System.Linq
 open FolderManager
-open Microsoft.Extensions.FileSystemGlobbing
 open Microsoft.Extensions.Logging
 
 let findFilesWithShebang (scriptsDir: string) =
-    let matcher = Matcher()
-    matcher.AddIncludePatterns(seq { "*"})
-    let matchingFiles = matcher.GetResultsInFullPath(scriptsDir)
+    let matchingFiles = Directory.EnumerateFiles(scriptsDir, "*", SearchOption.AllDirectories)
     matchingFiles
 
 [<EntryPoint>]
-let main (args) =
+let main args =
     let dryRunOption =
         Option<bool>("--dry-run", (fun () -> false))
 
