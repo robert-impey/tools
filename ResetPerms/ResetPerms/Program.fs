@@ -1,4 +1,5 @@
 ﻿open System.CommandLine
+open System.Linq
 open FolderManager
 open Microsoft.Extensions.FileSystemGlobbing
 
@@ -39,6 +40,8 @@ let main (args) =
         
         if dryRun then
             logger.Info "DRY RUN!"
+        
+        logger.Info $"Found {filesWithShebang.Count()} files with shebangs"
         
         for file in filesWithShebang do
             logger.Info file
