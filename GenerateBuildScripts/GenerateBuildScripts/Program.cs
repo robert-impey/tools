@@ -1,8 +1,9 @@
 ﻿using FolderManager;
-using GenerateBuildScripts;
 using Microsoft.Extensions.Logging;
 
-internal class Program
+namespace GenerateBuildScripts;
+
+internal static class Program
 {
     private static void Main(string[] args)
     {

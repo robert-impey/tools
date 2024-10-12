@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using LogLevel = NLog.LogLevel;
 
 namespace FolderManager;
 
@@ -16,12 +18,17 @@ public static class LogsFileFinder
     public static ILogger<T> GetLogger<T>(string tool, string task)
     {
         var logFile = CreateLogsFile(tool, task);
-
+        var config = new NLog.Config.LoggingConfiguration();
+        
+        var logFileTarget = new NLog.Targets.FileTarget("logfile") { FileName = logFile };
+        
+        config.AddRule(LogLevel.Trace, LogLevel.Fatal, logFileTarget);
+        
         using var servicesProvider = new ServiceCollection()
             .AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
-                loggingBuilder.AddConsole();
+                loggingBuilder.AddNLog(config);
             }).BuildServiceProvider();
         
         var logger = servicesProvider.GetRequiredService<ILogger<T>>();
