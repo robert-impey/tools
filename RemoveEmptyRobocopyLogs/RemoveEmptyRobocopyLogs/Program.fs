@@ -20,8 +20,8 @@ let synchLogsDirMessage =
 printfn $"%s{synchLogsDirMessage}"
 
 let matcher = Matcher()
-matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"});
-let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory);
+matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"})
+let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory)
 
 printfn "There are %d log files" (Seq.length matchingFiles)
 
