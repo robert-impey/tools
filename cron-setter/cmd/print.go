@@ -43,7 +43,7 @@ func printAllTasks(dev bool) {
 	printStayDeletedRun(7, 9, dev)
 
 	printBuild(9)
-	printResetPerms(10, dev)
+	printResetPerms(10)
 	printLogsDeleter(11, dev)
 	printListManagedFolders(12)
 	fmt.Println()
@@ -54,7 +54,7 @@ func printAllTasks(dev bool) {
 	printStayDeletedRun(17, 19, dev)
 
 	printBuild(19)
-	printResetPerms(20, dev)
+	printResetPerms(20)
 	fmt.Println()
 
 	printStayDeletedRun(21, 24, dev)
@@ -143,12 +143,12 @@ func printLogsDeleter(hour int, dev bool) {
 		logsDeleterMinutes, hour, exe)
 }
 
-func printResetPerms(hour int, dev bool) {
+func printResetPerms(hour int) {
 	resetPermsMinutes := rand.Int31n(60)
 
 	resetPermsScript := getResetPermsScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n",
-		resetPermsMinutes, hour, resetPermsScript, getFlag(dev, false))
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+		resetPermsMinutes, hour, resetPermsScript)
 }
 
 func printSynch(earliestHour int32, hoursRange int32, dev bool) {
