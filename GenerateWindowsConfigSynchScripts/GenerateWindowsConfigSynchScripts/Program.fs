@@ -1,6 +1,15 @@
 ﻿open System.CommandLine
 open FolderManager
 open Microsoft.Extensions.Logging
+open System.IO
+open System
+
+let async generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) =
+    logger.LogInformation $"Files file - {filesFile}; Synch script {synchScript}"  
+    let outputFile = new StreamWriter(synchScript, false);
+
+    outputFile.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!\n"
+                            + $"# Written {DateTime.UtcNow:u}\n");
 
 [<EntryPoint>]
 let main args =
@@ -21,12 +30,25 @@ let main args =
             else
                 LogsFileFinder.GetLogger<FolderManager>("synch", "GenerateWindowsConfigSynchScripts")
     
-        let folderManager = FolderManager.GetFolderManager(logger)
-
         if dryRun then
             logger.LogInformation "DRY RUN!"
+
+        let folderManager = FolderManager.GetFolderManager(logger)
+
+        let commonFilesFile = Path.Join(folderManager.GetCommonLocalScriptsFolder(), "synch", "config-Windows", "files.txt")
+        logger.LogInformation commonFilesFile
+
+        if File.Exists commonFilesFile then
+            let scriptPath = Path.Join(folderManager.GetAutogenFolder(), "synch", "config-Windows.ps1")
+            logger.LogInformation scriptPath
+
+            if File.Exists scriptPath then
+                logger.LogInformation "Deleting existing autogen'd script"
+                File.Delete scriptPath
+
+            generateSynchWindowsConfigScript logger commonFilesFile scriptPath
         else
-            logger.LogInformation "NOT DRY RUN!"
+            logger.LogInformation "Deleting existing autogen'd script"
 
     rootCommand.SetHandler(handler, dryRunOption)
 
