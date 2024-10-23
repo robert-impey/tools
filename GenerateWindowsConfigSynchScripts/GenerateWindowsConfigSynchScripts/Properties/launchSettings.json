@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "GenerateWindowsConfigSynchScripts": {
+      "commandName": "Project"
+    },
+    "Dry Run": {
+      "commandName": "Project",
+      "commandLineArgs": "--dry-run"
+    }
+  }
+}
