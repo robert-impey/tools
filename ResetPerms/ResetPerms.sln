@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ResetPerms", "ResetPerms\ResetPerms.fsproj", "{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ResetPerms", "ResetPerms\ResetPerms.fsproj", "{10DE596E-CF60-4F77-8AAD-9FEC9808A74D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ResetPerms.Test", "ResetPerms.Test\ResetPerms.Test.fsproj", "{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ResetPerms.Test", "ResetPerms.Test\ResetPerms.Test.fsproj", "{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager", "..\FolderManager\FolderManager\FolderManager.csproj", "{694EC3CF-E0F4-468E-9CDF-D1C9737499CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager.Test", "..\FolderManager\FolderManager.Test\FolderManager.Test.csproj", "{18EC985A-552F-4D93-B9B0-A05C88F76733}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46B8A0A2-73F8-4ED4-908E-2BC9B5CB1EAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{694EC3CF-E0F4-468E-9CDF-D1C9737499CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{694EC3CF-E0F4-468E-9CDF-D1C9737499CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{694EC3CF-E0F4-468E-9CDF-D1C9737499CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{694EC3CF-E0F4-468E-9CDF-D1C9737499CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18EC985A-552F-4D93-B9B0-A05C88F76733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18EC985A-552F-4D93-B9B0-A05C88F76733}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18EC985A-552F-4D93-B9B0-A05C88F76733}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18EC985A-552F-4D93-B9B0-A05C88F76733}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
