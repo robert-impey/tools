@@ -17,7 +17,7 @@ let main args =
         Option<bool>("--dry-run", (fun () -> false))
 
     let rootCommand =
-        RootCommand("Reset permissions for files that have a shebang")
+        RootCommand("Generate Windows Config Synch Scripts")
 
     rootCommand.AddOption(dryRunOption)
     
