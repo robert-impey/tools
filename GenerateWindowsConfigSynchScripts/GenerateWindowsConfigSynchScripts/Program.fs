@@ -7,10 +7,18 @@ open System.Text
 
 let generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) =
     async {
+        logger.LogInformation $"Writing to {synchScript}"
         use outputFile = File.OpenWrite(synchScript)
 
         do! outputFile.AsyncWrite("# AUTOGEN'D - DO NOT EDIT!\n" |> Encoding.ASCII.GetBytes)
         do! outputFile.AsyncWrite($"# Written {DateTime.UtcNow:u}\n" |> Encoding.ASCII.GetBytes)
+
+        let writeScriptLine (file: string) =
+            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {file}\n" |> Encoding.ASCII.GetBytes))
+
+        logger.LogInformation $"Reading {filesFile}"
+        File.ReadAllLines filesFile 
+            |> Seq.iter writeScriptLine
     }
 
 [<EntryPoint>]
