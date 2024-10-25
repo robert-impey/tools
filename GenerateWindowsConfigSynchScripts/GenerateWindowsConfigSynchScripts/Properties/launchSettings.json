@@ -3,9 +3,9 @@
     "GenerateWindowsConfigSynchScripts": {
       "commandName": "Project"
     },
-    "Dry Run": {
+    "Logged": {
       "commandName": "Project",
-      "commandLineArgs": "--dry-run"
+      "commandLineArgs": "--logged"
     }
   }
 }

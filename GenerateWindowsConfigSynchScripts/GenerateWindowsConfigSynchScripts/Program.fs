@@ -3,53 +3,52 @@ open FolderManager
 open Microsoft.Extensions.Logging
 open System.IO
 open System
+open System.Text
 
-let async generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) =
-    logger.LogInformation $"Files file - {filesFile}; Synch script {synchScript}"  
-    let outputFile = new StreamWriter(synchScript, false);
+let generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) =
+    async {
+        use outputFile = File.OpenWrite(synchScript)
 
-    outputFile.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!\n"
-                            + $"# Written {DateTime.UtcNow:u}\n");
+        do! outputFile.AsyncWrite("# AUTOGEN'D - DO NOT EDIT!\n" |> Encoding.ASCII.GetBytes)
+        do! outputFile.AsyncWrite($"# Written {DateTime.UtcNow:u}\n" |> Encoding.ASCII.GetBytes)
+    }
 
 [<EntryPoint>]
 let main args =
-    let dryRunOption =
-        Option<bool>("--dry-run", (fun () -> false))
+    let loggedOption =
+        Option<bool>("--logged", (fun () -> false))
 
     let rootCommand =
         RootCommand("Generate Windows Config Synch Scripts")
 
-    rootCommand.AddOption(dryRunOption)
+    rootCommand.AddOption(loggedOption)
     
-    let handler (dryRun: bool) =
+    let handler (logged: bool) =
         let logger =
-            if dryRun then
+            if logged then
+                LogsFileFinder.GetLogger<FolderManager>("synch", "GenerateWindowsConfigSynchScripts")
+            else
                 LoggerFactory.Create(fun builder ->
                     builder.ClearProviders() |> ignore
                     builder.AddConsole() |> ignore).CreateLogger<FolderManager>()
-            else
-                LogsFileFinder.GetLogger<FolderManager>("synch", "GenerateWindowsConfigSynchScripts")
-    
-        if dryRun then
-            logger.LogInformation "DRY RUN!"
 
         let folderManager = FolderManager.GetFolderManager(logger)
 
         let commonFilesFile = Path.Join(folderManager.GetCommonLocalScriptsFolder(), "synch", "config-Windows", "files.txt")
-        logger.LogInformation commonFilesFile
+        logger.LogInformation $"Files file - {commonFilesFile}"  
 
         if File.Exists commonFilesFile then
             let scriptPath = Path.Join(folderManager.GetAutogenFolder(), "synch", "config-Windows.ps1")
-            logger.LogInformation scriptPath
+            logger.LogInformation $"Script path - {scriptPath}"  
 
             if File.Exists scriptPath then
                 logger.LogInformation "Deleting existing autogen'd script"
                 File.Delete scriptPath
 
-            generateSynchWindowsConfigScript logger commonFilesFile scriptPath
+            Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath)
         else
             logger.LogInformation "Deleting existing autogen'd script"
 
-    rootCommand.SetHandler(handler, dryRunOption)
+    rootCommand.SetHandler(handler, loggedOption)
 
     rootCommand.Invoke(args)
