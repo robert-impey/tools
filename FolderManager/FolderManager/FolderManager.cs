@@ -21,7 +21,7 @@ public abstract class FolderManager(ILogger<FolderManager> logger)
 
     protected abstract string GetLocationsFile();
     public abstract string GetLocalScriptsFolder();
-    protected static string HomeFolder
+    public static string HomeFolder
     {
         get
         {
@@ -38,6 +38,27 @@ public abstract class FolderManager(ILogger<FolderManager> logger)
             }
 
             throw new ApplicationException("No home folder for your operating system!");
+        }
+    }
+
+    public static string ConfigFolder
+    {
+        get
+        {
+            var configVar = Environment.GetEnvironmentVariable("CONFIG");
+
+            if (string.IsNullOrWhiteSpace(configVar))
+            {
+                var cloudVar = Environment.GetEnvironmentVariable("CLOUD");
+                if (string.IsNullOrWhiteSpace(configVar))
+                {
+                    return Path.Join(HomeFolder, "config");
+                }
+
+                return Path.Join(cloudVar, "config");
+            }
+
+            return configVar;
         }
     }
 

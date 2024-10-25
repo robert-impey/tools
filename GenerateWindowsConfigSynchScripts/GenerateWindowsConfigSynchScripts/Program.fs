@@ -5,16 +5,17 @@ open System.IO
 open System
 open System.Text
 
-let generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) =
+let generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFile: string) (synchScript: string) (homeFolder: string) (commonWindowsConfigFolder: string)=
     async {
         logger.LogInformation $"Writing to {synchScript}"
         use outputFile = File.OpenWrite(synchScript)
 
         do! outputFile.AsyncWrite("# AUTOGEN'D - DO NOT EDIT!\n" |> Encoding.ASCII.GetBytes)
-        do! outputFile.AsyncWrite($"# Written {DateTime.UtcNow:u}\n" |> Encoding.ASCII.GetBytes)
+        do! outputFile.AsyncWrite($"# Written {DateTime.UtcNow:u}\n\n" |> Encoding.ASCII.GetBytes)
 
         let writeScriptLine (file: string) =
-            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {file}\n" |> Encoding.ASCII.GetBytes))
+            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {homeFolder} {commonWindowsConfigFolder} /xo {file}\n" |> Encoding.ASCII.GetBytes))
+            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {commonWindowsConfigFolder} {homeFolder} /xo {file}\n\n" |> Encoding.ASCII.GetBytes))
 
         logger.LogInformation $"Reading {filesFile}"
         File.ReadAllLines filesFile 
@@ -53,7 +54,7 @@ let main args =
                 logger.LogInformation "Deleting existing autogen'd script"
                 File.Delete scriptPath
 
-            Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath)
+            Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath FolderManager.HomeFolder FolderManager.ConfigFolder)
         else
             logger.LogInformation "Deleting existing autogen'd script"
 
