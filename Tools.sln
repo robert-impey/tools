@@ -25,6 +25,11 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ResetPerms.Test", "ResetPer
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GenerateWindowsConfigSynchScripts", "GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts.fsproj", "{66F84027-DA5B-42D9-B8F6-9F8CAD6A4F5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA3949B0-4E73-45D0-ACB3-864DFFAC824A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
