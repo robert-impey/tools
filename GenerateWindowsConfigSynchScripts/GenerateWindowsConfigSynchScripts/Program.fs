@@ -47,7 +47,12 @@ let main args =
         logger.LogInformation $"Files file - {commonFilesFile}"  
 
         if File.Exists commonFilesFile then
-            let scriptPath = Path.Join(folderManager.GetAutogenFolder(), "synch", "config-Windows.ps1")
+            let synchAutogen = Path.Join(folderManager.GetAutogenFolder(), "synch")
+
+            if not (Directory.Exists(synchAutogen)) then
+                Directory.CreateDirectory(synchAutogen) |> ignore
+
+            let scriptPath = Path.Join(synchAutogen, "config-Windows.ps1")
             logger.LogInformation $"Script path - {scriptPath}"  
 
             if File.Exists scriptPath then
