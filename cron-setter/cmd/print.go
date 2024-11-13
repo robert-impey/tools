@@ -36,11 +36,11 @@ func init() {
 func printAllTasks(dev bool) {
 	printHeaderComment()
 
-	printStayDeletedRun(0, 2, dev)
+	printStayDeletedRun(0, 2)
 	printSynch(2, 4, dev)
 	fmt.Println()
 
-	printStayDeletedRun(7, 9, dev)
+	printStayDeletedRun(7, 9)
 
 	printBuild(9)
 	printResetPerms(10)
@@ -51,13 +51,13 @@ func printAllTasks(dev bool) {
 	printSynch(13, 4, dev)
 	fmt.Println()
 
-	printStayDeletedRun(17, 19, dev)
+	printStayDeletedRun(17, 19)
 
 	printBuild(19)
 	printResetPerms(20)
 	fmt.Println()
 
-	printStayDeletedRun(21, 24, dev)
+	printStayDeletedRun(21, 24)
 }
 
 func printHeaderComment() {
@@ -120,17 +120,23 @@ func getResetPermsScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
 }
 
+func getStayDeletedScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "stay_deleted", "zsh-cron-runner.sh")
+}
+
 func getSynchScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
 }
 
-func printStayDeletedRun(startHour int, endHour int, dev bool) {
-	runStayDeleted := getExecutable("run-stay-deleted", dev)
+func printStayDeletedRun(startHour int, endHour int) {
+	script := getStayDeletedScript()
+
 	for i := startHour; i < endHour; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * %s sweepNightly\n",
-			stayDeletedMinutes, i, runStayDeleted)
+		fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+			stayDeletedMinutes, i, script)
 	}
 	fmt.Println()
 }
