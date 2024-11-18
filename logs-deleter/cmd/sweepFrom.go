@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/robert-impey/tools/logs-deleter/lib"
+	"github.com/robert-impey/tools/managed-folders/mflib"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
@@ -41,7 +42,7 @@ func sweepFrom() error {
 		return errors.New("tool not set")
 	}
 
-	logsDir, err := lib.GetLogsDir()
+	logsDir, err := mflib.GetLogsDir()
 	if err != nil {
 		return err
 	}

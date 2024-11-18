@@ -7,6 +7,7 @@ Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 import (
 	"errors"
 	"fmt"
+	"github.com/robert-impey/tools/managed-folders/mflib"
 	"io"
 	"os"
 	"path/filepath"
@@ -34,7 +35,7 @@ func init() {
 }
 
 func sweepLogsDirWithLogs() {
-	logsDir, err := lib.GetLogsDir()
+	logsDir, err := mflib.GetLogsDir()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
 		return

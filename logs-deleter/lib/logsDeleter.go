@@ -1,31 +1,12 @@
 package lib
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
-	"os/user"
 	"path/filepath"
 	"time"
 )
-
-func GetLogsDir() (string, error) {
-	currentUser, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-	var logsDir = filepath.Join(currentUser.HomeDir, "logs")
-
-	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
-		err := os.MkdirAll(logsDir, os.ModePerm)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return logsDir, nil
-}
 
 func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer, verbose bool) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)

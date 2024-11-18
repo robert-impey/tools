@@ -111,19 +111,23 @@ func sweepNightly(find bool) error {
 		return nil
 	}
 
+	logsDir, err := mflib.GetLogsDir()
+	if err != nil {
+		return err
+	}
 	const toolName = "staydeleted"
-	var logsDir = filepath.Join(userInfo.HomeDir, "logs", toolName)
+	var toolLogsDir = filepath.Join(logsDir, toolName)
 
-	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
-		err := os.MkdirAll(logsDir, os.ModePerm)
+	if _, err := os.Stat(toolLogsDir); errors.Is(err, os.ErrNotExist) {
+		err := os.MkdirAll(toolLogsDir, os.ModePerm)
 		if err != nil {
 			return err
 		}
 	}
 
 	timeStr := time.Now().Format("2006-01-02_15.04.05")
-	outLogFileName := filepath.Join(logsDir, fmt.Sprintf("%s.log", timeStr))
-	errLogFileName := filepath.Join(logsDir, fmt.Sprintf("%s.err", timeStr))
+	outLogFileName := filepath.Join(toolLogsDir, fmt.Sprintf("%s.log", timeStr))
+	errLogFileName := filepath.Join(toolLogsDir, fmt.Sprintf("%s.err", timeStr))
 
 	outLogFile, err := os.Create(outLogFileName)
 	if err != nil {
