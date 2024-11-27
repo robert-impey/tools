@@ -44,7 +44,7 @@ func printAllTasks(dev bool) {
 
 	printBuild(9)
 	printResetPerms(10)
-	printLogsDeleter(11, dev)
+	printLogsDeleter(11)
 	printListManagedFolders(12)
 	fmt.Println()
 
@@ -65,33 +65,12 @@ func printHeaderComment() {
 	fmt.Printf("# Cron tasks created by cron-setter at %s\n\n", now.Format("2006-01-02 15:04:05"))
 }
 
-func getExecutable(name string, dev bool) string {
-	executablesDir := getExecutablesDir(dev)
-	return filepath.Join(executablesDir, name)
-}
-
-func getExecutablesDir(dev bool) string {
-	currentUser, err := user.Current()
-	if err != nil {
-		log.Fatal(nil)
-	}
-	buildType := getBuildType(dev)
-	return filepath.Join(currentUser.HomeDir, "executables", "Linux", buildType, "x64")
-}
-
 func getLocalScripts() string {
 	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatal(nil)
 	}
 	return filepath.Join(currentUser.HomeDir, "local-scripts")
-}
-
-func getBuildType(dev bool) string {
-	if dev {
-		return "dev"
-	}
-	return "prod"
 }
 
 func getFlag(dev bool, singleDash bool) string {
@@ -130,6 +109,11 @@ func getSynchScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "synch", "run-nightly.sh")
 }
 
+func getLogsDeleterScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "zsh-cron-runner.sh")
+}
+
 func printStayDeletedRun(startHour int, endHour int) {
 	script := getStayDeletedScript()
 
@@ -141,20 +125,20 @@ func printStayDeletedRun(startHour int, endHour int) {
 	fmt.Println()
 }
 
-func printLogsDeleter(hour int, dev bool) {
-	logsDeleterMinutes := rand.Int31n(60)
+func printLogsDeleter(hour int) {
+	minutes := rand.Int31n(60)
 
-	exe := getExecutable("logs-deleter", dev)
-	fmt.Printf("%d %d * * * %s sweepAll\n",
-		logsDeleterMinutes, hour, exe)
+	script := getLogsDeleterScript()
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+		minutes, hour, script)
 }
 
 func printResetPerms(hour int) {
-	resetPermsMinutes := rand.Int31n(60)
+	minutes := rand.Int31n(60)
 
-	resetPermsScript := getResetPermsScript()
+	script := getResetPermsScript()
 	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
-		resetPermsMinutes, hour, resetPermsScript)
+		minutes, hour, script)
 }
 
 func printSynch(earliestHour int32, hoursRange int32, dev bool) {
