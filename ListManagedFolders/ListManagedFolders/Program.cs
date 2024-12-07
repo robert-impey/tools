@@ -4,7 +4,7 @@ namespace ListManagedFolders;
 
 internal static class Program
 {
-    private static async Task Main(string[] args)
+    private static async Task Main()
     {
         var logger = LogsFileFinder.GetLogger<FolderManager.FolderManager>(
                          "managed-folders", "ListManagedFolders") 
