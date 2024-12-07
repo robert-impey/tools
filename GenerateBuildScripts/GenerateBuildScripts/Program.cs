@@ -14,8 +14,6 @@ internal static class Program
 
         var buildScriptFinder = new BuildScriptFinder(folderManager);
 
-        var buildScriptToCopy = buildScriptFinder.GetBuildScriptToCopy();
-
         var destination = buildScriptFinder.GetBuildScriptDestination();
 
         if (File.Exists(destination))
@@ -23,6 +21,8 @@ internal static class Program
             logger.LogInformation($"Deleting {destination}");
             File.Delete(destination);
         }
+
+        var buildScriptToCopy = buildScriptFinder.GetBuildScriptToCopy();
 
         if (string.IsNullOrEmpty(buildScriptToCopy))
         {
