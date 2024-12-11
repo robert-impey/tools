@@ -6,3 +6,4 @@ I don't like repetitive tasks, but I do find it fun to automate stuff.
 I've used a number of different programming languages in order to learn those languages.
 Learning new languages by developing and improving programs is also an aim.
 I've found that in order for knowledge to stick, I need to solve problems that have some utility.
+This is in contrast to the toy programs that I have written at https://github.com/robert-impey/CodingExperiments
