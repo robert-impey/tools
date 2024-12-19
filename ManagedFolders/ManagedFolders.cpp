@@ -54,6 +54,8 @@ public:
 
         const fs::path managed_folders_path{autogen_path / "managed-folders.txt"};
 
+        cout << "Managed folders file: " << managed_folders_path << endl;
+
         ofstream managed_folders_file;
         managed_folders_file.open(managed_folders_path, ios::out | ios::trunc);
 
