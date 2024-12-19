@@ -23,21 +23,19 @@ var printCmd = &cobra.Command{
 
 Optionally, this can use the development versions of the commands.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dev, _ := cmd.Flags().GetBool("dev")
-		printAllTasks(dev)
+		printAllTasks()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(printCmd)
-	printCmd.Flags().BoolP("dev", "d", false, "add dev versions to cron")
 }
 
-func printAllTasks(dev bool) {
+func printAllTasks() {
 	printHeaderComment()
 
 	printStayDeletedRun(0, 2)
-	printSynch(2, 4, dev)
+	printSynch(2, 4)
 	fmt.Println()
 
 	printStayDeletedRun(7, 9)
@@ -48,7 +46,7 @@ func printAllTasks(dev bool) {
 	printListManagedFolders(12)
 	fmt.Println()
 
-	printSynch(13, 4, dev)
+	printSynch(13, 4)
 	fmt.Println()
 
 	printStayDeletedRun(17, 19)
@@ -71,17 +69,6 @@ func getLocalScripts() string {
 		log.Fatal(nil)
 	}
 	return filepath.Join(currentUser.HomeDir, "local-scripts")
-}
-
-func getFlag(dev bool, singleDash bool) string {
-	if dev {
-		if singleDash {
-			return " -dev"
-		}
-		return " --dev"
-	}
-
-	return ""
 }
 
 func getBuildScript() string {
@@ -141,15 +128,14 @@ func printResetPerms(hour int) {
 		minutes, hour, script)
 }
 
-func printSynch(earliestHour int32, hoursRange int32, dev bool) {
-	flag := getFlag(dev, false)
+func printSynch(earliestHour int32, hoursRange int32) {
 	synchScript := getSynchScript()
 
 	synchMinutes := rand.Int31n(60)
 	synchHours := rand.Int31n(hoursRange) + earliestHour
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s%s\n",
-		synchMinutes, synchHours, synchScript, flag)
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+		synchMinutes, synchHours, synchScript)
 }
 
 func printListManagedFolders(hour int) {
