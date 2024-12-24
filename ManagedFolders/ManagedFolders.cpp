@@ -115,12 +115,12 @@ private:
                     const fs::path located_folder_path2{location2_path / folder};
 
                     try {
-                        if (fs::exists(located_folder_path1)
-                            && fs::exists(located_folder_path2)) {
+                        if (exists(located_folder_path1)
+                            && exists(located_folder_path2)) {
                             pair a_pair{located_folder_path1, located_folder_path2};
-                            pair reversed_pair{located_folder_path2, located_folder_path1};
 
-                            if (ranges::find(pairs, reversed_pair) != pairs.end()) {
+                            if (pair reversed_pair{located_folder_path2, located_folder_path1};
+                                ranges::find(pairs, reversed_pair) != pairs.end()) {
                                 continue;
                             }
 
@@ -164,10 +164,8 @@ private:
         }
     }
 
-    void list_pairs_write(ostream &out) {
-        const auto pairs = find_pairs();
-
-        for (const auto &[fst, snd]: pairs) {
+    void list_pairs_write(ostream &out) const {
+        for (const auto pairs = find_pairs(); const auto &[fst, snd]: pairs) {
             out << fst.string() << " <-> " << snd.string() << endl;
         }
     }
