@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <ctime>
+#include <CLI/CLI.hpp>
 
 using namespace std;
 
