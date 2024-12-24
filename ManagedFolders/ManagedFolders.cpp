@@ -340,52 +340,63 @@ fs::path find_config_path() {
 }
 
 int main(const int argc, char *argv[]) {
-    const auto local_scripts_path{find_local_scripts_path()};
+    CLI::App app{ "Managed Folders" };
+    argv = app.ensure_utf8(argv);
 
-    if (argc >= 2) {
-        const string task{argv[1]};
+    CLI::App* list_sub_command = app.add_subcommand("list", "List managed folders");
+    CLI::App* list_write_sub_command = app.add_subcommand("list_write", "List managed folders");
 
-        auto folder_manager = make_folder_manager(local_scripts_path);
+    CLI::App* list_pairs_sub_command = app.add_subcommand("list_pairs", "List managed folders");
+    CLI::App* list_pairs_write_sub_command = app.add_subcommand("list_pairs_write", "List managed folders");
 
-        if (task == "list") {
-            folder_manager.list();
+    CLI::App* generate_synch_scripts_sub_command = app.add_subcommand("generate_synch_scripts", "List managed folders");
+    CLI::App* generate_synch_windows_config_script_sub_command = app.add_subcommand("generate_synch_windows_config_script", "List managed folders");
 
-            return 0;
-        }
+    app.require_subcommand();
 
-        if (task == "list_write") {
-            folder_manager.list_write();
+    CLI11_PARSE(app, argc, argv);
 
-            return 0;
-        }
+    const string task = app.get_subcommands().back()->get_name();
 
-        if (task == "list_pairs") {
-            folder_manager.list_pairs();
+    const auto local_scripts_path{ find_local_scripts_path() };
 
-            return 0;
-        }
+    auto folder_manager = make_folder_manager(local_scripts_path);
 
-        if (task == "list_pairs_write") {
-            folder_manager.list_pairs_write();
+    if (task == "list") {
+        folder_manager.list();
 
-            return 0;
-        }
-
-        if (task == "generate_synch_scripts") {
-            folder_manager.generate_synch_scripts();
-
-            return 0;
-        }
-
-        if (task == "generate_synch_windows_config_script") {
-            FolderManager::generate_synch_windows_config_script();
-
-            return 0;
-        }
+        return 0;
     }
 
-    cerr << "Please tell me what to do!" << endl;
-    return -1;
+    if (task == "list_write") {
+        folder_manager.list_write();
+
+        return 0;
+    }
+
+    if (task == "list_pairs") {
+        folder_manager.list_pairs();
+
+        return 0;
+    }
+
+    if (task == "list_pairs_write") {
+        folder_manager.list_pairs_write();
+
+        return 0;
+    }
+
+    if (task == "generate_synch_scripts") {
+        folder_manager.generate_synch_scripts();
+
+        return 0;
+    }
+
+    if (task == "generate_synch_windows_config_script") {
+        FolderManager::generate_synch_windows_config_script();
+
+        return 0;
+    }
 }
 
 vector<string> read_all_non_empty_lines(const fs::path &path) {
