@@ -1,3 +1,5 @@
+#include <CLI/CLI.hpp>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -5,8 +7,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <ctime>
-#include <CLI/CLI.hpp>
 
 using namespace std;
 
