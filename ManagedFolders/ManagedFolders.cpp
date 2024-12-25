@@ -344,8 +344,11 @@ int main(const int argc, char* argv[]) {
 	CLI::App app{ "Managed Folders" };
 	const auto u8_argv{ app.ensure_utf8(argv) };
 
-	CLI::App* list_sub_command{ app.add_subcommand("list", "List managed folders") };
-	CLI::App* list_write_sub_command{ app.add_subcommand("list_write", "Write list of managed folders to file") };
+	auto write {false};
+
+	const auto list_sub_command{
+		app.add_subcommand("list", "List managed folders") };
+	list_sub_command->add_flag("-w,--write", write, "Write list to file");
 
 	CLI::App* list_pairs_sub_command{ app.add_subcommand("list_pairs", "List pairs of managed folders") };
 	CLI::App* list_pairs_write_sub_command{ app.add_subcommand("list_pairs_write", "Write list of managed folders to file") };
@@ -365,13 +368,12 @@ int main(const int argc, char* argv[]) {
 	auto folder_manager = make_folder_manager(local_scripts_path);
 
 	if (task == "list") {
-		folder_manager.list();
-
-		return 0;
-	}
-
-	if (task == "list_write") {
-		folder_manager.list_write();
+		if (write) {
+			folder_manager.list_write();
+		}
+		else {
+			folder_manager.list();
+		}
 
 		return 0;
 	}
