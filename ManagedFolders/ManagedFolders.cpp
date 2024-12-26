@@ -274,8 +274,9 @@ private:
 	}
 };
 
-FolderManager make_folder_manager_from_local_scripts_dir(const fs::path&);
-FolderManager make_folder_manager_from_files(const fs::path&, const fs::path&);
+FolderManager make_folder_manager_from_strings(const string&, const string&);
+FolderManager make_folder_manager_from_local_scripts_path(const fs::path&);
+FolderManager make_folder_manager_from_paths(const fs::path&, const fs::path&);
 
 fs::path get_home_folder() {
 #pragma warning( push )
@@ -350,6 +351,10 @@ int main(const int argc, char* argv[]) {
 	const auto list_sub_command{
 		app.add_subcommand("list", "List managed folders") };
 	list_sub_command->add_flag("-w,--write", write, "Write list to file");
+	string locations_file;
+	list_sub_command->add_option("-l,--location", locations_file, "Locations file");
+	string folders_file;
+	list_sub_command->add_option("-f,--folders", folders_file, "Folders file");
 
 	CLI::App* list_pairs_sub_command{ app.add_subcommand("list_pairs", "List pairs of managed folders") };
 	CLI::App* list_pairs_write_sub_command{ app.add_subcommand("list_pairs_write", "Write list of managed folders to file") };
@@ -364,11 +369,9 @@ int main(const int argc, char* argv[]) {
 
 	const string task = app.get_subcommands().back()->get_name();
 
-	const auto local_scripts_path{ find_local_scripts_path() };
-
-	auto folder_manager = make_folder_manager_from_local_scripts_dir(local_scripts_path);
-
 	if (task == "list") {
+		auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
+
 		if (write) {
 			folder_manager.list_write();
 		}
@@ -378,6 +381,9 @@ int main(const int argc, char* argv[]) {
 
 		return 0;
 	}
+	
+	const auto local_scripts_path{ find_local_scripts_path() };
+	auto folder_manager{ make_folder_manager_from_local_scripts_path(local_scripts_path) };
 
 	if (task == "list_pairs") {
 		folder_manager.list_pairs();
@@ -557,14 +563,26 @@ fs::path find_folders_file_path(const fs::path& local_scripts_dir) {
 	return local_scripts_dir / "_Common" / "folders.txt";
 }
 
-FolderManager make_folder_manager_from_local_scripts_dir(const fs::path& local_scripts_dir) {
+FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file) {
+	if (locations_file.empty() || folders_file.empty()) {
+		const auto local_scripts_path{ find_local_scripts_path() };
+		return make_folder_manager_from_local_scripts_path(local_scripts_path);
+	}
+	else {
+		auto locations_file_path_fs{ fs::path{locations_file} };
+		auto folders_file_path_fs{ fs::path{folders_file} };
+		return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
+	}
+}
+
+FolderManager make_folder_manager_from_local_scripts_path(const fs::path& local_scripts_dir) {
 	auto locations_file_path{ find_locations_file_path(local_scripts_dir) };
 	auto folders_file_path{ find_folders_file_path(local_scripts_dir) };
 
-	return make_folder_manager_from_files(locations_file_path, folders_file_path);
+	return make_folder_manager_from_paths(locations_file_path, folders_file_path);
 }
 
-FolderManager make_folder_manager_from_files(const fs::path& locations_file_path, const fs::path& folders_file_path) {
+FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path) {
 	auto locations = read_all_non_empty_lines(locations_file_path);
 	auto folders = read_all_non_empty_lines(folders_file_path);
 
