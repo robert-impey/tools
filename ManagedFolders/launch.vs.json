@@ -19,8 +19,8 @@
       "type": "default",
       "project": "CMakeLists.txt",
       "projectTarget": "",
-      "name": "ManagedFolders list_write",
-      "args": [ "list_write" ]
+      "name": "ManagedFolders list --write",
+      "args": [ "list --write" ]
     }
   ]
 }
