@@ -274,7 +274,7 @@ private:
 	}
 };
 
-FolderManager make_folder_manager(const fs::path&);
+FolderManager make_folder_manager_from_local_scripts_dir(const fs::path&);
 
 fs::path get_home_folder() {
 #pragma warning( push )
@@ -365,7 +365,7 @@ int main(const int argc, char* argv[]) {
 
 	const auto local_scripts_path{ find_local_scripts_path() };
 
-	auto folder_manager = make_folder_manager(local_scripts_path);
+	auto folder_manager = make_folder_manager_from_local_scripts_dir(local_scripts_path);
 
 	if (task == "list") {
 		if (write) {
@@ -556,7 +556,7 @@ fs::path find_folders_file_path(const fs::path& local_scripts_dir) {
 	return local_scripts_dir / "_Common" / "folders.txt";
 }
 
-FolderManager make_folder_manager(const fs::path& local_scripts_dir) {
+FolderManager make_folder_manager_from_local_scripts_dir(const fs::path& local_scripts_dir) {
 	auto locations_file_path{ find_locations_file_path(local_scripts_dir) };
 	auto folders_file_path{ find_folders_file_path(local_scripts_dir) };
 
