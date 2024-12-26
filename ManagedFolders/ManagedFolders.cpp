@@ -275,6 +275,7 @@ private:
 };
 
 FolderManager make_folder_manager_from_local_scripts_dir(const fs::path&);
+FolderManager make_folder_manager_from_files(const fs::path&, const fs::path&);
 
 fs::path get_home_folder() {
 #pragma warning( push )
@@ -560,6 +561,10 @@ FolderManager make_folder_manager_from_local_scripts_dir(const fs::path& local_s
 	auto locations_file_path{ find_locations_file_path(local_scripts_dir) };
 	auto folders_file_path{ find_folders_file_path(local_scripts_dir) };
 
+	return make_folder_manager_from_files(locations_file_path, folders_file_path);
+}
+
+FolderManager make_folder_manager_from_files(const fs::path& locations_file_path, const fs::path& folders_file_path) {
 	auto locations = read_all_non_empty_lines(locations_file_path);
 	auto folders = read_all_non_empty_lines(folders_file_path);
 
