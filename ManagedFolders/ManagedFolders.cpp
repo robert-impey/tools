@@ -352,7 +352,7 @@ int main(const int argc, char* argv[]) {
 		app.add_subcommand("list", "List managed folders") };
 	list_sub_command->add_flag("-w,--write", write, "Write list to file");
 	string locations_file;
-	list_sub_command->add_option("-l,--location", locations_file, "Locations file");
+	list_sub_command->add_option("-l,--locations", locations_file, "Locations file");
 	string folders_file;
 	list_sub_command->add_option("-f,--folders", folders_file, "Folders file");
 
