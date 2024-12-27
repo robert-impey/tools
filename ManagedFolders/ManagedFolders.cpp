@@ -583,6 +583,9 @@ FolderManager make_folder_manager_from_local_scripts_path(const fs::path& local_
 }
 
 FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path) {
+	cout << "Locations file: " << locations_file_path << endl;
+	cout << "Folders file: " << folders_file_path << endl;
+
 	auto locations = read_all_non_empty_lines(locations_file_path);
 	auto folders = read_all_non_empty_lines(folders_file_path);
 
