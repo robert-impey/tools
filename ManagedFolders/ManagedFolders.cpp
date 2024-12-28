@@ -359,7 +359,7 @@ int main(const int argc, char* argv[]) {
 	CLI::App* list_pairs_sub_command{ app.add_subcommand("list_pairs", "List pairs of managed folders") };
 	CLI::App* list_pairs_write_sub_command{ app.add_subcommand("list_pairs_write", "Write list of managed folders to file") };
 
-	CLI::App* generate_synch_scripts_sub_command{ app.add_subcommand("generate_synch_scripts", "Generate Synch Scripts") };
+	const auto generate_synch_scripts_sub_command{ app.add_subcommand("generate_synch_scripts", "Generate Synch Scripts") };
 	CLI::App* generate_synch_windows_config_script_sub_command{
 	   app.add_subcommand("generate_synch_windows_config_script", "Generate Synch Scripts for Windows Config") };
 
@@ -480,6 +480,8 @@ void generate_folder_synch_script(
 
 	const fs::path script_path{ script_folder / script_name.str() };
 
+	cout << "Generating " << script_path << endl;
+
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
 
@@ -507,6 +509,8 @@ void generate_all_folders_synch_script(
 
 	ofstream script_file;
 	script_file.open(script_path, ios::out | ios::trunc);
+
+	cout << "Generating " << script_path << endl;
 
 	write_autogen_header(script_file);
 

@@ -21,6 +21,13 @@
       "projectTarget": "",
       "name": "ManagedFolders list --write",
       "args": [ "list --write" ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "",
+      "name": "ManagedFolders generate_synch_scripts",
+      "args": [ "generate_synch_scripts" ]
     }
   ]
 }
