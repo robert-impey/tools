@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager.Test", "Folde
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateBuildScripts", "GenerateBuildScripts\GenerateBuildScripts\GenerateBuildScripts.csproj", "{34116FA8-E9E3-4591-B53B-F730F0004745}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListManagedFolders", "ListManagedFolders\ListManagedFolders\ListManagedFolders.csproj", "{1A9341DC-7682-4D9F-B3CC-0A3AE07774D0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Make2CMakeLists", "Make2CMakeLists\Make2CMakeLists\Make2CMakeLists.csproj", "{C0ACD041-F194-4D0C-82DA-7D77EA15DB56}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Make2CMakeLists.Tests", "Make2CMakeLists\Make2CMakeLists.Tests\Make2CMakeLists.Tests.csproj", "{0AB8D4FA-55EC-43BC-9A97-C4A60F9975D6}"
@@ -48,10 +46,6 @@ Global
 		{34116FA8-E9E3-4591-B53B-F730F0004745}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34116FA8-E9E3-4591-B53B-F730F0004745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34116FA8-E9E3-4591-B53B-F730F0004745}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A9341DC-7682-4D9F-B3CC-0A3AE07774D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A9341DC-7682-4D9F-B3CC-0A3AE07774D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A9341DC-7682-4D9F-B3CC-0A3AE07774D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A9341DC-7682-4D9F-B3CC-0A3AE07774D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C0ACD041-F194-4D0C-82DA-7D77EA15DB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C0ACD041-F194-4D0C-82DA-7D77EA15DB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0ACD041-F194-4D0C-82DA-7D77EA15DB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
