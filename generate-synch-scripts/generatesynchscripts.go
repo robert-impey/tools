@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	mapset "github.com/deckarep/golang-set/v2"
@@ -123,13 +124,13 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 	}
 	fmt.Println()
 
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
 		return err
 	}
 
-	autoGenDir := filepath.Join(user.HomeDir, "autogen", "synch")
+	autoGenDir := filepath.Join(currentUser.HomeDir, "autogen", "synch")
 
 	if _, err := os.Stat(autoGenDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(autoGenDir, os.ModePerm)
@@ -150,11 +151,11 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 		}
 	}
 
-	scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n"
+	var allScriptsBuffer bytes.Buffer
+	allScriptsBuffer.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
 
-	now := time.Now().UTC()
-	scriptContents += fmt.Sprintf("# Generated on %s\n\n", now.Format("2006-01-02"))
-	scriptContents += "date\n\n"
+	allScriptsBuffer.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
+	allScriptsBuffer.WriteString("date\n\n")
 
 	for _, dir := range scriptsInfo.dirs {
 		to := getCmdLine(
@@ -162,23 +163,23 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 			dir,
 			scriptsInfo.src,
 			scriptsInfo.dst)
-		scriptContents += getEchoLine(to) + "\n"
-		scriptContents += to + "\n"
+		allScriptsBuffer.WriteString(getEchoLine(to) + "\n")
+		allScriptsBuffer.WriteString(to + "\n")
 
 		from := getCmdLine(
 			scriptsInfo.synch,
 			dir,
 			scriptsInfo.dst,
 			scriptsInfo.src)
-		scriptContents += getEchoLine(from) + "\n"
-		scriptContents += from + "\n"
+		allScriptsBuffer.WriteString(getEchoLine(from) + "\n")
+		allScriptsBuffer.WriteString(from + "\n")
 
-		scriptContents += "\n"
+		allScriptsBuffer.WriteString("\n")
 	}
 
-	scriptContents += "\ndate\n"
+	allScriptsBuffer.WriteString("\ndate\n")
 
-	err = os.WriteFile(scriptFileName, []byte(scriptContents), 0x755)
+	err = os.WriteFile(scriptFileName, allScriptsBuffer.Bytes(), 0x755)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
 	}
@@ -206,32 +207,33 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 				}
 			}
 
-			scriptContents := "#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n"
-			scriptContents += fmt.Sprintf("# Generated on %s\n\n", now.Format("2006-01-02"))
+			var scriptBuffer bytes.Buffer
+			scriptBuffer.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
+			scriptBuffer.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
 
-			scriptContents += "date\n\n"
+			scriptBuffer.WriteString("date\n\n")
 
 			to := getCmdLine(
 				scriptsInfo.synch,
 				dir,
 				scriptsInfo.src,
 				scriptsInfo.dst)
-			scriptContents += getEchoLine(to) + "\n"
-			scriptContents += to + "\n"
+			scriptBuffer.WriteString(getEchoLine(to) + "\n")
+			scriptBuffer.WriteString(to + "\n")
 
 			from := getCmdLine(
 				scriptsInfo.synch,
 				dir,
 				scriptsInfo.dst,
 				scriptsInfo.src)
-			scriptContents += getEchoLine(from) + "\n"
-			scriptContents += from + "\n"
+			scriptBuffer.WriteString(getEchoLine(from) + "\n")
+			scriptBuffer.WriteString(from + "\n")
 
-			scriptContents += "\n"
+			scriptBuffer.WriteString("\n")
 
-			scriptContents += "\ndate\n"
+			scriptBuffer.WriteString("\ndate\n")
 
-			err = os.WriteFile(scriptFileName, []byte(scriptContents), 0x755)
+			err = os.WriteFile(scriptFileName, scriptBuffer.Bytes(), 0x755)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
 			}
@@ -251,4 +253,8 @@ func getCmdLine(synchRoot, dir, src, dst string) string {
 
 func getEchoLine(cmd string) string {
 	return fmt.Sprintf("echo '%s'", cmd)
+}
+
+func getNowFmt() string {
+	return time.Now().UTC().Format(time.RFC1123)
 }
