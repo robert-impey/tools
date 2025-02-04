@@ -22,7 +22,7 @@ func TestParseGSSFile(t *testing.T) {
 	assert.Equal(t, len(scriptsInfo.dirs), 4)
 }
 
-func TestParseGSSFileBadFiles(t *testing.T) {
+func TestParseGSSFileBadFile(t *testing.T) {
 	scriptsInfo, err := parseGSSFile("does-not-exist.txt")
 
 	assert.NotNil(t, err)
