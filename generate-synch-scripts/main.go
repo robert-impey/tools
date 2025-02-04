@@ -80,7 +80,7 @@ func parseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 	gssFile, err := os.Open(gssFileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to open %v - %v\n", gssFileName, err)
-		return scriptsInfo, err
+		return nil, err
 	}
 	defer gssFile.Close()
 	input := bufio.NewScanner(gssFile)
