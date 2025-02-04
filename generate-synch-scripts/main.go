@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	mapset "github.com/deckarep/golang-set/v2"
+	"log"
 	"os"
 	"os/user"
 	"path"
@@ -35,8 +36,22 @@ func main() {
 		gssFiles = append(gssFiles, arg)
 	}
 
+	currentUser, err := user.Current()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	autoGenDir := filepath.Join(currentUser.HomeDir, "autogen", "synch")
+
+	if _, err := os.Stat(autoGenDir); errors.Is(err, os.ErrNotExist) {
+		err := os.MkdirAll(autoGenDir, os.ModePerm)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+	}
+
 	for _, gssFile := range gssFiles {
-		err := generateSynchScripts(gssFile)
+		err := generateSynchScripts(autoGenDir, gssFile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to generate the scripts for %v - %v\n", gssFile, err)
 			continue
@@ -44,7 +59,7 @@ func main() {
 	}
 }
 
-func generateSynchScripts(gssFile string) error {
+func generateSynchScripts(autoGenDir string, gssFile string) error {
 	fmt.Printf("Generating synch scripts for %v\n", gssFile)
 
 	scriptInfo, err := parseGSSFile(gssFile)
@@ -53,7 +68,7 @@ func generateSynchScripts(gssFile string) error {
 		return err
 	}
 
-	if err := writeAllDirs(scriptInfo); err != nil {
+	if err := writeAllDirs(autoGenDir, scriptInfo); err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to write all dirs script for %v - %v\n", gssFile, err)
 		return err
 	}
@@ -113,7 +128,7 @@ func parseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 	return scriptsInfo, nil
 }
 
-func writeAllDirs(scriptsInfo *ScriptsInfo) error {
+func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 	fmt.Printf("Generating scripts in %v\n", scriptsInfo.dir)
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
@@ -123,22 +138,6 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 		fmt.Println(dir)
 	}
 	fmt.Println()
-
-	currentUser, err := user.Current()
-	if err != nil {
-		fmt.Fprint(os.Stderr, err.Error())
-		return err
-	}
-
-	autoGenDir := filepath.Join(currentUser.HomeDir, "autogen", "synch")
-
-	if _, err := os.Stat(autoGenDir); errors.Is(err, os.ErrNotExist) {
-		err := os.MkdirAll(autoGenDir, os.ModePerm)
-		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
-			return err
-		}
-	}
 
 	scriptName := fmt.Sprintf("%s.sh", scriptsInfo.name)
 	scriptFileName := filepath.Join(autoGenDir, scriptName)
@@ -179,7 +178,7 @@ func writeAllDirs(scriptsInfo *ScriptsInfo) error {
 
 	allScriptsBuffer.WriteString("\ndate\n")
 
-	err = os.WriteFile(scriptFileName, allScriptsBuffer.Bytes(), 0x755)
+	err := os.WriteFile(scriptFileName, allScriptsBuffer.Bytes(), 0x755)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
 	}
