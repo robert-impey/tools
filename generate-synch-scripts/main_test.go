@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path"
 	"testing"
 )
 
@@ -24,4 +27,24 @@ func TestParseGSSFileBadFiles(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Nil(t, scriptsInfo)
+}
+
+func TestGenerateSynchScripts(t *testing.T) {
+	outputDir := t.TempDir()
+	generateSynchScripts(outputDir, "merneith.txt")
+
+	scriptsFile := path.Join(outputDir, "merneith.sh")
+	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
+	}
+
+	scriptsDir := path.Join(outputDir, "merneith")
+	if _, err := os.Stat(scriptsDir); errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("scripts dir %s doesn't exist", scriptsDir)
+	}
+
+	configScript := path.Join(scriptsDir, "config.sh")
+	if _, err := os.Stat(configScript); errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("config script file %s doesn't exist", configScript)
+	}
 }
