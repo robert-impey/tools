@@ -31,7 +31,9 @@ func TestParseGSSFileBadFile(t *testing.T) {
 
 func TestGenerateSynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
-	generateSynchScripts(outputDir, "merneith.txt")
+
+	err := generateSynchScripts(outputDir, "merneith.txt")
+	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "merneith.sh")
 	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
