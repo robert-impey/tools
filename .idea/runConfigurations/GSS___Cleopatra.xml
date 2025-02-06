@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GSS | Cleopatra" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="tools" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="$USER_HOME$/local-scripts/cleopatra/robert/synch/gss/Dropbox.txt" />
+    <kind value="DIRECTORY" />
+    <package value="github.com/robert-impey/tools" />
+    <directory value="$PROJECT_DIR$/generate-synch-scripts" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>

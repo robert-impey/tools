@@ -26,6 +26,7 @@ type ScriptsInfo struct {
 }
 
 func main() {
+	flag.Parse()
 	gssFiles := make([]string, 0)
 
 	for _, arg := range flag.Args() {
