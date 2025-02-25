@@ -35,10 +35,16 @@ func init() {
 }
 
 func sweepLogsDirWithLogs() {
-	logsDir, err := mflib.GetLogsDir()
-	if err != nil {
-		fmt.Fprint(os.Stderr, err.Error())
-		return
+	var logsDir string
+	var err error
+	if LogsDirectory == "" {
+		logsDir, err = mflib.GetLogsDir()
+		if err != nil {
+			fmt.Fprint(os.Stderr, err.Error())
+			return
+		}
+	} else {
+		logsDir = LogsDirectory
 	}
 
 	const toolName = "logs-deleter"

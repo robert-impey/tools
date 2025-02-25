@@ -42,9 +42,16 @@ func sweepFrom() error {
 		return errors.New("tool not set")
 	}
 
-	logsDir, err := mflib.GetLogsDir()
-	if err != nil {
-		return err
+	var logsDir string
+	var err error
+	if LogsDirectory == "" {
+		logsDir, err = mflib.GetLogsDir()
+		if err != nil {
+			fmt.Fprint(os.Stderr, err.Error())
+			return err
+		}
+	} else {
+		logsDir = LogsDirectory
 	}
 
 	var toolPath = filepath.Join(logsDir, Tool)
