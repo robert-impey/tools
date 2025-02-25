@@ -568,15 +568,9 @@ fs::path find_folders_file_path(const fs::path& local_scripts_dir) {
 }
 
 FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file) {
-	if (locations_file.empty() || folders_file.empty()) {
-		const auto local_scripts_path{ find_local_scripts_path() };
-		return make_folder_manager_from_local_scripts_path(local_scripts_path);
-	}
-	else {
-		auto locations_file_path_fs{ fs::path{locations_file} };
-		auto folders_file_path_fs{ fs::path{folders_file} };
-		return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
-	}
+	auto locations_file_path_fs{ fs::path{locations_file} };
+	auto folders_file_path_fs{ fs::path{folders_file} };
+	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
 }
 
 FolderManager make_folder_manager_from_local_scripts_path(const fs::path& local_scripts_dir) {

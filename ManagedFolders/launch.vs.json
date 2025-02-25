@@ -13,7 +13,13 @@
       "project": "CMakeLists.txt",
       "projectTarget": "",
       "name": "ManagedFolders list",
-      "args": [ "list" ]
+      "args": [
+        "list",
+        "--locations",
+        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\Windows\\locations.txt",
+        "--folders",
+        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\folders.txt"
+      ]
     },
     {
       "type": "default",
