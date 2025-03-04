@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/robert-impey/tools/logs-deleter/lib"
-	"github.com/robert-impey/tools/managed-folders/mflib"
 	"github.com/spf13/cobra"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -43,13 +43,8 @@ func sweepFrom() error {
 	}
 
 	var logsDir string
-	var err error
 	if LogsDirectory == "" {
-		logsDir, err = mflib.GetLogsDir()
-		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
-			return err
-		}
+		log.Fatalln("LogsDirectory not set")
 	} else {
 		logsDir = LogsDirectory
 	}

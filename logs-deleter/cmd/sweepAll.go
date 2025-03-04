@@ -7,8 +7,8 @@ Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 import (
 	"errors"
 	"fmt"
-	"github.com/robert-impey/tools/managed-folders/mflib"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -36,13 +36,8 @@ func init() {
 
 func sweepLogsDirWithLogs() {
 	var logsDir string
-	var err error
 	if LogsDirectory == "" {
-		logsDir, err = mflib.GetLogsDir()
-		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
-			return
-		}
+		log.Fatalln("LogsDirectory not set")
 	} else {
 		logsDir = LogsDirectory
 	}
@@ -63,6 +58,7 @@ func sweepLogsDirWithLogs() {
 
 	outLogFile := os.Stdout
 	errLogFile := os.Stderr
+	var err error
 	if !DeleteEmpty {
 		outLogFile, err = os.Create(outLogFileName)
 		if err != nil {
