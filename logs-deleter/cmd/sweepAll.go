@@ -7,14 +7,11 @@ Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
 import (
 	"errors"
 	"fmt"
-	"io"
+	"github.com/robert-impey/tools/logs-deleter/lib"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
-	"time"
-
-	"github.com/robert-impey/tools/logs-deleter/lib"
-	"github.com/spf13/cobra"
 )
 
 // sweepAllCmd represents the sweepAll command
@@ -47,42 +44,20 @@ func sweepLogsDirWithLogs() {
 	if _, err := os.Stat(toolLogDir); errors.Is(err, os.ErrNotExist) {
 		err := os.MkdirAll(toolLogDir, os.ModePerm)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			return
+			log.Fatalln(err)
 		}
 	}
 
-	timeStr := time.Now().Format("2006-01-02_15.04.05")
-	outLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.log", timeStr))
-	errLogFileName := filepath.Join(toolLogDir, fmt.Sprintf("%s.err", timeStr))
-
-	outLogFile := os.Stdout
-	errLogFile := os.Stderr
-	var err error
-	if !DeleteEmpty {
-		outLogFile, err = os.Create(outLogFileName)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			return
-		}
-
-		errLogFile, err = os.Create(errLogFileName)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			return
-		}
-	}
-
-	sweepErr := sweepLogsDir(logsDir, outLogFile)
+	sweepErr := sweepLogsDir(logsDir)
 
 	if sweepErr != nil {
-		fmt.Fprint(errLogFile, sweepErr)
+		log.Fatalln(sweepErr)
 	} else if Verbose {
-		fmt.Fprintf(outLogFile, "Success")
+		fmt.Println("Success")
 	}
 }
 
-func sweepLogsDir(logsDir string, outWriter io.Writer) error {
+func sweepLogsDir(logsDir string) error {
 	subDirs, err := filepath.Glob(filepath.Join(logsDir, "*"))
 	if err != nil {
 		return err
@@ -94,7 +69,7 @@ func sweepLogsDir(logsDir string, outWriter io.Writer) error {
 			return err
 		}
 
-		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, outWriter, Verbose)
+		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, Verbose)
 		if err != nil {
 			return err
 		}

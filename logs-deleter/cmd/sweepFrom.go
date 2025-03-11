@@ -24,7 +24,7 @@ var sweepFromCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := sweepFrom()
 		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
+			log.Fatalln(err.Error())
 		} else if Verbose {
 			fmt.Println("Success")
 		}
@@ -56,7 +56,7 @@ func sweepFrom() error {
 		return err1
 	}
 
-	err2 := lib.DeleteFrom(toolPath, Days, DeleteEmpty, os.Stdout, Verbose)
+	err2 := lib.DeleteFrom(toolPath, Days, DeleteEmpty, Verbose)
 	if err2 != nil {
 		return err2
 	}

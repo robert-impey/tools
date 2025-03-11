@@ -1,18 +1,17 @@
 package lib
 
 import (
-	"fmt"
-	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer, verbose bool) error {
+func DeleteFrom(subPath string, days int, deleteEmpty bool, verbose bool) error {
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
 	if verbose {
-		fmt.Fprintf(outWriter, "Searching %v for files older than %v\n", subPath, cutoff)
+		log.Printf("Searching %v for files older than %v\n", subPath, cutoff)
 	}
 
 	files, err := filepath.Glob(filepath.Join(subPath, "*"))
@@ -36,12 +35,12 @@ func DeleteFrom(subPath string, days int, deleteEmpty bool, outWriter io.Writer,
 	countFilesToDelete := len(filesToDelete)
 
 	if verbose || countFilesToDelete > 0 {
-		fmt.Fprintf(outWriter, "Found %d files to delete in %v\n", len(filesToDelete), subPath)
+		log.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
 	}
 
 	for _, fileToDelete := range filesToDelete {
 		var pathToDelete = filepath.Join(subPath, fileToDelete.Name())
-		fmt.Fprintf(outWriter, "Deleting %v\n", pathToDelete)
+		log.Printf("Deleting %v\n", pathToDelete)
 
 		err = os.RemoveAll(pathToDelete)
 		if err != nil {
