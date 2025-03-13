@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,12 +36,12 @@ func DeleteFrom(subPath string, days int, deleteEmpty bool, verbose bool) error 
 	countFilesToDelete := len(filesToDelete)
 
 	if verbose || countFilesToDelete > 0 {
-		log.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
+		fmt.Printf("Found %d files to delete in %v\n", len(filesToDelete), subPath)
 	}
 
 	for _, fileToDelete := range filesToDelete {
 		var pathToDelete = filepath.Join(subPath, fileToDelete.Name())
-		log.Printf("Deleting %v\n", pathToDelete)
+		fmt.Printf("Deleting %v\n", pathToDelete)
 
 		err = os.RemoveAll(pathToDelete)
 		if err != nil {
