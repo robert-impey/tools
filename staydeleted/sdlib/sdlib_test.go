@@ -28,33 +28,36 @@ func TestGetSdFolder(t *testing.T) {
 func TestSetGetAction(t *testing.T) {
 	dir := t.TempDir()
 
-	tfn := "test.txt"
-	tfp := filepath.Join(dir, tfn)
+	tfns := [...]string{"test.txt", "file with spaces.txt", "file with [].txt"}
 
-	tf, _ := os.Create(tfp)
-	defer tf.Close()
+	for _, tfn := range tfns {
+		tfp := filepath.Join(dir, tfn)
 
-	action := Keep
-	err := SetActionForFile(tfp, action)
-	if err != nil {
-		t.Error(err)
-	}
+		tf, _ := os.Create(tfp)
+		defer tf.Close()
 
-	sdfp, err := GetSdFile(tfp)
-	if err != nil {
-		t.Error(err)
-	}
+		action := Keep
+		err := SetActionForFile(tfp, action)
+		if err != nil {
+			t.Error(err)
+		}
 
-	gotAction, err := GetActionForFile(sdfp, dir, os.Stderr)
-	if err != nil {
-		t.Error(err)
-	}
+		sdfp, err := GetSdFile(tfp)
+		if err != nil {
+			t.Error(err)
+		}
 
-	if gotAction.File != tfp {
-		t.Error(fmt.Sprintf("gotAction.File is '%s', expecting '%s'!", gotAction.File, tfp))
-	}
+		gotAction, err := GetActionForFile(sdfp, dir, os.Stderr)
+		if err != nil {
+			t.Error(err)
+		}
 
-	if gotAction.Action != action {
-		t.Error(fmt.Sprintf("gotAction.Action: %s!", getStringForAction(gotAction.Action)))
+		if gotAction.File != tfp {
+			t.Error(fmt.Sprintf("gotAction.File is '%s', expecting '%s'!", gotAction.File, tfp))
+		}
+
+		if gotAction.Action != action {
+			t.Error(fmt.Sprintf("gotAction.Action: %s!", getStringForAction(gotAction.Action)))
+		}
 	}
 }
