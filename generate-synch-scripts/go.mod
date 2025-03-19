@@ -1,9 +1,9 @@
 module github.com/robert-impey/tools/generate-synch-scripts
 
-go 1.23.5
+go 1.24.1
 
 require (
-	github.com/deckarep/golang-set/v2 v2.7.0
+	github.com/deckarep/golang-set/v2 v2.8.0
 	github.com/stretchr/testify v1.10.0
 )
 
