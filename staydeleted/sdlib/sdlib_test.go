@@ -35,6 +35,15 @@ func TestSetGetAction(t *testing.T) {
 	}
 }
 
+func TestSetGetActionFunnyCharsInDir(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "dir with [weird ( chars")
+
+	os.Mkdir(dir, 0755)
+
+	tfn := "test.txt"
+	testGetSetFile(dir, tfn, t)
+}
+
 func testGetSetFile(dir string, tfn string, t *testing.T) {
 	tfp := filepath.Join(dir, tfn)
 
