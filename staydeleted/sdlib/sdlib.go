@@ -229,7 +229,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 				fmt.Fprintf(outWriter, "Containing folder '%v'\n", containingFolder)
 			}
 
-			sdFiles, err := filepath.Glob(filepath.Join(sdFolder, "*.txt"))
+			sdFiles, err := FindSdFiles(sdFolder)
 			if err != nil {
 				fmt.Fprintf(errWriter, "%v\n", err)
 				return err
@@ -327,6 +327,10 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 	}
 
 	return nil
+}
+
+func FindSdFiles(sdFolder string) ([]string, error) {
+	return filepath.Glob(filepath.Join(sdFolder, "*.txt"))
 }
 
 func GetWriters(logsDir string) (io.Writer, io.Writer, error) {
