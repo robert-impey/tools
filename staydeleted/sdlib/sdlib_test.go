@@ -76,7 +76,7 @@ func testGetSetFile(dir string, tfn string, t *testing.T) {
 }
 
 func TestFindingSdFiles(t *testing.T) {
-	dir := filepath.Join(t.TempDir(), "dir with [weird ( chars")
+	dir := filepath.Join(t.TempDir(), "dir with [globbing] (chars)")
 
 	os.Mkdir(dir, 0755)
 

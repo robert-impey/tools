@@ -208,7 +208,6 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 
 	sdExpiryCutoff := time.Now().AddDate(0, -1*expiryMonths, 0)
 
-	re, _ := regexp.Compile(`[0-9a-fA-F]+.txt`)
 	if verbose {
 		fmt.Fprintf(outWriter, "Sweeping: '%v'\n", absDirectoryToSweep)
 	}
@@ -248,7 +247,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 					return err
 				}
 
-				if !re.Match([]byte(sdStat.Name())) {
+				if !isSdFile(sdStat) {
 					fmt.Fprintf(outWriter, "'%v' is not a legal name for SD file - deleting.\n",
 						sdFile)
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -330,7 +329,29 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 }
 
 func FindSdFiles(sdFolder string) ([]string, error) {
-	return filepath.Glob(filepath.Join(sdFolder, "*.txt"))
+	var sdFiles []string
+	walker := func(sdFile string, info os.FileInfo, err error) error {
+		sdStat, err := os.Stat(sdFile)
+		if err != nil {
+			return err
+		}
+		if isSdFile(sdStat) {
+			sdFiles = append(sdFiles, sdFile)
+		}
+		return nil
+	}
+
+	err := filepath.Walk(sdFolder, walker)
+
+	if err != nil {
+		return []string{}, err
+	}
+	return sdFiles, nil
+}
+
+func isSdFile(sdStat os.FileInfo) bool {
+	re, _ := regexp.Compile(`[0-9a-fA-F]+.txt`)
+	return re.Match([]byte(sdStat.Name()))
 }
 
 func GetWriters(logsDir string) (io.Writer, io.Writer, error) {
