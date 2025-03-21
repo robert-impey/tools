@@ -70,23 +70,6 @@ public:
 		list_write(managed_folders_file_stream);
 	}
 
-	void list_pairs() {
-		list_pairs_write(cout);
-	}
-
-	void list_pairs_write() {
-		auto autogen_path{ find_autogen_path() };
-
-		const fs::path managed_folders_pairs_path{ autogen_path / "managed-folders-pairs.txt" };
-
-		ofstream managed_folders_pairs_file;
-		managed_folders_pairs_file.open(managed_folders_pairs_path, ios::out | ios::trunc);
-
-		write_autogen_header(managed_folders_pairs_file);
-
-		list_pairs_write(managed_folders_pairs_file);
-	}
-
 	void generate_synch_scripts() {
 		auto synch_autogen_path{ find_tool_autogen_path("synch") };
 
@@ -391,18 +374,6 @@ int main(const int argc, char* argv[]) {
 	
 	const auto local_scripts_path{ find_local_scripts_path() };
 	auto folder_manager{ make_folder_manager_from_local_scripts_path(local_scripts_path) };
-
-	if (task == "list_pairs") {
-		folder_manager.list_pairs();
-
-		return 0;
-	}
-
-	if (task == "list_pairs_write") {
-		folder_manager.list_pairs_write();
-
-		return 0;
-	}
 
 	if (task == "generate_synch_scripts") {
 		folder_manager.generate_synch_scripts();
