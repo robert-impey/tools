@@ -1,12 +1,13 @@
 package cmd
 
 /*
-Copyright © 2022 Robert Impey robert.impey@hotmail.co.uk
+Copyright © 2022 - 2025 Robert Impey robert.impey@hotmail.co.uk
 */
 
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -24,7 +25,7 @@ var markFromCmd = &cobra.Command{
 		for _, arg := range args {
 			err := markFrom(arg)
 			if err != nil {
-				fmt.Fprint(os.Stderr, err.Error())
+				log.Println(err.Error())
 			} else {
 				fmt.Println("Success")
 			}
@@ -66,7 +67,7 @@ func markFrom(markFromFileName string) error {
 	for _, fileToMark := range filesToMark {
 		err := sdlib.SetActionForFile(fileToMark, action)
 		if err != nil {
-			fmt.Fprint(os.Stderr, err.Error())
+			log.Printf(err.Error())
 		} else {
 			fmt.Printf("Marked %v as %v\n", fileToMark, action)
 		}
