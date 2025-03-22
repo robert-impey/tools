@@ -166,17 +166,17 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 	return directoriesToSweep, nil
 }
 
-func SweepFrom(sweepFromFileName string, expiryMonths int, outWriter io.Writer, errWriter io.Writer, verbose bool) error {
+func SweepFrom(sweepFromFileName string, expiryMonths int, verbose bool) error {
 	var directoriesToSweepFrom, err = ReadSweepFromFile(sweepFromFileName)
 	if err != nil {
-		_, err := fmt.Fprintf(errWriter, "Unable to read file to sweep from '%v' - '%v'\n", sweepFromFileName, err)
+		_, err := fmt.Fprintf(os.Stderr, "Unable to read file to sweep from '%v' - '%v'\n", sweepFromFileName, err)
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
-		err := SweepDirectory(directoryToSweepFrom, expiryMonths, outWriter, errWriter, verbose)
+		err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose)
 		if err != nil {
 			return err
 		}
@@ -185,7 +185,7 @@ func SweepFrom(sweepFromFileName string, expiryMonths int, outWriter io.Writer, 
 	return nil
 }
 
-func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writer, errWriter io.Writer, verbose bool) error {
+func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) error {
 	stat, err := os.Stat(directoryToSweep)
 	if err != nil {
 		return err
@@ -201,7 +201,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 
 	absDirectoryToSweep, err := filepath.Abs(directoryToSweep)
 	if err != nil {
-		fmt.Fprintf(errWriter, "Unable to find the absolute path for '%v' - '%v'!\n",
+		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v' - '%v'!\n",
 			directoryToSweep, err)
 		return err
 	}
@@ -209,53 +209,53 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 	sdExpiryCutoff := time.Now().AddDate(0, -1*expiryMonths, 0)
 
 	if verbose {
-		fmt.Fprintf(outWriter, "Sweeping: '%v'\n", absDirectoryToSweep)
+		fmt.Fprintf(os.Stdout, "Sweeping: '%v'\n", absDirectoryToSweep)
 	}
 	filesToDelete := make([]fileToDelete, 0)
 	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Fprintf(errWriter, "%v\n", err)
+			fmt.Fprintf(os.Stderr, "%v\n", err)
 			return err
 		}
 
 		if info.IsDir() && info.Name() == SdFolderName {
 			sdFolder := path
 			if verbose {
-				fmt.Fprintf(outWriter, "Search SD folder '%v'\n", sdFolder)
+				fmt.Fprintf(os.Stdout, "Search SD folder '%v'\n", sdFolder)
 			}
 			containingFolder := filepath.Dir(sdFolder)
 			if verbose {
-				fmt.Fprintf(outWriter, "Containing folder '%v'\n", containingFolder)
+				fmt.Fprintf(os.Stdout, "Containing folder '%v'\n", containingFolder)
 			}
 
 			sdFiles, err := FindSdFiles(sdFolder)
 			if err != nil {
-				fmt.Fprintf(errWriter, "%v\n", err)
+				fmt.Fprintf(os.Stderr, "%v\n", err)
 				return err
 			}
 
 			// Remove emptied sd folders
 			if len(sdFiles) == 0 {
-				fmt.Fprintf(outWriter, "Adding empty SD folder '%s' to the delete list\n", sdFolder)
+				fmt.Fprintf(os.Stdout, "Adding empty SD folder '%s' to the delete list\n", sdFolder)
 				filesToDelete = append(filesToDelete, fileToDelete{Path: sdFolder, SDFile: ""})
 			}
 
 			for _, sdFile := range sdFiles {
 				sdStat, err := os.Stat(sdFile)
 				if err != nil {
-					fmt.Fprintf(errWriter, "%v\n", err)
+					fmt.Fprintf(os.Stderr, "%v\n", err)
 					return err
 				}
 
 				if !isSdFile(sdStat) {
-					fmt.Fprintf(outWriter, "'%v' is not a legal name for SD file - deleting.\n",
+					fmt.Fprintf(os.Stdout, "'%v' is not a legal name for SD file - deleting.\n",
 						sdFile)
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
 					continue
 				}
 
 				if sdStat.ModTime().Before(sdExpiryCutoff) {
-					fmt.Fprintf(outWriter, "Adding old SD file '%v' from %s to the delete list\n",
+					fmt.Fprintf(os.Stdout, "Adding old SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -263,31 +263,31 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 				}
 
 				if verbose {
-					fmt.Fprintf(outWriter, "SD File '%v'\n", sdFile)
+					fmt.Fprintf(os.Stdout, "SD File '%v'\n", sdFile)
 				}
-				actionForFile, err := GetActionForFile(sdFile, containingFolder, errWriter)
+				actionForFile, err := GetActionForFile(sdFile, containingFolder, os.Stderr)
 				if err != nil {
-					fmt.Fprintf(errWriter, "%v\n", err)
+					fmt.Fprintf(os.Stderr, "%v\n", err)
 					return err
 				}
 
 				if actionForFile.Action == Delete {
 					if _, err := os.Stat(actionForFile.File); os.IsNotExist(err) {
 						if verbose {
-							fmt.Fprintf(outWriter, "'%v' already deleted.\n", actionForFile.File)
+							fmt.Fprintf(os.Stdout, "'%v' already deleted.\n", actionForFile.File)
 						}
 						continue
 					}
-					fmt.Fprintf(outWriter, "Adding '%v' to the delete list\n", actionForFile.File)
+					fmt.Fprintf(os.Stdout, "Adding '%v' to the delete list\n", actionForFile.File)
 					filesToDelete = append(filesToDelete, fileToDelete{actionForFile.File, actionForFile.SdFile})
 				} else if actionForFile.Action == Keep {
 					if verbose {
-						fmt.Fprintf(outWriter, "Keeping '%v'\n", actionForFile.File)
+						fmt.Fprintf(os.Stdout, "Keeping '%v'\n", actionForFile.File)
 					}
 				} else {
-					fmt.Fprintf(errWriter, "Unrecognised action '%v' from '%v'!\n",
+					fmt.Fprintf(os.Stderr, "Unrecognised action '%v' from '%v'!\n",
 						actionForFile.Action, sdFile)
-					fmt.Fprintf(outWriter, "Adding unreadable SD file '%v' from %s to the delete list\n",
+					fmt.Fprintf(os.Stdout, "Adding unreadable SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -300,7 +300,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 
 	err = filepath.Walk(absDirectoryToSweep, walker)
 	if err != nil {
-		_, err := fmt.Fprintf(errWriter, "%v\n", err)
+		_, err := fmt.Fprintf(os.Stderr, "%v\n", err)
 		if err != nil {
 			return err
 		}
@@ -314,13 +314,13 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, outWriter io.Writ
 		if len(fileToDelete.SDFile) > 0 {
 			deleteMessage += fmt.Sprintf(" as instructed by '%v'", fileToDelete.SDFile)
 		}
-		fmt.Fprintf(outWriter, "%v\n", deleteMessage)
+		fmt.Fprintf(os.Stdout, "%v\n", deleteMessage)
 
 		err = os.RemoveAll(fileToDelete.Path)
 		if err != nil {
-			fmt.Fprintf(errWriter, "%v\n", err)
+			fmt.Fprintf(os.Stderr, "%v\n", err)
 			if errors.As(err, &pe) {
-				fmt.Fprintf(errWriter, "Failed to remove %v from %v\n", pe.Path, fileToDelete.SDFile)
+				fmt.Fprintf(os.Stderr, "Failed to remove %v from %v\n", pe.Path, fileToDelete.SDFile)
 			}
 		}
 	}
@@ -352,42 +352,4 @@ func FindSdFiles(sdFolder string) ([]string, error) {
 func isSdFile(sdStat os.FileInfo) bool {
 	re, _ := regexp.Compile(`[0-9a-fA-F]+.txt`)
 	return re.Match([]byte(sdStat.Name()))
-}
-
-func GetWriters(logsDir string) (io.Writer, io.Writer, error) {
-	if len(logsDir) > 0 {
-		rootLogFolder, err := filepath.Abs(logsDir)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		if _, err := os.Stat(rootLogFolder); os.IsNotExist(err) {
-			fmt.Printf("Making root logs directory '%v'\n", rootLogFolder)
-			os.Mkdir(rootLogFolder, 0755)
-		}
-
-		sdLogFolder := filepath.Join(rootLogFolder, "staydeleted")
-		if _, err := os.Stat(sdLogFolder); os.IsNotExist(err) {
-			fmt.Printf("Making staydeleted logs directory '%v'\n", sdLogFolder)
-			os.Mkdir(sdLogFolder, 0755)
-		}
-
-		timeStr := time.Now().Format("2006-01-02_15.04.05")
-		outLogFileName := filepath.Join(sdLogFolder, fmt.Sprintf("%s.log", timeStr))
-		errLogFileName := filepath.Join(sdLogFolder, fmt.Sprintf("%s.err", timeStr))
-
-		outLogFile, err := os.Create(outLogFileName)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		errLogFile, err := os.Create(errLogFileName)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return outLogFile, errLogFile, nil
-	} else {
-		return os.Stdout, os.Stderr, nil
-	}
 }

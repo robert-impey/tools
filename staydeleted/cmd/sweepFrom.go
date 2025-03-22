@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/robert-impey/tools/staydeleted/sdlib"
@@ -50,28 +49,19 @@ func init() {
 }
 
 func sweepFrom(paths []string) {
-	outWriter, errWriter, err := sdlib.GetWriters(LogsDir)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-	}
-
-	sweepFromPaths(paths, outWriter, errWriter)
-}
-
-func sweepFromPaths(paths []string, outWriter io.Writer, errWriter io.Writer) {
 	for _, path := range paths {
 		stat, err := os.Stat(path)
 		if err != nil {
-			fmt.Fprintf(errWriter, "%v\n", err)
+			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
 
 		if stat.IsDir() {
-			fmt.Fprintf(errWriter, "%v\n is a directory!", path)
+			fmt.Fprintf(os.Stderr, "%v\n is a directory!", path)
 		} else {
-			err := sdlib.SweepFrom(path, ExpiryMonths, outWriter, errWriter, Verbose)
+			err := sdlib.SweepFrom(path, ExpiryMonths, Verbose)
 			if err != nil {
-				fmt.Fprintf(errWriter, "%v\n", err)
+				fmt.Fprintf(os.Stderr, "%v\n", err)
 			}
 		}
 	}
