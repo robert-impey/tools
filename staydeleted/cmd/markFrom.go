@@ -67,7 +67,7 @@ func markFrom(markFromFileName string) error {
 	for _, fileToMark := range filesToMark {
 		err := sdlib.SetActionForFile(fileToMark, action)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Println(err.Error())
 		} else {
 			fmt.Printf("Marked %v as %v\n", fileToMark, action)
 		}
