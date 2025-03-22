@@ -5,8 +5,8 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
-	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -59,8 +59,7 @@ func GetSdFolder(file string) (string, error) {
 	attemptedAbsSdFolder := filepath.Join(dir, SdFolderName)
 	absSdFolder, err := filepath.Abs(attemptedAbsSdFolder)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to find the absolute path of '%v'!",
-			attemptedAbsSdFolder)
+		log.Printf("Unable to find the absolute path of '%v'!", attemptedAbsSdFolder)
 		return "", err
 	} else {
 		return absSdFolder, nil
@@ -70,7 +69,7 @@ func GetSdFolder(file string) (string, error) {
 func GetSdFile(file string) (string, error) {
 	sdFolder, err := GetSdFolder(file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to get sd folder for '%v'!", file)
+		log.Printf("Unable to get sd folder for '%v'!", file)
 		return "", err
 	}
 
@@ -79,12 +78,17 @@ func GetSdFile(file string) (string, error) {
 	return filepath.Join(sdFolder, fmt.Sprintf("%x.txt", md5.Sum(data))), nil
 }
 
-func GetActionForFile(sdFileName, containingFolder string, errWriter io.Writer) (ActionForFile, error) {
+func GetActionForFile(sdFileName, containingFolder string) (ActionForFile, error) {
 	sdFile, err := os.Open(sdFileName)
-	defer sdFile.Close()
+	defer func(sdFile *os.File) {
+		err := sdFile.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(sdFile)
 
 	if err != nil {
-		fmt.Fprintf(errWriter, "%v\n", err)
+		log.Printf("%v\n", err)
 		return ActionForFile{"", "", NoAction}, err
 	}
 
@@ -94,7 +98,7 @@ func GetActionForFile(sdFileName, containingFolder string, errWriter io.Writer) 
 	input.Scan()
 	action, err := getActionForString(input.Text())
 	if err != nil {
-		fmt.Fprintf(errWriter, "%v\n", err)
+		log.Printf("%v\n", err)
 		return ActionForFile{"", "", NoAction}, err
 	}
 
@@ -104,7 +108,7 @@ func GetActionForFile(sdFileName, containingFolder string, errWriter io.Writer) 
 func SetActionForFile(fileName string, action Action) error {
 	var absFileName, err = filepath.Abs(fileName)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n", fileName)
+		log.Printf("Unable to find the absolute path for '%v'!\n", fileName)
 		return err
 	}
 
@@ -113,7 +117,7 @@ func SetActionForFile(fileName string, action Action) error {
 	sdFileName, err := GetSdFile(absFileName)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to get sd file name for '%v'!",
+		log.Printf("Unable to get sd file name for '%v'!",
 			absFileName)
 		return err
 	}
@@ -123,19 +127,29 @@ func SetActionForFile(fileName string, action Action) error {
 
 	if _, err := os.Stat(sdFolder); os.IsNotExist(err) {
 		fmt.Printf("Making directory '%v'\n", sdFolder)
-		os.Mkdir(sdFolder, 0755)
+		err := os.Mkdir(sdFolder, 0755)
+		if err != nil {
+			return err
+		}
 	}
 
 	sdFile, err := os.Create(sdFileName)
-	defer sdFile.Close()
+	defer func(sdFile *os.File) {
+		err := sdFile.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(sdFile)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Couldn't create file '%v'!\n",
-			sdFileName)
+		log.Printf("Couldn't create file '%v'!\n", sdFileName)
 		return err
 	}
 
-	fmt.Fprintf(sdFile, "%v\n%s\n", fileBase, getStringForAction(action))
+	_, err = fmt.Fprintf(sdFile, "%v\n%s\n", fileBase, getStringForAction(action))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -146,8 +160,12 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer sweepFromFile.Close()
-
+	defer func(sdFile *os.File) {
+		err := sdFile.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(sweepFromFile)
 	directoriesToSweep := make([]string, 0)
 
 	input := bufio.NewScanner(sweepFromFile)
@@ -201,7 +219,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 
 	absDirectoryToSweep, err := filepath.Abs(directoryToSweep)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v' - '%v'!\n",
+		log.Printf("Unable to find the absolute path for '%v' - '%v'!\n",
 			directoryToSweep, err)
 		return err
 	}
@@ -209,53 +227,53 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 	sdExpiryCutoff := time.Now().AddDate(0, -1*expiryMonths, 0)
 
 	if verbose {
-		fmt.Fprintf(os.Stdout, "Sweeping: '%v'\n", absDirectoryToSweep)
+		fmt.Printf("Sweeping: '%v'\n", absDirectoryToSweep)
 	}
 	filesToDelete := make([]fileToDelete, 0)
 	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			log.Printf("%v\n", err)
 			return err
 		}
 
 		if info.IsDir() && info.Name() == SdFolderName {
 			sdFolder := path
 			if verbose {
-				fmt.Fprintf(os.Stdout, "Search SD folder '%v'\n", sdFolder)
+				fmt.Printf("Search SD folder '%v'\n", sdFolder)
 			}
 			containingFolder := filepath.Dir(sdFolder)
 			if verbose {
-				fmt.Fprintf(os.Stdout, "Containing folder '%v'\n", containingFolder)
+				fmt.Printf("Containing folder '%v'\n", containingFolder)
 			}
 
 			sdFiles, err := FindSdFiles(sdFolder)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
+				log.Printf("%v\n", err)
 				return err
 			}
 
 			// Remove emptied sd folders
 			if len(sdFiles) == 0 {
-				fmt.Fprintf(os.Stdout, "Adding empty SD folder '%s' to the delete list\n", sdFolder)
+				fmt.Printf("Adding empty SD folder '%s' to the delete list\n", sdFolder)
 				filesToDelete = append(filesToDelete, fileToDelete{Path: sdFolder, SDFile: ""})
 			}
 
 			for _, sdFile := range sdFiles {
 				sdStat, err := os.Stat(sdFile)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "%v\n", err)
+					log.Printf("%v\n", err)
 					return err
 				}
 
 				if !isSdFile(sdStat) {
-					fmt.Fprintf(os.Stdout, "'%v' is not a legal name for SD file - deleting.\n",
+					fmt.Printf("'%v' is not a legal name for SD file - deleting.\n",
 						sdFile)
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
 					continue
 				}
 
 				if sdStat.ModTime().Before(sdExpiryCutoff) {
-					fmt.Fprintf(os.Stdout, "Adding old SD file '%v' from %s to the delete list\n",
+					fmt.Printf("Adding old SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -263,31 +281,31 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 				}
 
 				if verbose {
-					fmt.Fprintf(os.Stdout, "SD File '%v'\n", sdFile)
+					fmt.Printf("SD File '%v'\n", sdFile)
 				}
-				actionForFile, err := GetActionForFile(sdFile, containingFolder, os.Stderr)
+				actionForFile, err := GetActionForFile(sdFile, containingFolder)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "%v\n", err)
+					log.Printf("%v\n", err)
 					return err
 				}
 
 				if actionForFile.Action == Delete {
 					if _, err := os.Stat(actionForFile.File); os.IsNotExist(err) {
 						if verbose {
-							fmt.Fprintf(os.Stdout, "'%v' already deleted.\n", actionForFile.File)
+							fmt.Printf("'%v' already deleted.\n", actionForFile.File)
 						}
 						continue
 					}
-					fmt.Fprintf(os.Stdout, "Adding '%v' to the delete list\n", actionForFile.File)
+					fmt.Printf("Adding '%v' to the delete list\n", actionForFile.File)
 					filesToDelete = append(filesToDelete, fileToDelete{actionForFile.File, actionForFile.SdFile})
 				} else if actionForFile.Action == Keep {
 					if verbose {
-						fmt.Fprintf(os.Stdout, "Keeping '%v'\n", actionForFile.File)
+						fmt.Printf("Keeping '%v'\n", actionForFile.File)
 					}
 				} else {
-					fmt.Fprintf(os.Stderr, "Unrecognised action '%v' from '%v'!\n",
+					log.Printf("Unrecognised action '%v' from '%v'!\n",
 						actionForFile.Action, sdFile)
-					fmt.Fprintf(os.Stdout, "Adding unreadable SD file '%v' from %s to the delete list\n",
+					fmt.Printf("Adding unreadable SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -300,10 +318,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 
 	err = filepath.Walk(absDirectoryToSweep, walker)
 	if err != nil {
-		_, err := fmt.Fprintf(os.Stderr, "%v\n", err)
-		if err != nil {
-			return err
-		}
+		log.Printf("%v\n", err)
 		return err
 	}
 
@@ -314,13 +329,13 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 		if len(fileToDelete.SDFile) > 0 {
 			deleteMessage += fmt.Sprintf(" as instructed by '%v'", fileToDelete.SDFile)
 		}
-		fmt.Fprintf(os.Stdout, "%v\n", deleteMessage)
+		fmt.Printf("%v\n", deleteMessage)
 
 		err = os.RemoveAll(fileToDelete.Path)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			log.Printf("%v\n", err)
 			if errors.As(err, &pe) {
-				fmt.Fprintf(os.Stderr, "Failed to remove %v from %v\n", pe.Path, fileToDelete.SDFile)
+				log.Printf("Failed to remove %v from %v\n", pe.Path, fileToDelete.SDFile)
 			}
 		}
 	}

@@ -15,7 +15,7 @@ package cmd
 // limitations under the License.
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/robert-impey/tools/staydeleted/sdlib"
@@ -52,16 +52,16 @@ func sweepFrom(paths []string) {
 	for _, path := range paths {
 		stat, err := os.Stat(path)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			log.Println(err)
 			continue
 		}
 
 		if stat.IsDir() {
-			fmt.Fprintf(os.Stderr, "%v\n is a directory!", path)
+			log.Printf("%v\n is a directory!", path)
 		} else {
 			err := sdlib.SweepFrom(path, ExpiryMonths, Verbose)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
+				log.Fatalln(err)
 			}
 		}
 	}

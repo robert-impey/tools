@@ -61,7 +61,7 @@ func testGetSetFile(dir string, tfn string, t *testing.T) {
 		t.Error(err)
 	}
 
-	gotAction, err := GetActionForFile(sdfp, dir, os.Stderr)
+	gotAction, err := GetActionForFile(sdfp, dir)
 	if err != nil {
 		t.Error(err)
 	}
