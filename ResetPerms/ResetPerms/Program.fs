@@ -19,47 +19,36 @@ let findFilesWithShebang (scriptsDir: string) =
 
 [<EntryPoint>]
 let main args =
-    let dryRunOption = Option<bool>("--dry-run", (fun () -> false))
-
     let rootCommand = RootCommand("Reset permissions for files that have a shebang")
 
-    rootCommand.AddOption(dryRunOption)
-
-    let handler (dryRun: bool) =
+    let handler () =
         let logger =
-            if dryRun then
-                LoggerFactory
-                    .Create(fun builder ->
-                        builder.ClearProviders() |> ignore
-                        builder.AddConsole() |> ignore)
-                    .CreateLogger<FolderManager>()
-            else
-                LogsFileFinder.GetLogger<FolderManager>("reset-perms", "ResetPerms")
+            LoggerFactory
+                .Create(fun builder ->
+                    builder.ClearProviders() |> ignore
+                    builder.AddConsole() |> ignore)
+                .CreateLogger<FolderManager>()
 
         let folderManager = FolderManager.GetFolderManager(logger)
 
         let filesWithShebang = findFilesWithShebang (folderManager.GetLocalScriptsFolder())
-
-        if dryRun then
-            logger.LogInformation "DRY RUN!"
 
         logger.LogInformation $"Found {filesWithShebang.Count()} files with shebangs"
 
         for file in filesWithShebang do
             logger.LogInformation $"File with shebang: {file}"
 
-            if not dryRun then
-                File.SetUnixFileMode(
-                    file,
-                    UnixFileMode.UserRead
-                    ||| UnixFileMode.UserWrite
-                    ||| UnixFileMode.UserExecute
-                    ||| UnixFileMode.GroupRead
-                    ||| UnixFileMode.GroupExecute
-                    ||| UnixFileMode.OtherRead
-                    ||| UnixFileMode.OtherExecute
-                )
+            File.SetUnixFileMode(
+                file,
+                UnixFileMode.UserRead
+                ||| UnixFileMode.UserWrite
+                ||| UnixFileMode.UserExecute
+                ||| UnixFileMode.GroupRead
+                ||| UnixFileMode.GroupExecute
+                ||| UnixFileMode.OtherRead
+                ||| UnixFileMode.OtherExecute
+            )
 
-    rootCommand.SetHandler(handler, dryRunOption)
+    rootCommand.SetHandler(handler)
 
     rootCommand.Invoke(args)
