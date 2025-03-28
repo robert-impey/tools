@@ -1,3 +1,4 @@
+use std::fs;
 use clap::Parser;
 use std::path::{Path, PathBuf};
 
@@ -38,8 +39,23 @@ fn main() {
 }
 
 fn print_managed_folders(locations_path: Box<Path>, folders_path: Box<Path>) {
-    println!("folders_path: {}", folders_path.display());
     println!("locations_path: {}", locations_path.display());
+    println!("folders_path: {}", folders_path.display());
+
+    if let Some(locations_contents) = fs::read_to_string(locations_path).ok() {
+        if let Some(folders_contents) = fs::read_to_string(folders_path).ok() {
+            for location_line in locations_contents.lines() {
+                for folders_line in folders_contents.lines() {
+                    let managed_folder_path = Path::new(location_line).join(folders_line);
+                    
+                    if managed_folder_path.exists() {
+                        println!("{}", managed_folder_path.display());
+                    }
+                }
+            }
+        }    
+    }
+    
 }
 
 fn write_managed_folders_file(
@@ -47,7 +63,7 @@ fn write_managed_folders_file(
     folders_path: Box<Path>,
     managed_folders_file_path: Box<Path>,
 ) {
-    println!("folders_path: {}", folders_path.display());
     println!("locations_path: {}", locations_path.display());
+    println!("folders_path: {}", folders_path.display());
     println!("Writing to: {}", managed_folders_file_path.display());
 }
