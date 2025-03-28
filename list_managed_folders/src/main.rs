@@ -1,6 +1,7 @@
 use std::fs;
 use clap::Parser;
 use std::path::{Path, PathBuf};
+use chrono::{DateTime, Utc};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -47,15 +48,15 @@ fn print_managed_folders(locations_path: Box<Path>, folders_path: Box<Path>) {
             for location_line in locations_contents.lines() {
                 for folders_line in folders_contents.lines() {
                     let managed_folder_path = Path::new(location_line).join(folders_line);
-                    
+
                     if managed_folder_path.exists() {
                         println!("{}", managed_folder_path.display());
                     }
                 }
             }
-        }    
+        }
     }
-    
+
 }
 
 fn write_managed_folders_file(
@@ -69,6 +70,15 @@ fn write_managed_folders_file(
 
     let mut output = String::new();
 
+    output.push_str("# AUTOGEN'D!\n# ");
+
+    let now: DateTime<Utc> = Utc::now();
+
+    output.push_str(now.to_rfc2822().as_str());
+
+    output.push_str("\n");
+    output.push_str("# DO NOT EDIT!\n\n");
+
     if let Some(locations_contents) = fs::read_to_string(locations_path).ok() {
         if let Some(folders_contents) = fs::read_to_string(folders_path).ok() {
             for location_line in locations_contents.lines() {
@@ -78,13 +88,13 @@ fn write_managed_folders_file(
                     if managed_folder_path.exists() {
                         if let Some(managed_folder_str) = managed_folder_path.to_str() {
                             output.push_str(managed_folder_str);
-                            output.push_str("\n");                            
+                            output.push_str("\n");
                         }
                     }
                 }
             }
         }
     }
-    
+
     let _ = fs::write(managed_folders_file_path, output);
 }
