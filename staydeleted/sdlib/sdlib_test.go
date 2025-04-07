@@ -67,11 +67,11 @@ func testGetSetFile(dir string, tfn string, t *testing.T) {
 	}
 
 	if gotAction.File != tfp {
-		t.Error(fmt.Sprintf("gotAction.File is '%s', expecting '%s'!", gotAction.File, tfp))
+		t.Errorf("gotAction.File is '%s', expecting '%s'!", gotAction.File, tfp)
 	}
 
 	if gotAction.Action != action {
-		t.Error(fmt.Sprintf("gotAction.Action: %s!", getStringForAction(gotAction.Action)))
+		t.Errorf("gotAction.Action: %s!", getStringForAction(gotAction.Action))
 	}
 }
 
@@ -101,6 +101,6 @@ func TestFindingSdFiles(t *testing.T) {
 
 	foundFounds := len(sdFiles)
 	if foundFounds != 1 {
-		t.Error(fmt.Sprintf("got %d sd files, expecting 1!", foundFounds))
+		t.Errorf("got %d sd files, expecting 1!", foundFounds)
 	}
 }
