@@ -27,6 +27,10 @@ type ActionForFile struct {
 	Action       Action
 }
 
+type fileToDelete struct {
+	Path, SDFile string
+}
+
 const SdFolderName = ".stay-deleted"
 
 func GetActionForBool(keep bool) Action {
@@ -213,10 +217,6 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 		return fmt.Errorf("%s is not a directory", directoryToSweep)
 	}
 
-	type fileToDelete struct {
-		Path, SDFile string
-	}
-
 	absDirectoryToSweep, err := filepath.Abs(directoryToSweep)
 	if err != nil {
 		log.Printf("Unable to find the absolute path for '%v' - '%v'!\n",
@@ -224,11 +224,23 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 		return err
 	}
 
-	sdExpiryCutoff := time.Now().AddDate(0, -1*expiryMonths, 0)
-
 	if verbose {
 		fmt.Printf("Sweeping: '%v'\n", absDirectoryToSweep)
 	}
+
+	sdExpiryCutoff := time.Now().AddDate(0, -1*expiryMonths, 0)
+
+	filesToDelete, err := findFilesToDelete(absDirectoryToSweep, sdExpiryCutoff, verbose)
+	if err != nil {
+		return err
+	}
+
+	deleteFilesToDelete(filesToDelete)
+
+	return nil
+}
+
+func findFilesToDelete(absDirectoryToSweep string, sdExpiryCutoff time.Time, verbose bool) ([]fileToDelete, error) {
 	filesToDelete := make([]fileToDelete, 0)
 	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -316,12 +328,16 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 		return nil
 	}
 
-	err = filepath.Walk(absDirectoryToSweep, walker)
+	err := filepath.Walk(absDirectoryToSweep, walker)
 	if err != nil {
 		log.Printf("%v\n", err)
-		return err
+		return nil, err
 	}
 
+	return filesToDelete, nil
+}
+
+func deleteFilesToDelete(filesToDelete []fileToDelete) {
 	var pe *fs.PathError
 	for _, fileToDelete := range filesToDelete {
 		var deleteMessage = fmt.Sprintf("Deleting '%v'", fileToDelete.Path)
@@ -331,7 +347,7 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 		}
 		fmt.Printf("%v\n", deleteMessage)
 
-		err = os.RemoveAll(fileToDelete.Path)
+		err := os.RemoveAll(fileToDelete.Path)
 		if err != nil {
 			log.Printf("%v\n", err)
 			if errors.As(err, &pe) {
@@ -339,13 +355,14 @@ func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) err
 			}
 		}
 	}
-
-	return nil
 }
 
 func FindSdFiles(sdFolder string) ([]string, error) {
 	var sdFiles []string
 	walker := func(sdFile string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		sdStat, err := os.Stat(sdFile)
 		if err != nil {
 			return err
