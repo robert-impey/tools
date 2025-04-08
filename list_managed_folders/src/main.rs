@@ -36,7 +36,21 @@ fn main() {
                 if let Some(managed_folders_file_path) 
                     = cli.managed_folders_file.as_deref() {
                     println!("Writing to: {}", managed_folders_file_path.display());
-                    let _ = fs::write(managed_folders_file_path, contents);
+
+                    let mut file_contents = String::new();
+
+                    file_contents.push_str("# AUTOGEN'D!\n# ");
+                
+                    let now: DateTime<Utc> = Utc::now();
+                
+                    file_contents.push_str(now.to_rfc2822().as_str());
+                
+                    file_contents.push_str("\n");
+                    file_contents.push_str("# DO NOT EDIT!\n");
+
+                    file_contents.push_str(&contents);
+
+                    let _ = fs::write(managed_folders_file_path, file_contents);
                 }
             } else {
                 println!("{}", contents);
@@ -50,15 +64,6 @@ fn make_managed_folders_file_contents(
     folders_path: Box<Path>
 ) -> String {
     let mut output = String::new();
-
-    output.push_str("# AUTOGEN'D!\n# ");
-
-    let now: DateTime<Utc> = Utc::now();
-
-    output.push_str(now.to_rfc2822().as_str());
-
-    output.push_str("\n");
-    output.push_str("# DO NOT EDIT!\n");
 
     if let Some(locations_contents) = fs::read_to_string(locations_path).ok() {
         if let Some(folders_contents) = fs::read_to_string(folders_path).ok() {
