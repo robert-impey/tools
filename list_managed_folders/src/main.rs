@@ -68,8 +68,14 @@ fn make_managed_folders_file_contents(
     if let Some(locations_contents) = fs::read_to_string(locations_path).ok() {
         if let Some(folders_contents) = fs::read_to_string(folders_path).ok() {
             for location_line in locations_contents.lines() {
-                output.push_str("\n");
+                let mut first = true;
+                
                 for folders_line in folders_contents.lines() {
+                    if first {
+                        output.push_str("\n");
+                        first = false;
+                    }
+                    
                     let managed_folder_path = 
                         Path::new(location_line).join(folders_line);
 
