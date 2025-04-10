@@ -16,9 +16,9 @@
       "args": [
         "list",
         "--locations",
-        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\Windows\\locations.txt",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\Windows\\locations.txt",
         "--folders",
-        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\folders.txt"
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt"
       ]
     },
     {
@@ -30,9 +30,9 @@
         "list",
         "--write",
         "--locations",
-        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\Windows\\locations.txt",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\Windows\\locations.txt",
         "--folders",
-        "C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\folders.txt",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt",
         "--managed-folders",
         "C:\\Users\\rober\\autogen\\managed-folders.txt"
       ]
@@ -43,6 +43,19 @@
       "projectTarget": "",
       "name": "ManagedFolders generate_synch_scripts",
       "args": [ "generate_synch_scripts" ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "",
+      "name": "ManagedFolders generate_synch_scripts Menka",
+      "args": [
+        "generate_synch_scripts",
+        "--locations",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\Menka\\locations.txt",
+        "--folders",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt"
+      ]
     }
   ]
 }
