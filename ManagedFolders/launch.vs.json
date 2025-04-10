@@ -12,6 +12,13 @@
       "type": "default",
       "project": "CMakeLists.txt",
       "projectTarget": "",
+      "name": "ManagedFolders list (No files)",
+      "args": [ "list" ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "",
       "name": "ManagedFolders list",
       "args": [
         "list",
@@ -41,8 +48,21 @@
       "type": "default",
       "project": "CMakeLists.txt",
       "projectTarget": "",
-      "name": "ManagedFolders generate_synch_scripts",
+      "name": "ManagedFolders generate_synch_scripts (No files)",
       "args": [ "generate_synch_scripts" ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "",
+      "name": "ManagedFolders generate_synch_scripts",
+      "args": [
+        "generate_synch_scripts",
+        "--locations",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\Windows\\locations.txt",
+        "--folders",
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt"
+      ]
     },
     {
       "type": "default",

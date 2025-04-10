@@ -153,12 +153,6 @@ private:
 		}
 	}
 
-	void list_pairs_write(ostream& out) const {
-		for (const auto pairs = find_pairs(); const auto & [fst, snd]: pairs) {
-			out << fst.string() << " <-> " << snd.string() << endl;
-		}
-	}
-
 	void generate_synch_location_pair_folders(const fs::path& synch_autogen_path) const {
 		for (auto& location_path1 : _location_paths) {
 			const string clean_path1 = clean_path(location_path1.string());
@@ -335,21 +329,24 @@ int main(const int argc, char* argv[]) {
 	const auto u8_argv{ app.ensure_utf8(argv) };
 
 	auto write {false};
+	string locations_file;
+	string folders_file;
 
 	const auto list_sub_command{
 		app.add_subcommand("list", "List managed folders") };
 	list_sub_command->add_flag("-w,--write", write, "Write list to file");
-	string locations_file;
+	
 	list_sub_command->add_option("-l,--locations", locations_file, "Locations File");
-	string folders_file;
 	list_sub_command->add_option("-f,--folders", folders_file, "Folders File");
+	
 	string managed_folders_file;
 	list_sub_command->add_option("-m,--managed-folders", managed_folders_file, "Managed Folders File");
 
-	CLI::App* list_pairs_sub_command{ app.add_subcommand("list_pairs", "List pairs of managed folders") };
-	CLI::App* list_pairs_write_sub_command{ app.add_subcommand("list_pairs_write", "Write list of managed folders to file") };
-
 	const auto generate_synch_scripts_sub_command{ app.add_subcommand("generate_synch_scripts", "Generate Synch Scripts") };
+
+	generate_synch_scripts_sub_command->add_option("-l,--locations", locations_file, "Locations File");
+	generate_synch_scripts_sub_command->add_option("-f,--folders", folders_file, "Folders File");
+
 	CLI::App* generate_synch_windows_config_script_sub_command{
 	   app.add_subcommand("generate_synch_windows_config_script", "Generate Synch Scripts for Windows Config") };
 
@@ -359,32 +356,44 @@ int main(const int argc, char* argv[]) {
 
 	const string task = app.get_subcommands().back()->get_name();
 
-	if (task == "list") {
-		auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
+	try {
+		if (task == "list") {
+			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
 
-		if (write) {
-			folder_manager.list_write(managed_folders_file);
+			if (write) {
+				folder_manager.list_write(managed_folders_file);
+			}
+			else {
+				folder_manager.list();
+			}
+
+			return 0;
 		}
-		else {
-			folder_manager.list();
+
+		if (task == "generate_synch_scripts") {
+			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
+			folder_manager.generate_synch_scripts();
+
+			return 0;
 		}
 
-		return 0;
+		if (task == "generate_synch_windows_config_script") {
+			FolderManager::generate_synch_windows_config_script();
+
+			return 0;
+		}
 	}
-	
-	const auto local_scripts_path{ find_local_scripts_path() };
-	auto folder_manager{ make_folder_manager_from_local_scripts_path(local_scripts_path) };
-
-	if (task == "generate_synch_scripts") {
-		folder_manager.generate_synch_scripts();
-
-		return 0;
+	catch (const CLI::Error& e) {
+		cerr << "Error: " << e.what() << endl;
+		return 1;
 	}
-
-	if (task == "generate_synch_windows_config_script") {
-		FolderManager::generate_synch_windows_config_script();
-
-		return 0;
+	catch (const std::exception& e) {
+		cerr << "Error: " << e.what() << endl;
+		return 1;
+	}
+	catch (...) {
+		cerr << "Unknown error occurred!" << endl;
+		return 1;
 	}
 }
 
@@ -546,6 +555,9 @@ fs::path find_folders_file_path(const fs::path& local_scripts_dir) {
 }
 
 FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file) {
+	if (locations_file.empty() || folders_file.empty()) {
+		throw runtime_error{ "Locations file and folders file must be specified!" };
+	}
 	auto locations_file_path_fs{ fs::path{locations_file} };
 	auto folders_file_path_fs{ fs::path{folders_file} };
 	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
