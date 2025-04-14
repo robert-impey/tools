@@ -25,7 +25,9 @@
         "--locations",
         "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\Windows\\locations.txt",
         "--folders",
-        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt"
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt",
+        "--autogen",
+        "C:\\Users\\rober\\autogen"
       ]
     },
     {
@@ -38,7 +40,9 @@
         "--locations",
         "C:\\Users\\rober\\Dropbox\\local-scripts\\Menka\\locations.txt",
         "--folders",
-        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt"
+        "C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\folders.txt",
+        "--autogen",
+        "C:\\Users\\rober\\autogen"
       ]
     }
   ]

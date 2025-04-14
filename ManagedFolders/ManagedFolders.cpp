@@ -14,11 +14,7 @@ namespace fs = std::filesystem;
 
 vector<string> read_all_non_empty_lines(const fs::path&);
 
-fs::path get_home_folder();
-
-fs::path find_autogen_path();
-
-fs::path find_tool_autogen_path(const string&);
+fs::path find_tool_autogen_path(const fs::path&, const string&);
 
 string clean_path(const string&);
 
@@ -35,23 +31,25 @@ public:
 	explicit FolderManager(
 		vector<string> locations,
 		vector<string> folders,
-		vector<fs::path> location_paths
+		vector<fs::path> location_paths,
+		const fs::path& autogen_dir_path
 	) {
 		_locations = std::move(locations);
 		_folders = std::move(folders);
 		_location_paths = std::move(location_paths);
+		_autogen_dir_path = autogen_dir_path;
 	}
 
 	void generate_synch_scripts() {
-		auto synch_autogen_path{ find_tool_autogen_path("synch") };
+		auto synch_autogen_path{ find_tool_autogen_path(_autogen_dir_path, "synch")};
 
 		generate_synch_location_pair_folders(synch_autogen_path);
 	}
 
-
 private:
 	vector<string> _locations, _folders;
 	vector<fs::path> _location_paths;
+	fs::path _autogen_dir_path;
 
 	[[nodiscard]] vector<pair<fs::path, fs::path>> find_pairs() const {
 		vector<pair<fs::path, fs::path>> pairs;
@@ -144,48 +142,22 @@ private:
 	}
 };
 
-FolderManager make_folder_manager_from_strings(const string&, const string&);
-FolderManager make_folder_manager_from_paths(const fs::path&, const fs::path&);
-
-fs::path get_home_folder() {
-#pragma warning( push )
-#pragma warning(disable: 4996)
-	const auto user_profile{ getenv("USERPROFILE") };
-#pragma warning( pop )
-
-	if (user_profile != nullptr) {
-		const fs::path user_profile_folder{ user_profile };
-
-		return user_profile_folder;
-	}
-
-#pragma warning( push )
-#pragma warning(disable: 4996)
-	const auto home{ getenv("HOME") };
-#pragma warning( pop )
-
-	if (home != nullptr) {
-		const fs::path home_folder{ home };
-
-		return home_folder;
-	}
-
-	throw runtime_error{ "Unable to find the home folder!" };
-}
-
+FolderManager make_folder_manager_from_strings(const string&, const string&, const string&);
+FolderManager make_folder_manager_from_paths(const fs::path&, const fs::path&, const fs::path&);
 
 int main(const int argc, char* argv[]) {
 	CLI::App app{ "Managed Folders" };
 	const auto u8_argv{ app.ensure_utf8(argv) };
 
-	auto write {false};
 	string locations_file;
 	string folders_file;
+	string autogen_dir;
 	
 	const auto generate_synch_scripts_sub_command{ app.add_subcommand("generate_synch_scripts", "Generate Synch Scripts") };
 
 	generate_synch_scripts_sub_command->add_option("-l,--locations", locations_file, "Locations File");
 	generate_synch_scripts_sub_command->add_option("-f,--folders", folders_file, "Folders File");
+	generate_synch_scripts_sub_command->add_option("-a,--autogen", autogen_dir, "Autogen Directory");
 
 	app.require_subcommand();
 
@@ -195,7 +167,7 @@ int main(const int argc, char* argv[]) {
 
 	try {
 		if (task == "generate_synch_scripts") {
-			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
+			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file, autogen_dir) };
 			folder_manager.generate_synch_scripts();
 
 			return 0;
@@ -233,21 +205,7 @@ vector<string> read_all_non_empty_lines(const fs::path& path) {
 	return lines;
 }
 
-fs::path find_autogen_path() {
-	const auto home_folder_path{ get_home_folder() };
-
-	fs::path autogen_path{ home_folder_path / "autogen" };
-
-	if (!exists(autogen_path)) {
-		create_directory(autogen_path);
-	}
-
-	return autogen_path;
-}
-
-fs::path find_tool_autogen_path(const string& tool) {
-	const auto autogen_path{ find_autogen_path() };
-
+fs::path find_tool_autogen_path(const fs::path& autogen_path, const string& tool) {
 	fs::path tool_autogen_path{ autogen_path / tool };
 
 	if (!exists(tool_autogen_path)) {
@@ -348,18 +306,29 @@ void generate_all_folders_synch_script(
 	script_file.close();
 }
 
-FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file) {
+FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file, const string& autogen_dir) {
 	if (locations_file.empty() || folders_file.empty()) {
-		throw runtime_error{ "Locations file and folders file must be specified!" };
+		throw runtime_error{ "Locations folders files must be specified!" };
 	}
+
+	if (autogen_dir.empty()) {
+		throw runtime_error{ "The autogen directory must be specified!" };
+	}
+
 	auto locations_file_path_fs{ fs::path{locations_file} };
 	auto folders_file_path_fs{ fs::path{folders_file} };
-	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
+	auto autogen_dir_path_fs{ fs::path{autogen_dir} };
+	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs, autogen_dir_path_fs);
 }
 
-FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path) {
+FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path, const fs::path& autogen_dir_path) {
 	cout << "Locations file: " << locations_file_path << endl;
 	cout << "Folders file: " << folders_file_path << endl;
+	cout << "Autogen Directory: " << autogen_dir_path << endl;
+
+	if (!is_directory(autogen_dir_path)) {
+		throw runtime_error{ "The autogen directory must be a directory!" };
+	}
 
 	auto locations = read_all_non_empty_lines(locations_file_path);
 	auto folders = read_all_non_empty_lines(folders_file_path);
@@ -382,7 +351,8 @@ FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path
 	FolderManager folder_manager(
 		locations,
 		folders,
-		location_paths);
+		location_paths,
+		autogen_dir_path);
 
 	return folder_manager;
 }
