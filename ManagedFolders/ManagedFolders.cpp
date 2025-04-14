@@ -20,10 +20,6 @@ fs::path find_autogen_path();
 
 fs::path find_tool_autogen_path(const string&);
 
-fs::path find_local_scripts_path();
-
-fs::path find_config_path();
-
 string clean_path(const string&);
 
 void generate_folder_synch_script(const string&, const fs::path&, const fs::path&, const fs::path&);
@@ -76,13 +72,6 @@ public:
 		generate_synch_location_pair_folders(synch_autogen_path);
 	}
 
-	static void generate_synch_windows_config_script() {
-		auto synch_autogen_path{ find_tool_autogen_path("synch") };
-
-		auto files_file{ find_windows_config_files_file() };
-
-		generate_synch_windows_config_script(synch_autogen_path, files_file);
-	}
 
 private:
 	vector<string> _locations, _folders;
@@ -202,62 +191,9 @@ private:
 			}
 		}
 	}
-
-	static void generate_synch_windows_config_script(const fs::path& synch_autogen_path, const fs::path& files_file) {
-		cout << "generate_synch_windows_config_script" << endl;
-
-		auto script_name{ "config-Windows.ps1" };
-
-		const fs::path script_path{ synch_autogen_path / script_name };
-
-		ofstream script_file;
-		script_file.open(script_path, ios::out | ios::trunc);
-
-		write_autogen_header(script_file);
-
-		cout << "Reading " << files_file << endl;
-
-		auto home_folder{ get_home_folder() };
-
-		auto files = read_all_non_empty_lines(files_file);
-
-		auto config_path = find_config_path();
-
-		auto common_windows_config_path{ config_path / "_Common" / "Windows" };
-
-		for (auto& file : files) {
-			ostringstream command1;
-			command1 << "ROBOCOPY " << home_folder << " " << common_windows_config_path << " /xo " << file;
-			write_powershell_command(script_file, command1.str());
-
-			ostringstream command2;
-			command2 << "ROBOCOPY " << common_windows_config_path << " " << home_folder << " /xo " << file;
-
-			write_powershell_command(script_file, command2.str());
-		}
-	}
-
-	static fs::path find_windows_config_files_file() {
-		auto local_scripts_path{ find_local_scripts_path() };
-
-		const auto computer_name{ getenv("ComputerName") };
-
-		if (computer_name != nullptr) {
-			const fs::path computer_specific_files_file{
-					local_scripts_path / computer_name / "synch" / "config-Windows" / "files.txt" };
-
-			if (fs::exists(computer_specific_files_file))
-				return computer_specific_files_file;
-		}
-
-		fs::path common_files_file{ local_scripts_path / "_Common" / "synch" / "config-Windows" / "files.txt" };
-
-		return common_files_file;
-	}
 };
 
 FolderManager make_folder_manager_from_strings(const string&, const string&);
-FolderManager make_folder_manager_from_local_scripts_path(const fs::path&);
 FolderManager make_folder_manager_from_paths(const fs::path&, const fs::path&);
 
 fs::path get_home_folder() {
@@ -286,43 +222,6 @@ fs::path get_home_folder() {
 	throw runtime_error{ "Unable to find the home folder!" };
 }
 
-fs::path find_local_scripts_path() {
-#pragma warning( push )
-#pragma warning(disable: 4996)
-	const auto local_scripts_env_var{ getenv("LOCAL_SCRIPTS") };
-#pragma warning( pop )
-
-	if (local_scripts_env_var != nullptr) {
-		const fs::path local_scripts_path{ local_scripts_env_var };
-
-		return local_scripts_path;
-	}
-
-	const auto home_folder_path{ get_home_folder() };
-
-	fs::path local_scripts_path{ home_folder_path / "local-scripts" };
-
-	return local_scripts_path;
-}
-
-fs::path find_config_path() {
-#pragma warning( push )
-#pragma warning(disable: 4996)
-	const auto config_env_var{ getenv("CONFIG") };
-#pragma warning( pop )
-
-	if (config_env_var != nullptr) {
-		const fs::path config_path{ config_env_var };
-
-		return config_path;
-	}
-
-	const auto home_folder_path{ get_home_folder() };
-
-	fs::path config_path{ home_folder_path / "config" };
-
-	return config_path;
-}
 
 int main(const int argc, char* argv[]) {
 	CLI::App app{ "Managed Folders" };
@@ -373,12 +272,6 @@ int main(const int argc, char* argv[]) {
 		if (task == "generate_synch_scripts") {
 			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
 			folder_manager.generate_synch_scripts();
-
-			return 0;
-		}
-
-		if (task == "generate_synch_windows_config_script") {
-			FolderManager::generate_synch_windows_config_script();
 
 			return 0;
 		}
@@ -530,30 +423,6 @@ void generate_all_folders_synch_script(
 	script_file.close();
 }
 
-fs::path find_locations_file_path(const fs::path& local_scripts_dir) {
-#ifdef _WIN32
-	auto os_folder{ "Windows" };
-#elif _WIN64
-	auto os_folder{ "Windows" };
-#elif __linux__
-	auto os_folder{ "linux" };
-#elif __unix
-	auto os_folder{ "linux" };
-#elif __unix__
-	auto os_folder{ "linux" };
-#else
-	auto os_folder = "Other";
-#endif
-
-	auto locations_file_path{ local_scripts_dir / "_Common" / os_folder / "locations.txt" };
-
-	return locations_file_path;
-}
-
-fs::path find_folders_file_path(const fs::path& local_scripts_dir) {
-	return local_scripts_dir / "_Common" / "folders.txt";
-}
-
 FolderManager make_folder_manager_from_strings(const string& locations_file, const string& folders_file) {
 	if (locations_file.empty() || folders_file.empty()) {
 		throw runtime_error{ "Locations file and folders file must be specified!" };
@@ -563,12 +432,6 @@ FolderManager make_folder_manager_from_strings(const string& locations_file, con
 	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
 }
 
-FolderManager make_folder_manager_from_local_scripts_path(const fs::path& local_scripts_dir) {
-	auto locations_file_path{ find_locations_file_path(local_scripts_dir) };
-	auto folders_file_path{ find_folders_file_path(local_scripts_dir) };
-
-	return make_folder_manager_from_paths(locations_file_path, folders_file_path);
-}
 
 FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path) {
 	cout << "Locations file: " << locations_file_path << endl;
