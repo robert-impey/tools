@@ -187,9 +187,6 @@ int main(const int argc, char* argv[]) {
 	generate_synch_scripts_sub_command->add_option("-l,--locations", locations_file, "Locations File");
 	generate_synch_scripts_sub_command->add_option("-f,--folders", folders_file, "Folders File");
 
-	CLI::App* generate_synch_windows_config_script_sub_command{
-	   app.add_subcommand("generate_synch_windows_config_script", "Generate Synch Scripts for Windows Config") };
-
 	app.require_subcommand();
 
 	CLI11_PARSE(app, argc, u8_argv);
@@ -359,7 +356,6 @@ FolderManager make_folder_manager_from_strings(const string& locations_file, con
 	auto folders_file_path_fs{ fs::path{folders_file} };
 	return make_folder_manager_from_paths(locations_file_path_fs, folders_file_path_fs);
 }
-
 
 FolderManager make_folder_manager_from_paths(const fs::path& locations_file_path, const fs::path& folders_file_path) {
 	cout << "Locations file: " << locations_file_path << endl;
