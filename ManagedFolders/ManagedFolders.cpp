@@ -42,30 +42,6 @@ public:
 		_location_paths = std::move(location_paths);
 	}
 
-	void list() {
-		list_write(cout);
-	}
-
-	void list_write(string managed_folders_file) {
-		fs::path managed_folders_path;
-		if (managed_folders_file.empty()) {
-			auto autogen_path{ find_autogen_path() };
-			managed_folders_path = autogen_path / "managed-folders.txt";
-		}
-		else {
-			managed_folders_path = managed_folders_file;
-		}		
-
-		cout << "Managed folders file: " << managed_folders_path << endl;
-
-		ofstream managed_folders_file_stream;
-		managed_folders_file_stream.open(managed_folders_path, ios::out | ios::trunc);
-
-		write_autogen_header(managed_folders_file_stream);
-
-		list_write(managed_folders_file_stream);
-	}
-
 	void generate_synch_scripts() {
 		auto synch_autogen_path{ find_tool_autogen_path("synch") };
 
@@ -115,31 +91,6 @@ private:
 		sort(pairs.begin(), pairs.end());
 
 		return pairs;
-	}
-
-	void list_write(ostream& out) {
-		auto first{ true };
-		for (auto& location : _locations) {
-			const fs::path location_path{ location };
-
-			if (first)
-				first = false;
-			else if (exists(location_path))
-				out << endl;
-
-			for (auto& folder : _folders) {
-				const fs::path located_folder_path{ location_path / folder };
-
-				try {
-					if (exists(located_folder_path)) {
-						out << located_folder_path.string() << endl;
-					}
-				}
-				catch (std::filesystem::filesystem_error& e) {
-					std::cerr << e.what() << endl;
-				}
-			}
-		}
 	}
 
 	void generate_synch_location_pair_folders(const fs::path& synch_autogen_path) const {
@@ -230,17 +181,7 @@ int main(const int argc, char* argv[]) {
 	auto write {false};
 	string locations_file;
 	string folders_file;
-
-	const auto list_sub_command{
-		app.add_subcommand("list", "List managed folders") };
-	list_sub_command->add_flag("-w,--write", write, "Write list to file");
 	
-	list_sub_command->add_option("-l,--locations", locations_file, "Locations File");
-	list_sub_command->add_option("-f,--folders", folders_file, "Folders File");
-	
-	string managed_folders_file;
-	list_sub_command->add_option("-m,--managed-folders", managed_folders_file, "Managed Folders File");
-
 	const auto generate_synch_scripts_sub_command{ app.add_subcommand("generate_synch_scripts", "Generate Synch Scripts") };
 
 	generate_synch_scripts_sub_command->add_option("-l,--locations", locations_file, "Locations File");
@@ -256,19 +197,6 @@ int main(const int argc, char* argv[]) {
 	const string task = app.get_subcommands().back()->get_name();
 
 	try {
-		if (task == "list") {
-			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
-
-			if (write) {
-				folder_manager.list_write(managed_folders_file);
-			}
-			else {
-				folder_manager.list();
-			}
-
-			return 0;
-		}
-
 		if (task == "generate_synch_scripts") {
 			auto folder_manager{ make_folder_manager_from_strings(locations_file, folders_file) };
 			folder_manager.generate_synch_scripts();
