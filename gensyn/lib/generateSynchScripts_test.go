@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseGSSFile(t *testing.T) {
-	scriptsInfo, err := parseGSSFile("merneith.txt")
+	scriptsInfo, err := ParseGSSFile("merneith.txt")
 
 	assert.Nil(t, err)
 	assert.NotNil(t, scriptsInfo)
@@ -24,7 +24,7 @@ func TestParseGSSFile(t *testing.T) {
 }
 
 func TestParseGSSFileBadFile(t *testing.T) {
-	scriptsInfo, err := parseGSSFile("does-not-exist.txt")
+	scriptsInfo, err := ParseGSSFile("does-not-exist.txt")
 
 	assert.NotNil(t, err)
 	assert.Nil(t, scriptsInfo)
@@ -33,7 +33,7 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateSynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := generateSynchScripts(outputDir, "merneith.txt")
+	err := GenerateSynchScripts(outputDir, "merneith.txt")
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "merneith.sh")

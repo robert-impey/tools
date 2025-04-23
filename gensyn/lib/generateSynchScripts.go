@@ -22,10 +22,10 @@ type ScriptsInfo struct {
 	dirs                       []string
 }
 
-func generateSynchScripts(autoGenDir string, gssFile string) error {
+func GenerateSynchScripts(autoGenDir string, gssFile string) error {
 	fmt.Printf("Generating synch scripts for %v\n", gssFile)
 
-	scriptInfo, err := parseGSSFile(gssFile)
+	scriptInfo, err := ParseGSSFile(gssFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to parse %v - %v\n", gssFile, err)
 		return err
@@ -38,7 +38,7 @@ func generateSynchScripts(autoGenDir string, gssFile string) error {
 	return nil
 }
 
-func parseGSSFile(gssFileName string) (*ScriptsInfo, error) {
+func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 	scriptsInfo := new(ScriptsInfo)
 
 	base := filepath.Base(gssFileName)
