@@ -1,6 +1,6 @@
 module github.com/robert-impey/tools/logs-deleter
 
-go 1.24.1
+go 1.24.2
 
 require github.com/spf13/cobra v1.9.1
 

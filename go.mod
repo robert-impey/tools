@@ -1,6 +1,6 @@
 module github.com/robert-impey/tools
 
-go 1.24.1
+go 1.24.2
 
 require (
 	github.com/mitchellh/go-homedir v1.1.0
