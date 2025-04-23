@@ -4,6 +4,6 @@ toolchain go1.24.2
 
 use (
 	.
-	./generate-synch-scripts
+	./gensyn
 	./logs-deleter
 )

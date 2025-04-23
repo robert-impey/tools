@@ -33,11 +33,11 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  build_generate_synch_scripts:
+  build_gensynch:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./generate-synch-scripts
+        working-directory: ./gensyn
     steps:
       - uses: actions/checkout@v4
 

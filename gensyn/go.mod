@@ -1,4 +1,4 @@
-module github.com/robert-impey/tools/generate-synch-scripts
+module github.com/robert-impey/tools/gensyn
 
 go 1.24.2
 
