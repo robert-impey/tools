@@ -1,6 +1,6 @@
 package main
 
-// Copyright © 2018 Robert Impey robert.impey@gmail.com
+// Copyright © 2018 Robert Impey robert.impey@hotmail.co.uk
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

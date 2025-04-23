@@ -1,5 +1,5 @@
 // Generates synch scripts for running rsync between two directories
-package gensyn
+// package gensyn
 
 // "errors"
 // "flag"
