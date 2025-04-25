@@ -1,7 +1,7 @@
 package main
 
 /*
-Copyright © 2023 Robert Impey robert.impey@hotmail.co.uk
+Copyright © 2023 Robert Impey robert-impey@users.noreply.github.com
 */
 
 import "github.com/robert-impey/tools/cron-setter/cmd"

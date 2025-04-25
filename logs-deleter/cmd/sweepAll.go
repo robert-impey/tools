@@ -1,17 +1,18 @@
 package cmd
 
 /*
-Copyright © 2022 Robert Impey, robert.impey@hotmail.co.uk
+Copyright © 2022 Robert Impey, robert-impey@users.noreply.github.com
 */
 
 import (
 	"errors"
 	"fmt"
-	"github.com/robert-impey/tools/logs-deleter/lib"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/robert-impey/tools/logs-deleter/lib"
+	"github.com/spf13/cobra"
 )
 
 // sweepAllCmd represents the sweepAll command

@@ -1,6 +1,6 @@
 package cmd
 
-// Copyright © 2018 - 2025 Robert Impey robert.impey@hotmail.co.uk
+// Copyright © 2018 - 2025 Robert Impey robert-impey@users.noreply.github.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@ package cmd
 // limitations under the License.
 
 import (
+	"log"
+
 	"github.com/robert-impey/tools/staydeleted/sdlib"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var Keep bool

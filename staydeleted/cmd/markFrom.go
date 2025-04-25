@@ -1,7 +1,7 @@
 package cmd
 
 /*
-Copyright © 2022 - 2025 Robert Impey robert.impey@hotmail.co.uk
+Copyright © 2022 - 2025 Robert Impey robert-impey@users.noreply.github.com
 */
 
 import (
