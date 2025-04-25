@@ -59,7 +59,12 @@ let main args =
                 logger.LogInformation "Deleting existing autogen'd script"
                 File.Delete scriptPath
 
-            Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath FolderManager.HomeFolder FolderManager.ConfigFolder)
+            let configFolder = Path.Join(FolderManager.ConfigFolder, "_Common", "Windows")
+
+            if Directory.Exists(configFolder) then
+                Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath FolderManager.HomeFolder configFolder)
+            else
+                logger.LogError $"Common Windows config folder does not exist - {configFolder}"
         else
             logger.LogInformation "Deleting existing autogen'd script"
 
