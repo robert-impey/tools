@@ -14,12 +14,16 @@ let generateSynchWindowsConfigScript (logger : ILogger<FolderManager>) (filesFil
         do! outputFile.AsyncWrite($"# Written {DateTime.UtcNow:u}\n\n" |> Encoding.ASCII.GetBytes)
 
         let writeScriptLine (file: string) =
-            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {homeFolder} {commonWindowsConfigFolder} /xo {file}\n" |> Encoding.ASCII.GetBytes))
-            Async.RunSynchronously(outputFile.AsyncWrite($"ROBOCOPY {commonWindowsConfigFolder} {homeFolder} /xo {file}\n\n" |> Encoding.ASCII.GetBytes))
+            async {
+                do! outputFile.AsyncWrite($"ROBOCOPY {homeFolder} {commonWindowsConfigFolder} /xo {file}\n" |> Encoding.ASCII.GetBytes)
+                do! outputFile.AsyncWrite($"ROBOCOPY {commonWindowsConfigFolder} {homeFolder} /xo {file}\n\n" |> Encoding.ASCII.GetBytes)
+            }
 
         logger.LogInformation $"Reading {filesFile}"
-        File.ReadAllLines filesFile 
-            |> Seq.iter writeScriptLine
+
+        let lines = File.ReadAllLines filesFile
+        for l in lines  do
+             writeScriptLine l |> Async.StartImmediate
     }
 
 [<EntryPoint>]
