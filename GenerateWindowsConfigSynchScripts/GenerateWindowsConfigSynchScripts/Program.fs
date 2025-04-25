@@ -62,6 +62,7 @@ let main args =
             let configFolder = Path.Join(FolderManager.ConfigFolder, "_Common", "Windows")
 
             if Directory.Exists(configFolder) then
+                logger.LogInformation $"Common Windows config folder - {configFolder}"
                 Async.RunSynchronously(generateSynchWindowsConfigScript logger commonFilesFile scriptPath FolderManager.HomeFolder configFolder)
             else
                 logger.LogError $"Common Windows config folder does not exist - {configFolder}"
