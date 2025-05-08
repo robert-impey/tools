@@ -20,8 +20,7 @@ var printCmd = &cobra.Command{
 	Use:   "print",
 	Short: "Print out a crontab",
 	Long: `This command prints out a crontab with the daily tasks.
-
-Optionally, this can use the development versions of the commands.`,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printAllTasks()
 	},
@@ -53,9 +52,10 @@ func printAllTasks() {
 
 	printBuild(19)
 	printResetPerms(20)
+	printTidyFolder(21)
 	fmt.Println()
 
-	printStayDeletedRun(21, 24)
+	printStayDeletedRun(22, 24)
 }
 
 func printHeaderComment() {
@@ -84,6 +84,11 @@ func getListManagedFoldersScript() string {
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
+}
+
+func getTidyFolderScript() string {
+	localScriptsDir := getLocalScripts()
+	return filepath.Join(localScriptsDir, "_Common", "tidy_folder", "search.sh")
 }
 
 func getStayDeletedScript() string {
@@ -124,6 +129,14 @@ func printResetPerms(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getResetPermsScript()
+	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+		minutes, hour, script)
+}
+
+func printTidyFolder(hour int) {
+	minutes := rand.Int31n(60)
+
+	script := getTidyFolderScript()
 	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
 		minutes, hour, script)
 }
