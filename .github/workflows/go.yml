@@ -6,12 +6,8 @@ name: Go
 on:
   push:
     branches:
-      - "master"
       - "dev"
-  pull_request:
-    branches:
-      - "master"
-      - "dev"
+      - "prod"
 
 jobs:
   build_cron_setter:
