@@ -8,8 +8,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	mapset "github.com/deckarep/golang-set/v2"
-	"github.com/robert-impey/tools/managed-folders/mflib"
 	"log"
 	"os"
 	"path"
@@ -17,6 +15,9 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	mapset "github.com/deckarep/golang-set/v2"
+	"github.com/robert-impey/tools/manfldrs/mflib"
 
 	"github.com/spf13/cobra"
 )

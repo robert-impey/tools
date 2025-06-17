@@ -6,9 +6,10 @@ Copyright © 2024 Robert Impey robert.impey@hotmail.co.uk
 
 import (
 	"fmt"
-	"github.com/robert-impey/tools/managed-folders/mflib"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/robert-impey/tools/manfldrs/mflib"
+	"github.com/spf13/cobra"
 )
 
 // showCmd represents the show command
