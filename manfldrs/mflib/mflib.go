@@ -119,6 +119,9 @@ func GetLocationsFile() (string, error) {
 	if runtime.GOOS == "windows" {
 		osFolder = "Windows"
 	}
+	if runtime.GOOS == "darwin" {
+		osFolder = "darwin"
+	}
 
 	locationsFileName := "locations.txt"
 	locationsFile := path.Join(commonLocalScriptsDirectory, osFolder, locationsFileName)
