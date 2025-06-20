@@ -36,6 +36,8 @@ var listCmd = &cobra.Command{
 		if managedFoldersFile == "" {
 			output = *os.Stdout
 		} else {
+			fmt.Printf("Writing to managed folders file: %s\n", managedFoldersFile)
+
 			mfOut, err := os.Create(managedFoldersFile)
 
 			output = *mfOut
@@ -105,12 +107,20 @@ func getFolders() ([]string, error) {
 		log.Fatalln("Must specify --folders")
 	}
 
+	if managedFoldersFile != "" {
+		fmt.Printf("Reading folders file: %s\n", foldersFile)
+	}
+
 	return getDistinctSortedLine(foldersFile)
 }
 
 func getLocations() ([]string, error) {
 	if locationsFile == "" {
 		log.Fatalln("Must specify --locations")
+	}
+
+	if managedFoldersFile != "" {
+		fmt.Printf("Reading locations file: %s\n", locationsFile)
 	}
 
 	return getDistinctSortedLine(locationsFile)
