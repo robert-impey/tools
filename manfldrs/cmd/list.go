@@ -17,12 +17,13 @@ import (
 	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
-	"github.com/robert-impey/tools/manfldrs/mflib"
 
 	"github.com/spf13/cobra"
 )
 
-var write bool
+var locationsFile string
+var foldersFile string
+var managedFoldersFile string
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -32,12 +33,9 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var output os.File
 
-		if write {
-			managedFoldersFile, err := mflib.GetManagedFoldersFileName()
-			if err != nil {
-				log.Fatalln(err)
-			}
-
+		if managedFoldersFile == "" {
+			output = *os.Stdout
+		} else {
 			mfOut, err := os.Create(managedFoldersFile)
 
 			output = *mfOut
@@ -49,8 +47,6 @@ var listCmd = &cobra.Command{
 
 			now := time.Now().UTC()
 			fmt.Fprintf(&output, "# Generated at %s\n\n", now.Format("2006-01-02 15:04:05"))
-		} else {
-			output = *os.Stdout
 		}
 
 		folders, err1 := getFolders()
@@ -96,22 +92,25 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(listCmd)
 
-	listCmd.Flags().BoolVarP(&write, "write", "w", false, "Write the managed folders file")
+	listCmd.Flags().StringVarP(
+		&locationsFile, "locations", "l", "", "File containing locations to search for folders")
+	listCmd.Flags().StringVarP(
+		&foldersFile, "folders", "f", "", "File containing folders to search for in locations")
+	listCmd.Flags().StringVarP(
+		&managedFoldersFile, "managed-folders-file", "m", "", "File to write the managed folders to")
 }
 
 func getFolders() ([]string, error) {
-	foldersFile, err := mflib.GetFoldersFile()
-	if err != nil {
-		return nil, err
+	if foldersFile == "" {
+		log.Fatalln("Must specify --folders")
 	}
 
 	return getDistinctSortedLine(foldersFile)
 }
 
 func getLocations() ([]string, error) {
-	locationsFile, err := mflib.GetLocationsFile()
-	if err != nil {
-		return nil, err
+	if locationsFile == "" {
+		log.Fatalln("Must specify --locations")
 	}
 
 	return getDistinctSortedLine(locationsFile)
