@@ -5,8 +5,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import picocli.CommandLine;
+
 @SpringBootApplication
-public class FolderManagerApplication implements ApplicationRunner{
+public class FolderManagerApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FolderManagerApplication.class, args);
@@ -14,7 +16,10 @@ public class FolderManagerApplication implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		System.out.println("Folder Manager Application has started successfully.");
+		int exitCode = new CommandLine(new ListManagedFoldersCommand()).execute(args.getSourceArgs());
+		if (exitCode != 0) {
+			throw new RuntimeException(String.format("Command failed with exit code %d%n", exitCode));
+		}
 	}
 
 }
