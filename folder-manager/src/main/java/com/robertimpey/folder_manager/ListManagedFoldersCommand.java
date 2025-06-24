@@ -57,10 +57,28 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
             return 0; // Return 1 for success, but no managed folders to list
         }
 
+        boolean topOfPrintingLocations = true;
         if (managedFoldersFile == null || managedFoldersFile.isEmpty()) {
             for (String location : locations) {
-                for (String folder : folders) {
-                    System.out.printf("Managed folder: %s/%s%n", location, folder);
+                Path locationPath = Paths.get(location);
+                if (Files.exists(locationPath)) {
+
+                    for (String folder : folders) {
+                        boolean topOfPrintingFolders = true;
+                        Path folderPath = locationPath.resolve(folder);
+                        if (Files.exists(folderPath)) {
+                            if (topOfPrintingLocations) {
+                                topOfPrintingLocations = false;
+                            }
+                            if (topOfPrintingFolders) {
+                                topOfPrintingFolders = false;
+                            } else {
+                                System.out.println();
+                            }
+
+                            System.out.println(folderPath.toAbsolutePath());
+                        }
+                    }
                 }
             }
         } else {
