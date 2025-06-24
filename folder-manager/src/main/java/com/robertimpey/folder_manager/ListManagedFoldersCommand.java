@@ -5,6 +5,9 @@ import picocli.CommandLine.Option;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,33 +60,41 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
             return 0; // Return 1 for success, but no managed folders to list
         }
 
-        boolean topOfPrintingLocations = true;
+        PrintWriter outFile;
         if (managedFoldersFile == null || managedFoldersFile.isEmpty()) {
-            for (String location : locations) {
-                Path locationPath = Paths.get(location);
-                if (Files.exists(locationPath)) {
+            outFile = new PrintWriter(System.out, true);
+        } else {
+            System.out.printf("Writing the list of managed folders to: %s%n", managedFoldersFile);
+            Path managedFoldersPath = Paths.get(managedFoldersFile);
+            if (!Files.exists(managedFoldersPath)) {
+                Files.createDirectories(managedFoldersPath.getParent());
+            }
+            OutputStream outputStream = Files.newOutputStream(managedFoldersPath);
+            outFile = new PrintWriter(new OutputStreamWriter(outputStream), true);
+        }
 
-                    for (String folder : folders) {
-                        boolean topOfPrintingFolders = true;
-                        Path folderPath = locationPath.resolve(folder);
-                        if (Files.exists(folderPath)) {
-                            if (topOfPrintingLocations) {
-                                topOfPrintingLocations = false;
-                            }
-                            if (topOfPrintingFolders) {
-                                topOfPrintingFolders = false;
-                            } else {
-                                System.out.println();
-                            }
+        boolean topOfPrintingLocations = true;
+        for (String location : locations) {
+            Path locationPath = Paths.get(location);
+            if (Files.exists(locationPath)) {
 
-                            System.out.println(folderPath.toAbsolutePath());
+                for (String folder : folders) {
+                    boolean topOfPrintingFolders = true;
+                    Path folderPath = locationPath.resolve(folder);
+                    if (Files.exists(folderPath)) {
+                        if (topOfPrintingLocations) {
+                            topOfPrintingLocations = false;
                         }
+                        if (topOfPrintingFolders) {
+                            topOfPrintingFolders = false;
+                        } else {
+                            outFile.println();
+                        }
+
+                        outFile.println(folderPath.toAbsolutePath());
                     }
                 }
             }
-        } else {
-
-            System.out.printf("Writing the list of managed folders to: %s%n", managedFoldersFile);
         }
 
         return 0; // Return 0 for success
