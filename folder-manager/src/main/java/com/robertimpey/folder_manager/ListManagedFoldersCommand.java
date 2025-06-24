@@ -26,13 +26,33 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        if (locationsFile == null || locationsFile.isEmpty()) {
+            System.out.println("Locations file is required. Use -l or --locations to specify it.");
+            return 0; // Return 0 for success, but no locations to list
+        }
+
+        if (foldersFile == null || foldersFile.isEmpty()) {
+            System.out.println("Folders file is required. Use -f or --folders to specify it.");
+            return 0; // Return 0 for success, but no folders to list
+        }
+
         System.out.printf("Reading locations from: %s%n", locationsFile);
-        List<String> locations = readLinesFromFile(locationsFile);
+        Path locationsPath = Paths.get(locationsFile);
+        List<String> locations = null;
+
+        if (Files.exists(locationsPath)) {
+            locations = readLinesFromPath(locationsPath);
+        }
 
         System.out.printf("Reading folders from: %s%n", foldersFile);
-        List<String> folders = readLinesFromFile(foldersFile);
+        Path foldersPath = Paths.get(foldersFile);
+        List<String> folders = null;
 
-        if (locations.isEmpty() || folders.isEmpty()) {
+        if (Files.exists(foldersPath)) {
+            folders = readLinesFromPath(foldersPath);
+        }
+
+        if (locations == null || locations.isEmpty() || folders == null || folders.isEmpty()) {
             System.out.println("No locations or folders found. Exiting.");
             return 0; // Return 1 for success, but no managed folders to list
         }
@@ -51,8 +71,7 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
         return 0; // Return 0 for success
     }
 
-    private List<String> readLinesFromFile(String file) throws Exception {
-        Path filePath = Paths.get(file);
+    private List<String> readLinesFromPath(Path filePath) throws Exception {
         List<String> lines = new ArrayList<>();
         if (Files.exists(filePath)) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath)))) {
