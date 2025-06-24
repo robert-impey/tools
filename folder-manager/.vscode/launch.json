@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "FolderManagerApplication",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager"
+        },
+        {
+            "type": "java",
+            "name": "FolderManagerApplication List",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager",
+            "args": "-f ~/local-scripts/_Common/folders.txt -l ~/local-scripts/_Common/linux/locations.txt"
+        },
+        {
+            "type": "java",
+            "name": "FolderManagerApplication Write",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager",
+            "args": "-f ~/local-scripts/_Common/folders.txt -l ~/local-scripts/_Common/linux/locations.txt -m ~/autogen/managed-folders.txt"
+        }
+    ]
+}
