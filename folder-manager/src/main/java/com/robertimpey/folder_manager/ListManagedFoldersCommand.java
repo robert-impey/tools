@@ -1,8 +1,5 @@
 package com.robertimpey.folder_manager;
 
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -18,6 +15,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 @Command(name = "list", mixinStandardHelpOptions = true, description = "Lists all managed folders in the system.")
 public class ListManagedFoldersCommand implements Callable<Integer> {
@@ -93,18 +93,18 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
         for (String location : locations) {
             Path locationPath = Paths.get(location);
             if (Files.exists(locationPath)) {
-
+                boolean topOfPrintingFolders = true;
                 for (String folder : folders) {
-                    boolean topOfPrintingFolders = true;
+
                     Path folderPath = locationPath.resolve(folder);
                     if (Files.exists(folderPath)) {
                         if (topOfPrintingLocations) {
                             topOfPrintingLocations = false;
-                        }
-                        if (topOfPrintingFolders) {
-                            topOfPrintingFolders = false;
                         } else {
-                            outFile.println();
+                            if (topOfPrintingFolders) {
+                                outFile.println();
+                                topOfPrintingFolders = false;
+                            }
                         }
 
                         outFile.println(folderPath.toAbsolutePath());

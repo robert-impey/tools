@@ -21,11 +21,19 @@
         },
         {
             "type": "java",
-            "name": "FolderManagerApplication Write",
+            "name": "FolderManagerApplication List (Windows)",
             "request": "launch",
             "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
             "projectName": "folder-manager",
-            "args": "-f ~/local-scripts/_Common/folders.txt -l ~/local-scripts/_Common/linux/locations.txt -m ~/autogen/managed-folders.txt"
+            "args": "-f ${env:LOCAL_SCRIPTS}\\_Common\\folders.txt -l ${env:LOCAL_SCRIPTS}\\_Common\\Windows\\locations.txt"
+        },
+        {
+            "type": "java",
+            "name": "FolderManagerApplication Write (Windows)",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager",
+            "args": "-f ${env:LOCAL_SCRIPTS}\\_Common\\folders.txt -l ${env:LOCAL_SCRIPTS}\\_Common\\Windows\\locations.txt -m ${env:USERPROFILE}\\autogen\\managed-folders.txt"
         }
     ]
 }
