@@ -13,11 +13,11 @@
         },
         {
             "type": "java",
-            "name": "FolderManagerApplication List",
+            "name": "FolderManagerApplication List (Mac)",
             "request": "launch",
             "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
             "projectName": "folder-manager",
-            "args": "-f ~/local-scripts/_Common/folders.txt -l ~/local-scripts/_Common/linux/locations.txt"
+            "args": "-f ${env:LOCAL_SCRIPTS}/_Common/folders.txt -l ${env:LOCAL_SCRIPTS}/_Common/darwin/locations.txt"
         },
         {
             "type": "java",

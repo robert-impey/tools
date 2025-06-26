@@ -103,11 +103,11 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
                         } else {
                             if (topOfPrintingFolders) {
                                 outFile.println();
-                                topOfPrintingFolders = false;
                             }
                         }
 
                         outFile.println(folderPath.toAbsolutePath());
+                        topOfPrintingFolders = false;
                     }
                 }
             }
