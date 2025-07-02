@@ -16,10 +16,9 @@ public class FolderManagerApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		int exitCode = new CommandLine(new ListManagedFoldersCommand()).execute(args.getSourceArgs());
+		int exitCode = new CommandLine(new SubcommandsClasses()).execute(args.getSourceArgs());
 		if (exitCode != 0) {
 			throw new RuntimeException(String.format("Command failed with exit code %d%n", exitCode));
 		}
 	}
-
 }
