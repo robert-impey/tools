@@ -34,6 +34,14 @@
             "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
             "projectName": "folder-manager",
             "args": "list -f ${env:LOCAL_SCRIPTS}\\_Common\\folders.txt -l ${env:LOCAL_SCRIPTS}\\_Common\\Windows\\locations.txt -m ${env:USERPROFILE}\\autogen\\managed-folders.txt"
+        },
+        {
+            "type": "java",
+            "name": "FolderManagerApplication Robocopy Gen",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager",
+            "args": "robocopy -f ${env:LOCAL_SCRIPTS}\\_Common\\folders.txt -l ${env:LOCAL_SCRIPTS}\\_Common\\Windows\\locations.txt -a ${env:USERPROFILE}\\autogen"
         }
     ]
 }
