@@ -13,7 +13,7 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
     @Option(names = { "-f", "--folders" }, description = "The folders file")
     private String foldersFile;
 
-    @Option(names = { "-a", "--auto-gen-folder" }, description = "The folder for the auto-generated scripts")
+    @Option(names = { "-a", "--autogen" }, description = "The folder for the autogen'd scripts")
     private String autoGenFolder;
 
     @Override
