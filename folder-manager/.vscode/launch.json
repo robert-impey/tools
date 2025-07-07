@@ -13,11 +13,19 @@
         },
         {
             "type": "java",
+            "name": "FolderManagerApplication List (Linux)",
+            "request": "launch",
+            "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
+            "projectName": "folder-manager",
+            "args": "list -f ${env:HOME}/local-scripts/_Common/folders.txt -l ${env:HOME}/local-scripts/_Common/linux/locations.txt"
+        },
+        {
+            "type": "java",
             "name": "FolderManagerApplication List (Mac)",
             "request": "launch",
             "mainClass": "com.robertimpey.folder_manager.FolderManagerApplication",
             "projectName": "folder-manager",
-            "args": "-f ${env:LOCAL_SCRIPTS}/_Common/folders.txt -l ${env:LOCAL_SCRIPTS}/_Common/darwin/locations.txt"
+            "args": "list -f ${env:LOCAL_SCRIPTS}/_Common/folders.txt -l ${env:LOCAL_SCRIPTS}/_Common/darwin/locations.txt"
         },
         {
             "type": "java",
