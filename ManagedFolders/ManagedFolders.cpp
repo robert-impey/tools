@@ -51,46 +51,6 @@ private:
 	vector<fs::path> _location_paths;
 	fs::path _autogen_dir_path;
 
-	[[nodiscard]] vector<pair<fs::path, fs::path>> find_pairs() const {
-		vector<pair<fs::path, fs::path>> pairs;
-
-		for (auto& folder : _folders) {
-			for (auto& location1 : _locations) {
-				for (auto& location2 : _locations) {
-					if (location1 == location2)
-						continue;
-
-					const fs::path location1_path{ location1 };
-					const fs::path location2_path{ location2 };
-
-					const fs::path located_folder_path1{ location1_path / folder };
-					const fs::path located_folder_path2{ location2_path / folder };
-
-					try {
-						if (exists(located_folder_path1)
-							&& exists(located_folder_path2)) {
-							pair a_pair{ located_folder_path1, located_folder_path2 };
-
-							if (pair reversed_pair{ located_folder_path2, located_folder_path1 };
-								ranges::find(pairs, reversed_pair) != pairs.end()) {
-								continue;
-							}
-
-							pairs.push_back(a_pair);
-						}
-					}
-					catch (std::filesystem::filesystem_error& e) {
-						std::cerr << e.what() << endl;
-					}
-				}
-			}
-		}
-
-		sort(pairs.begin(), pairs.end());
-
-		return pairs;
-	}
-
 	void generate_synch_location_pair_folders(const fs::path& synch_autogen_path) const {
 		for (auto& location_path1 : _location_paths) {
 			const string clean_path1 = clean_path(location_path1.string());
