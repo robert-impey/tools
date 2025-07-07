@@ -1,5 +1,7 @@
 package com.robertimpey.folder_manager;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import picocli.CommandLine.Command;
@@ -28,6 +30,12 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
             return 0; // Return 0 for success, but no folders to list
         }
 
+        System.out.printf("Reading locations from: %s%n", locationsFile);
+        Path locationsPath = Paths.get(locationsFile);
+
+        System.out.printf("Reading folders from: %s%n", foldersFile);
+        Path foldersPath = Paths.get(foldersFile);
+
         if (autoGenFolder == null || autoGenFolder.isEmpty()) {
             System.out.println("Auto-generated folder is required. Use -a or --auto-gen-folder to specify it.");
             return 0; // Return 0 for success, but no auto-generated folder to list
@@ -37,6 +45,9 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
         System.out.printf("Reading folders from: %s%n", foldersFile);
         System.out.printf("Using auto-generated folder: %s%n", autoGenFolder);
 
+        FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
+        folderManager.generateRobocopyScripts(Paths.get(autoGenFolder));
+        
         return 0;
     }
 

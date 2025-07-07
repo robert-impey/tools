@@ -58,6 +58,12 @@ public class FolderManager {
         }
     }
 
+    public void generateRobocopyScripts(Path autoGenFolder) throws Exception {
+        if (autoGenFolder == null || !Files.exists(autoGenFolder)) {
+            throw new IllegalArgumentException("Auto-generated folder does not exist: " + autoGenFolder);
+        }
+    }
+
     private static List<String> readLinesFromPath(Path filePath) throws Exception {
         List<String> lines = new ArrayList<>();
         if (Files.exists(filePath)) {
