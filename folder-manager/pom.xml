@@ -13,7 +13,7 @@
 	<artifactId>folder-manager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>folder-manager</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Tools for managing folders</description>
 	<url />
 	<licenses>
 		<license />
