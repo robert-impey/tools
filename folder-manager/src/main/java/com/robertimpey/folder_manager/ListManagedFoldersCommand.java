@@ -45,24 +45,11 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
 
         System.out.printf("Reading locations from: %s%n", locationsFile);
         Path locationsPath = Paths.get(locationsFile);
-        List<String> locations = null;
-
-        if (Files.exists(locationsPath)) {
-            locations = readLinesFromPath(locationsPath);
-        }
 
         System.out.printf("Reading folders from: %s%n", foldersFile);
         Path foldersPath = Paths.get(foldersFile);
-        List<String> folders = null;
 
-        if (Files.exists(foldersPath)) {
-            folders = readLinesFromPath(foldersPath);
-        }
-
-        if (locations == null || locations.isEmpty() || folders == null || folders.isEmpty()) {
-            System.out.println("No locations or folders found. Exiting.");
-            return 0; // Return 1 for success, but no managed folders to list
-        }
+        FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
 
         PrintWriter outFile;
         if (managedFoldersFile == null || managedFoldersFile.isEmpty()) {
@@ -89,46 +76,8 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
             outFile.printf("# Created: %s%n%n", formattedDateTime);
         }
 
-        boolean topOfPrintingLocations = true;
-        for (String location : locations) {
-            Path locationPath = Paths.get(location);
-            if (Files.exists(locationPath)) {
-                boolean topOfPrintingFolders = true;
-                for (String folder : folders) {
-
-                    Path folderPath = locationPath.resolve(folder);
-                    if (Files.exists(folderPath)) {
-                        if (topOfPrintingLocations) {
-                            topOfPrintingLocations = false;
-                        } else {
-                            if (topOfPrintingFolders) {
-                                outFile.println();
-                            }
-                        }
-
-                        outFile.println(folderPath.toAbsolutePath());
-                        topOfPrintingFolders = false;
-                    }
-                }
-            }
-        }
+        folderManager.listManagedFolders(outFile);
 
         return 0; // Return 0 for success
-    }
-
-    private List<String> readLinesFromPath(Path filePath) throws Exception {
-        List<String> lines = new ArrayList<>();
-        if (Files.exists(filePath)) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath)))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    lines.add(line);
-                }
-            }
-        } else {
-            throw new Exception("File does not exist: " + filePath);
-        }
-
-        return lines;
     }
 }
