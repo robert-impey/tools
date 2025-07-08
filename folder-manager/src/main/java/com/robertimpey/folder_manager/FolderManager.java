@@ -75,7 +75,7 @@ public class FolderManager {
 
                     if (Files.exists(sourcePath)) {
                         // Generate the robocopy script
-                        Path scriptPath = getScriptPath(autoGenFolder,  location1, location2);
+                        Path scriptPath = getScriptPath(autoGenFolder, location1, location2, folder);
                         createRobocopySynchScript(scriptPath, sourcePath, destinationPath);
                     }
                 }
@@ -83,11 +83,24 @@ public class FolderManager {
         }
     }
 
-    private static Path getScriptPath(Path autoGenFolder, String location1, String location2) {
-        return autoGenFolder.resolve("robocopy_" + location1.hashCode() + "_" + location2.hashCode() + ".cmd");
+    private static Path getScriptPath(Path autoGenFolder, String location1, String location2, String folder) {
+        return autoGenFolder
+            .resolve("synch")
+            .resolve(getCleanLocationName(location1))
+            .resolve(getCleanLocationName(location2))
+            .resolve(folder + ".ps1");
     }
 
-    private static void createRobocopySynchScript(Path scriptPath, Path sourcePath, Path destinationPath) throws Exception {
+    private static String getCleanLocationName(String location) {
+        String allLegal = location.replaceAll("[:\\\\\\\\/ ]+", "_");
+        
+        String noTrailingUnderscore = allLegal.replaceAll("_+$", "");
+
+        return noTrailingUnderscore;
+    }
+
+    private static void createRobocopySynchScript(Path scriptPath, Path sourcePath, Path destinationPath)
+            throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
         }
