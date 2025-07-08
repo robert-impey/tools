@@ -47,8 +47,7 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
 
         FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
         folderManager.generateRobocopyScripts(Paths.get(autoGenFolder));
-        
+
         return 0;
     }
-
 }
