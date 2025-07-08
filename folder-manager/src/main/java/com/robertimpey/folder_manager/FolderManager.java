@@ -62,6 +62,39 @@ public class FolderManager {
         if (autoGenFolder == null || !Files.exists(autoGenFolder)) {
             throw new IllegalArgumentException("Auto-generated folder does not exist: " + autoGenFolder);
         }
+
+        for (String location1 : this.locations) {
+            for (String location2 : this.locations) {
+                if (location1.equals(location2)) {
+                    continue; // Skip if both locations are the same
+                }
+
+                for (String folder : this.folders) {
+                    Path sourcePath = Paths.get(location1, folder);
+                    Path destinationPath = Paths.get(location2, folder);
+
+                    if (Files.exists(sourcePath)) {
+                        // Generate the robocopy script
+                        Path scriptPath = getScriptPath(autoGenFolder,  location1, location2);
+                        createRobocopySynchScript(scriptPath, sourcePath, destinationPath);
+                    }
+                }
+            }
+        }
+    }
+
+    private static Path getScriptPath(Path autoGenFolder, String location1, String location2) {
+        return autoGenFolder.resolve("robocopy_" + location1.hashCode() + "_" + location2.hashCode() + ".cmd");
+    }
+
+    private static void createRobocopySynchScript(Path scriptPath, Path sourcePath, Path destinationPath) throws Exception {
+        if (!Files.exists(scriptPath.getParent())) {
+            Files.createDirectories(scriptPath.getParent());
+        }
+
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(scriptPath))) {
+            writer.printf("robocopy \"%s\" \"%s\" /E /Z /COPYALL /R:3 /W:5%n", sourcePath, destinationPath);
+        }
     }
 
     private static List<String> readLinesFromPath(Path filePath) throws Exception {
