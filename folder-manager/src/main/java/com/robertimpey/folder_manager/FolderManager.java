@@ -73,26 +73,32 @@ public class FolderManager {
                     continue; // Skip if both locations are the same
                 }
 
+                Path scriptPath = getScriptPath(autoGenFolder, location1, location2);
+                Path sourcePath = Paths.get(location1);
+                Path destinationPath = Paths.get(location2);
+                List<String> commonFolders = new ArrayList<>();
                 for (String folder : this.folders) {
-                    Path sourcePath = Paths.get(location1, folder);
-                    Path destinationPath = Paths.get(location2, folder);
 
-                    if (Files.exists(sourcePath) && Files.exists(destinationPath)) {
-                        // Generate the robocopy script
-                        Path scriptPath = getScriptPath(autoGenFolder, location1, location2, folder);
-                        createRobocopySynchScript(scriptPath, sourcePath, destinationPath);
+                    if (Files.exists(sourcePath.resolve(folder)) && Files.exists(destinationPath.resolve(folder))) {
+                        commonFolders.add(folder);
+
+                        createRobocopySynchScript(scriptPath.resolve(folder + ".ps1"), sourcePath, destinationPath);
                     }
+                }
+
+                if (!commonFolders.isEmpty()) {
+                    createAllFoldersRobocopySynchScript(commonFolders, scriptPath.resolve("_all.ps1"), sourcePath,
+                            destinationPath);
                 }
             }
         }
     }
 
-    private static Path getScriptPath(Path autoGenFolder, String location1, String location2, String folder) {
+    private static Path getScriptPath(Path autoGenFolder, String location1, String location2) {
         return autoGenFolder
                 .resolve("synch")
                 .resolve(getCleanLocationName(location1))
-                .resolve(getCleanLocationName(location2))
-                .resolve(folder + ".ps1");
+                .resolve(getCleanLocationName(location2));
     }
 
     private static String getCleanLocationName(String location) {
@@ -119,11 +125,51 @@ public class FolderManager {
             writer.println();
 
             writer.printf("$folder = \"%s\"%n", sourcePath.getFileName());
-            writer.printf("$src = \"%s\"%n", sourcePath.getParent().toAbsolutePath());
-            writer.printf("$dst = \"%s\"%n", destinationPath.getParent().toAbsolutePath());
+            writer.printf("$src = \"%s\"%n", sourcePath.toAbsolutePath());
+            writer.printf("$dst = \"%s\"%n", destinationPath.toAbsolutePath());
             writer.println();
 
             writer.println("Synch $folder $src $dst $logged");
+        }
+    }
+
+    private static void createAllFoldersRobocopySynchScript(List<String> commonFolders, Path scriptPath,
+            Path sourcePath, Path destinationPath)
+            throws Exception {
+        if (!Files.exists(scriptPath.getParent())) {
+            Files.createDirectories(scriptPath.getParent());
+        }
+
+        System.out.println("Generating " + scriptPath);
+
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(scriptPath))) {
+            writeAutoGenHeader(writer);
+            writeSynchScriptFileParams(writer);
+
+            writer.println("Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"");
+            writer.println();
+
+            writer.print("$folders = ");
+
+            boolean first = true;
+            for (String folder : commonFolders) {
+                if (first) {
+                    first = false;
+                } else {
+                    writer.print(", ");
+                }
+                writer.printf("\"%s\"", folder);
+            }
+            writer.println();
+            writer.println();
+
+            writer.printf("$src = \"%s\"%n", sourcePath.toAbsolutePath());
+            writer.printf("$dst = \"%s\"%n", destinationPath.toAbsolutePath());
+            writer.println();
+
+            writer.println("foreach ($folder in $folders) {");
+            writer.println("    Synch $folder $src $dst $logged");
+            writer.println("}");
         }
     }
 
