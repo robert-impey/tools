@@ -89,15 +89,15 @@ public class FolderManager {
 
     private static Path getScriptPath(Path autoGenFolder, String location1, String location2, String folder) {
         return autoGenFolder
-            .resolve("synch")
-            .resolve(getCleanLocationName(location1))
-            .resolve(getCleanLocationName(location2))
-            .resolve(folder + ".ps1");
+                .resolve("synch")
+                .resolve(getCleanLocationName(location1))
+                .resolve(getCleanLocationName(location2))
+                .resolve(folder + ".ps1");
     }
 
     private static String getCleanLocationName(String location) {
         String allLegal = location.replaceAll("[:\\\\\\\\/ ]+", "_");
-        
+
         String noTrailingUnderscore = allLegal.replaceAll("_+$", "");
 
         return noTrailingUnderscore;
@@ -113,7 +113,17 @@ public class FolderManager {
 
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(scriptPath))) {
             writeAutoGenHeader(writer);
-            writer.printf("robocopy \"%s\" \"%s\" /E /Z /COPYALL /R:3 /W:5%n", sourcePath, destinationPath);
+            writeSynchScriptFileParams(writer);
+
+            writer.println("Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"");
+            writer.println();
+
+            writer.printf("$folder = \"%s\"%n", sourcePath.getFileName());
+            writer.printf("$src = \"%s\"%n", sourcePath.getParent().toAbsolutePath());
+            writer.printf("$dst = \"%s\"%n", destinationPath.getParent().toAbsolutePath());
+            writer.println();
+
+            writer.println("Synch $folder $src $dst $logged");
         }
     }
 
@@ -136,14 +146,22 @@ public class FolderManager {
     public static void writeAutoGenHeader(PrintWriter outFile) {
         outFile.println("# AUTOGEN'D FILE - DO NOT EDIT");
 
-            LocalDateTime localDateTime = LocalDateTime.now();
-            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        LocalDateTime localDateTime = LocalDateTime.now();
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
 
-            // Define a custom time format
-            DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+        // Define a custom time format
+        DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
 
-            // Format the time
-            String formattedDateTime = zonedDateTime.format(formatter);
-            outFile.printf("# Created: %s%n%n", formattedDateTime);
+        // Format the time
+        String formattedDateTime = zonedDateTime.format(formatter);
+        outFile.printf("# Created: %s%n%n", formattedDateTime);
+    }
+
+    private static void writeSynchScriptFileParams(PrintWriter outFile) {
+        outFile.println("param(");
+        outFile.println("    [Parameter (Mandatory = $False)]");
+        outFile.println("    [switch]$logged = $False");
+        outFile.println(")");
+        outFile.println();
     }
 }
