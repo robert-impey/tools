@@ -82,7 +82,7 @@ public class FolderManager {
                     if (Files.exists(sourcePath.resolve(folder)) && Files.exists(destinationPath.resolve(folder))) {
                         commonFolders.add(folder);
 
-                        createRobocopySynchScript(scriptPath.resolve(folder + ".ps1"), sourcePath, destinationPath);
+                        createRobocopySynchScript(folder, scriptPath.resolve(folder + ".ps1"), sourcePath, destinationPath);
                     }
                 }
 
@@ -109,7 +109,7 @@ public class FolderManager {
         return noTrailingUnderscore;
     }
 
-    private static void createRobocopySynchScript(Path scriptPath, Path sourcePath, Path destinationPath)
+    private static void createRobocopySynchScript(String folder, Path scriptPath, Path sourcePath, Path destinationPath)
             throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
@@ -124,7 +124,7 @@ public class FolderManager {
             writer.println("Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"");
             writer.println();
 
-            writer.printf("$folder = \"%s\"%n", sourcePath.getFileName());
+            writer.printf("$folder = \"%s\"%n", folder);
             writer.printf("$src = \"%s\"%n", sourcePath.toAbsolutePath());
             writer.printf("$dst = \"%s\"%n", destinationPath.toAbsolutePath());
             writer.println();
