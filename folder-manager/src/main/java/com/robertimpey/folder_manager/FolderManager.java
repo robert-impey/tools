@@ -6,6 +6,10 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +77,7 @@ public class FolderManager {
                     Path sourcePath = Paths.get(location1, folder);
                     Path destinationPath = Paths.get(location2, folder);
 
-                    if (Files.exists(sourcePath)) {
+                    if (Files.exists(sourcePath) && Files.exists(destinationPath)) {
                         // Generate the robocopy script
                         Path scriptPath = getScriptPath(autoGenFolder, location1, location2, folder);
                         createRobocopySynchScript(scriptPath, sourcePath, destinationPath);
@@ -105,7 +109,10 @@ public class FolderManager {
             Files.createDirectories(scriptPath.getParent());
         }
 
+        System.out.println("Generating " + scriptPath);
+
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(scriptPath))) {
+            writeAutoGenHeader(writer);
             writer.printf("robocopy \"%s\" \"%s\" /E /Z /COPYALL /R:3 /W:5%n", sourcePath, destinationPath);
         }
     }
@@ -124,5 +131,19 @@ public class FolderManager {
         }
 
         return lines;
+    }
+
+    public static void writeAutoGenHeader(PrintWriter outFile) {
+        outFile.println("# AUTOGEN'D FILE - DO NOT EDIT");
+
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+
+            // Define a custom time format
+            DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+
+            // Format the time
+            String formattedDateTime = zonedDateTime.format(formatter);
+            outFile.printf("# Created: %s%n%n", formattedDateTime);
     }
 }

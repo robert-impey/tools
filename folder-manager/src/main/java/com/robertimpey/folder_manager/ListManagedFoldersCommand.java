@@ -6,10 +6,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Callable;
 
 import picocli.CommandLine.Command;
@@ -59,17 +55,7 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
             OutputStream outputStream = Files.newOutputStream(managedFoldersPath);
             outFile = new PrintWriter(new OutputStreamWriter(outputStream), true);
 
-            outFile.println("# AUTOGEN'D FILE - DO NOT EDIT");
-
-            LocalDateTime localDateTime = LocalDateTime.now();
-            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-
-            // Define a custom time format
-            DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
-
-            // Format the time
-            String formattedDateTime = zonedDateTime.format(formatter);
-            outFile.printf("# Created: %s%n%n", formattedDateTime);
+            FolderManager.writeAutoGenHeader(outFile);
         }
 
         folderManager.listManagedFolders(outFile);
