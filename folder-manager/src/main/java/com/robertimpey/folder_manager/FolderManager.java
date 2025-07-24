@@ -102,11 +102,9 @@ public class FolderManager {
     }
 
     private static String getCleanLocationName(String location) {
-        String allLegal = location.replaceAll("[:\\\\\\\\/ ]+", "_");
+        String allLegal = location.replaceAll("[:\\\\/ ]+", "_");
 
-        String noTrailingUnderscore = allLegal.replaceAll("_+$", "");
-
-        return noTrailingUnderscore;
+        return allLegal.replaceAll("_+$", "");
     }
 
     private static void createRobocopySynchScript(String folder, Path scriptPath, Path sourcePath, Path destinationPath)
