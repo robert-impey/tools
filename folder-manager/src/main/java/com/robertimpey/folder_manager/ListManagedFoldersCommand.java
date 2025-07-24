@@ -14,13 +14,13 @@ import picocli.CommandLine.Option;
 @Command(name = "list", mixinStandardHelpOptions = true, description = "Lists all managed folders in the system.")
 public class ListManagedFoldersCommand implements Callable<Integer> {
 
-    @Option(names = { "-l", "--locations" }, description = "The locations file")
+    @Option(names = {"-l", "--locations"}, description = "The locations file")
     private String locationsFile;
 
-    @Option(names = { "-f", "--folders" }, description = "The folders file")
+    @Option(names = {"-f", "--folders"}, description = "The folders file")
     private String foldersFile;
 
-    @Option(names = { "-m", "--managed-folders-file" }, description = "The managed folders file")
+    @Option(names = {"-m", "--managed-folders-file"}, description = "The managed folders file")
     private String managedFoldersFile;
 
     @Override

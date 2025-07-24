@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.Nonnull;
+
 public class FolderManager {
     private final List<String> locations;
     private final List<String> folders;
@@ -22,14 +24,14 @@ public class FolderManager {
         this.folders = folders;
     }
 
-    public static FolderManager create(Path locationsPath, Path foldersPath) throws Exception {
+    public static @Nonnull FolderManager create(Path locationsPath, Path foldersPath) throws Exception {
         List<String> locations = readLinesFromPath(locationsPath);
-        if (locations == null || locations.isEmpty()) {
+        if (locations.isEmpty()) {
             throw new IllegalArgumentException("Locations cannot be null or empty");
         }
 
         List<String> folders = readLinesFromPath(foldersPath);
-        if (folders == null || folders.isEmpty()) {
+        if (folders.isEmpty()) {
             throw new IllegalArgumentException("Folders cannot be null or empty");
         }
 
@@ -87,28 +89,23 @@ public class FolderManager {
                 }
 
                 if (!commonFolders.isEmpty()) {
-                    createAllFoldersRobocopySynchScript(commonFolders, scriptPath.resolve("_all.ps1"), sourcePath,
-                            destinationPath);
+                    createAllFoldersRobocopySynchScript(commonFolders, scriptPath.resolve("_all.ps1"), sourcePath, destinationPath);
                 }
             }
         }
     }
 
-    private static Path getScriptPath(Path autoGenFolder, String location1, String location2) {
-        return autoGenFolder
-                .resolve("synch")
-                .resolve(getCleanLocationName(location1))
-                .resolve(getCleanLocationName(location2));
+    private static @Nonnull Path getScriptPath(@Nonnull Path autoGenFolder, @Nonnull String location1, @Nonnull String location2) {
+        return autoGenFolder.resolve("synch").resolve(getCleanLocationName(location1)).resolve(getCleanLocationName(location2));
     }
 
-    private static String getCleanLocationName(String location) {
+    private static @Nonnull String getCleanLocationName(@Nonnull String location) {
         String allLegal = location.replaceAll("[:\\\\/ ]+", "_");
 
         return allLegal.replaceAll("_+$", "");
     }
 
-    private static void createRobocopySynchScript(String folder, Path scriptPath, Path sourcePath, Path destinationPath)
-            throws Exception {
+    private static void createRobocopySynchScript(@Nonnull String folder, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
         }
@@ -131,9 +128,7 @@ public class FolderManager {
         }
     }
 
-    private static void createAllFoldersRobocopySynchScript(List<String> commonFolders, Path scriptPath,
-            Path sourcePath, Path destinationPath)
-            throws Exception {
+    private static void createAllFoldersRobocopySynchScript(@Nonnull List<String> commonFolders, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
         }
@@ -171,7 +166,7 @@ public class FolderManager {
         }
     }
 
-    private static List<String> readLinesFromPath(Path filePath) throws Exception {
+    private static @Nonnull List<String> readLinesFromPath(@Nonnull Path filePath) throws Exception {
         List<String> lines = new ArrayList<>();
         if (Files.exists(filePath)) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath)))) {
@@ -187,7 +182,7 @@ public class FolderManager {
         return lines;
     }
 
-    public static void writeAutoGenHeader(PrintWriter outFile) {
+    public static void writeAutoGenHeader(@Nonnull PrintWriter outFile) {
         outFile.println("# AUTOGEN'D FILE - DO NOT EDIT");
 
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -201,7 +196,7 @@ public class FolderManager {
         outFile.printf("# Created: %s%n%n", formattedDateTime);
     }
 
-    private static void writeSynchScriptFileParams(PrintWriter outFile) {
+    private static void writeSynchScriptFileParams(@Nonnull PrintWriter outFile) {
         outFile.println("param(");
         outFile.println("    [Parameter (Mandatory = $False)]");
         outFile.println("    [switch]$logged = $False");

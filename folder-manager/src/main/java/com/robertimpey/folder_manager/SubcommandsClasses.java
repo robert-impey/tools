@@ -4,8 +4,7 @@ import java.util.concurrent.Callable;
 
 import picocli.CommandLine.Command;
 
-@Command(name = "subcommands", subcommands = { ListManagedFoldersCommand.class,
-        GenerateRobocopyScriptsCommand.class }, mixinStandardHelpOptions = true, description = "Subcommands for folder management. Use 'list' to list managed folders or 'robocopy' to generate robocopy scripts.")
+@Command(name = "subcommands", subcommands = {ListManagedFoldersCommand.class, GenerateRobocopyScriptsCommand.class}, mixinStandardHelpOptions = true, description = "Subcommands for folder management. Use 'list' to list managed folders or 'robocopy' to generate robocopy scripts.")
 public class SubcommandsClasses implements Callable<Integer> {
 
     @Override

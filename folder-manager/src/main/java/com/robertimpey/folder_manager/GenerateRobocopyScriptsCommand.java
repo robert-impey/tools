@@ -9,13 +9,13 @@ import picocli.CommandLine.Option;
 
 @Command(name = "robocopy", mixinStandardHelpOptions = true, description = "Generates robocopy scripts for managed folders.")
 public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
-    @Option(names = { "-l", "--locations" }, description = "The locations file")
+    @Option(names = {"-l", "--locations"}, description = "The locations file")
     private String locationsFile;
 
-    @Option(names = { "-f", "--folders" }, description = "The folders file")
+    @Option(names = {"-f", "--folders"}, description = "The folders file")
     private String foldersFile;
 
-    @Option(names = { "-a", "--autogen" }, description = "The folder for the autogen'd scripts")
+    @Option(names = {"-a", "--autogen"}, description = "The folder for the autogen'd scripts")
     private String autoGenFolder;
 
     @Override
