@@ -17,7 +17,7 @@ fn main() {
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_dir() {
-                continue; 
+                continue;
             }
 
             let path = entry.path();
@@ -35,37 +35,44 @@ fn main() {
             for file in files.iter().cloned() {
                 let path = file.path();
 
-                let file_stem = path.file_stem().unwrap();
+                if let Some(file_stem) = path.file_stem() {
+                    match path.extension() {
+                        Some(extension) => {
+                            let extension_string = extension.to_str().unwrap();
 
-                let file_stem_str = file_stem.to_str().unwrap();
+                            for other_file in files.iter().cloned() {
+                                let other_path = other_file.path();
 
-                match path.extension() {
-                    Some(extension) => {
-                        let extension_string = extension.to_str().unwrap();
+                                let other_file_stem = other_path.file_stem().unwrap();
 
-                        for other_file in files.iter().cloned() {
-                            let other_path = other_file.path();
+                                match other_path.extension() {
+                                    Some(other_extension) => {
+                                        let other_extension_str = other_extension.to_str().unwrap();
 
-                            let other_file_stem = other_path.file_stem().unwrap();
-                            let other_file_stem_string = other_file_stem.to_str().unwrap();
-
-                            match other_path.extension() {
-                                Some(other_extension) => {
-                                    let other_extension_str = other_extension.to_str().unwrap();
-
-                                    if extension_string == other_extension_str {
-                                        if other_file_stem_string != file_stem_str {
-                                            if other_file_stem_string.starts_with(file_stem_str) {
-                                                matching_stems.push((file.clone(), other_file));
+                                        if extension_string == other_extension_str {
+                                            if other_file_stem != file_stem {
+                                                if let Some(other_file_stem_str) =
+                                                    other_file_stem.to_str()
+                                                {
+                                                    if let Some(file_stem_str) = file_stem.to_str()
+                                                    {
+                                                        if other_file_stem_str
+                                                            .starts_with(file_stem_str)
+                                                        {
+                                                            matching_stems
+                                                                .push((file.clone(), other_file));
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
+                                    None => (),
                                 }
-                                None => (),
                             }
                         }
+                        None => (),
                     }
-                    None => (),
                 }
             }
         }
