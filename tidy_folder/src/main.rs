@@ -1,4 +1,4 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{collections::HashMap, ffi::OsString};
 
 use clap::Parser;
 use walkdir::{DirEntry, WalkDir};
@@ -13,7 +13,7 @@ fn main() {
     let cli = Cli::parse();
 
     if let Some(name) = cli.directory.as_deref() {
-        let mut dirs_and_files: HashMap<PathBuf, Vec<DirEntry>> = HashMap::new();
+        let mut dirs_and_files: HashMap<OsString, Vec<DirEntry>> = HashMap::new();
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_dir() {
@@ -24,7 +24,7 @@ fn main() {
 
             if let Some(parent) = path.parent() {
                 dirs_and_files
-                    .entry(parent.to_path_buf())
+                    .entry(parent.to_path_buf().into_os_string())
                     .or_insert_with(Vec::new)
                     .push(entry);
             }
