@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 
 use clap::Parser;
 use walkdir::{DirEntry, WalkDir};
@@ -13,16 +13,18 @@ fn main() {
     let cli = Cli::parse();
 
     if let Some(name) = cli.directory.as_deref() {
-        let mut dirs_and_files: HashMap<String, Vec<DirEntry>> = HashMap::new();
+        let mut dirs_and_files: HashMap<PathBuf, Vec<DirEntry>> = HashMap::new();
 
         for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
+            if entry.file_type().is_dir() {
+                continue; 
+            }
+
             let path = entry.path();
 
-            if path.is_file() {
-                let parent = path.parent().unwrap();
-                let parent_str = parent.to_str().unwrap().to_string();
-
-                dirs_and_files.entry(parent_str)
+            if let Some(parent) = path.parent() {
+                dirs_and_files
+                    .entry(parent.to_path_buf())
                     .or_insert_with(Vec::new)
                     .push(entry);
             }
@@ -59,11 +61,11 @@ fn main() {
                                         }
                                     }
                                 }
-                                None => ()
+                                None => (),
                             }
                         }
                     }
-                    None => ()
+                    None => (),
                 }
             }
         }
@@ -72,7 +74,10 @@ fn main() {
             println!("Value for directory: {name}");
             println!("Matching stems:");
             for (file, other_file) in matching_stems {
-                println!("Matching stems in {}", file.path().parent().unwrap().display());
+                println!(
+                    "Matching stems in {}",
+                    file.path().parent().unwrap().display()
+                );
                 println!("\t{}", file.file_name().to_str().unwrap());
                 println!("\t{}", other_file.file_name().to_str().unwrap());
             }
