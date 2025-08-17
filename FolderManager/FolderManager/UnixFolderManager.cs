@@ -1,18 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace FolderManager;
 
-public class WindowsFolderManager(ILogger<FolderManager> logger) : FolderManager(logger)
+public abstract class UnixFolderManager(ILogger<FolderManager> logger) : FolderManager(logger)
 {
     public override string GetLocalScriptsFolder()
     {
         var localScriptsPathParts = new List<string>();
 
-        var localScripts = Environment.GetEnvironmentVariable("LOCAL_SCRIPTS");
+        var home = Environment.GetEnvironmentVariable("HOME");
 
-        if (localScripts is not null)
+        if (home is not null)
         {
-            localScriptsPathParts.Add(localScripts);
+            localScriptsPathParts.Add(home);
+            localScriptsPathParts.Add("local-scripts");
         }
 
         if (localScriptsPathParts.Count == 0)
@@ -22,6 +23,4 @@ public class WindowsFolderManager(ILogger<FolderManager> logger) : FolderManager
 
         return Path.Join(localScriptsPathParts.ToArray());
     }
-
-    protected override string GetLocationsFile() => GetLocationsFile("Windows");
 }

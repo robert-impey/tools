@@ -16,6 +16,11 @@ public abstract class FolderManager(ILogger<FolderManager> logger)
             return new LinuxFolderManager(logger);
         }
 
+        if (OperatingSystem.IsMacOS())
+        {
+            return new MacOsFolderManager(logger);
+        }
+
         throw new ApplicationException("No folder manager for your operating system!");
     }
 
@@ -191,6 +196,4 @@ public abstract class FolderManager(ILogger<FolderManager> logger)
     }
 
     public static string LogsFolder => Path.Combine(HomeFolder, "logs");
-
-    public abstract string PowerShellExe { get; }
 }
