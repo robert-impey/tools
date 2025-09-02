@@ -1,33 +1,61 @@
 ﻿open System.IO
-open FolderManager
 open Microsoft.Extensions.FileSystemGlobbing
+open Spectre.Console
+open Spectre.Console.Cli
+open System.ComponentModel
 
 open RobocopyLogs
 
-printfn "Looking for Robocopy Log Files"
+// Define the settings for the command
+type LogSettings() =
+    inherit CommandSettings()
 
-let synchLogsDirectory =
-    Path.Combine(FolderManager.LogsFolder, "synch")
+    [<CommandOption("-l|--logsDirectory")>]
+    [<Description("Path to the logs directory")>]
+    member val LogsDirectory: string = "" with get, set
 
-printfn "Synch logs directory: %s" synchLogsDirectory
+// Define the command logic
+type DefaultCommand() =
+    inherit Command<LogSettings>()
 
-let synchLogsDirMessage =
-    if Directory.Exists(synchLogsDirectory) then
-        $"synch logs directory %s{synchLogsDirectory} exists"
-    else
-        $"Synch logs directory %s{synchLogsDirectory} does not exist"
+    override _.Execute(context, settings) =
+        AnsiConsole.MarkupLine($"[green]Logs directory:[/] {settings.LogsDirectory}")
 
-printfn $"%s{synchLogsDirMessage}"
+        printfn "Looking for Robocopy Log Files"
 
-let matcher = Matcher()
-matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"})
-let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory)
+        let synchLogsDirectory =
+            Path.Combine(settings.LogsDirectory, "synch")
 
-printfn "There are %d log files" (Seq.length matchingFiles)
+        printfn "Synch logs directory: %s" synchLogsDirectory
 
-for logFile in matchingFiles do
-    if fileHasCopies logFile then
-        printfn "%s has copies - keeping" logFile
-    else
-        printfn "%s has no copies - deleting" logFile
-        File.Delete(logFile)
+        let synchLogsDirMessage =
+            if Directory.Exists(synchLogsDirectory) then
+                $"synch logs directory %s{synchLogsDirectory} exists"
+            else
+                $"Synch logs directory %s{synchLogsDirectory} does not exist"
+
+        printfn $"%s{synchLogsDirMessage}"
+
+        let matcher = Matcher()
+        matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"})
+        let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory)
+
+        printfn "There are %d log files" (Seq.length matchingFiles)
+
+        for logFile in matchingFiles do
+            if fileHasCopies logFile then
+                printfn "%s has copies - keeping" logFile
+            else
+                printfn "%s has no copies - deleting" logFile
+                File.Delete(logFile)
+        0
+
+// Entry point
+[<EntryPoint>]
+let main argv =
+    let app = CommandApp<DefaultCommand>() // Set default command here
+    app.Configure(fun config ->
+        config.SetApplicationName("LogViewer") |> ignore
+    )
+    app.Run(argv)
+
