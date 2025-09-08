@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Logs Deleter | All" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="tools" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="sweepAll -v -l C:\Users\rober\logs" />
+    <kind value="PACKAGE" />
+    <package value="github.com/robert-impey/tools/logs-deleter" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
