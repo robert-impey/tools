@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FolderManagerApplication | List (Windows)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../../Program Files/OpenJDK/jdk-22.0.2" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <module name="folder-manager" />
+    <option name="PROGRAM_PARAMETERS" value="list --locations $USER_HOME$/Dropbox/local-scripts/_Common/Windows/locations.txt --folders $USER_HOME$/Dropbox/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.robertimpey.folder_manager.FolderManagerApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
