@@ -16,7 +16,7 @@ jobs:
       run:
         working-directory: ./tidy_folder
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build
         run: cargo build --verbose
       - name: Run tests
