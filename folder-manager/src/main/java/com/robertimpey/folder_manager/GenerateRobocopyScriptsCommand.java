@@ -30,23 +30,22 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
             return 0; // Return 0 for success, but no folders to list
         }
 
-        System.out.printf("Reading locations from: %s%n", locationsFile);
-        Path locationsPath = Paths.get(locationsFile);
-
-        System.out.printf("Reading folders from: %s%n", foldersFile);
-        Path foldersPath = Paths.get(foldersFile);
-
         if (autoGenFolder == null || autoGenFolder.isEmpty()) {
             System.out.println("Auto-generated folder is required. Use -a or --auto-gen-folder to specify it.");
             return 0; // Return 0 for success, but no auto-generated folder to list
         }
 
         System.out.printf("Reading locations from: %s%n", locationsFile);
+        Path locationsPath = Paths.get(locationsFile);
+
         System.out.printf("Reading folders from: %s%n", foldersFile);
+        Path foldersPath = Paths.get(foldersFile);
+
         System.out.printf("Using auto-generated folder: %s%n", autoGenFolder);
+        Path autoGenPath = Paths.get(autoGenFolder);
 
         FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
-        folderManager.generateRobocopyScripts(Paths.get(autoGenFolder));
+        folderManager.generateRobocopyScripts(autoGenPath);
 
         return 0;
     }
