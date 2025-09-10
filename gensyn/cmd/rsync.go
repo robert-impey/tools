@@ -1,7 +1,8 @@
+package cmd
+
 /*
 Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
 */
-package cmd
 
 import (
 	"errors"

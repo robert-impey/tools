@@ -1,5 +1,9 @@
 package lib
 
+/*
+Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
+*/
+
 import (
 	"errors"
 	"os"

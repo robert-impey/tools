@@ -1,8 +1,8 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
+
+/*
+Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
+*/
 
 import (
 	"os"
