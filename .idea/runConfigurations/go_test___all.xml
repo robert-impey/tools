@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="go test tools" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+  <configuration default="false" name="go test | all" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$" />
     <kind value="DIRECTORY" />
