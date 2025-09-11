@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWindowsConfigSynchScripts", "GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts.csproj", "{39BE3EAD-9412-4603-8E9D-5D91DC291A50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWindowsConfigSynchScripts", "GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts.csproj", "{27E24689-E272-46BF-553B-F5E0E962902A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,10 +52,10 @@ Global
 		{9FF911BE-0440-4F08-8882-4AE91915A431}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FF911BE-0440-4F08-8882-4AE91915A431}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FF911BE-0440-4F08-8882-4AE91915A431}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39BE3EAD-9412-4603-8E9D-5D91DC291A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39BE3EAD-9412-4603-8E9D-5D91DC291A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39BE3EAD-9412-4603-8E9D-5D91DC291A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39BE3EAD-9412-4603-8E9D-5D91DC291A50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27E24689-E272-46BF-553B-F5E0E962902A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27E24689-E272-46BF-553B-F5E0E962902A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27E24689-E272-46BF-553B-F5E0E962902A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27E24689-E272-46BF-553B-F5E0E962902A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
