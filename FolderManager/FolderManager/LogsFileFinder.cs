@@ -9,17 +9,16 @@ public static class LogsFileFinder
 {
     public const string LogFileTimeFormat = "yyyy-MM-ddTHH-mm-ssZ";
 
-    public static string CreateLogsFile(string logsDirectory, string tool, string task)
+    public static string CreateLogsFile(string logsDirectory, string task)
     {
-        var toolLogsDirectory = Path.Combine(logsDirectory, tool);
         var timeString = DateTime.UtcNow.ToString(LogFileTimeFormat);
         var fileName = $"{timeString}-{task}.log";
-        return Path.Combine(toolLogsDirectory, fileName);
+        return Path.Combine(logsDirectory, fileName);
     }
 
-    public static ILogger<T> GetLogger<T>(string logsDirectory, string tool, string task)
+    public static ILogger<T> GetLogger<T>(string logsDirectory, string task)
     {
-        var logFile = CreateLogsFile(logsDirectory, tool, task);
+        var logFile = CreateLogsFile(logsDirectory,  task);
         var config = new NLog.Config.LoggingConfiguration();
         
         var logFileTarget = new NLog.Targets.FileTarget("logfile") { FileName = logFile };

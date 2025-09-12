@@ -15,7 +15,7 @@ public class Command : Command<CommandSettings>
 
         if (settings.Logged)
         {
-            logger = LogsFileFinder.GetLogger<Command>(settings.LogsDirectory, "synch", "GenerateWindowsConfigSynchScripts");
+            logger = LogsFileFinder.GetLogger<Command>(settings.LogsDirectory, "GenerateWindowsConfigSynchScripts");
         }
         else
         {
@@ -27,6 +27,8 @@ public class Command : Command<CommandSettings>
         }
         
         logger.LogInformation("Starting GenerateWindowsConfigSynchScripts");
+
+        logger.LogInformation($"LogsDirectory: {settings.LogsDirectory}");
 
         if (string.IsNullOrWhiteSpace(settings.Autogen))
         {
