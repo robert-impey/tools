@@ -1,0 +1,7 @@
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/Users/robert/Library/CloudStorage/Dropbox/local-scripts/_Common/synch/rsync-excluded.txt
+robert@kiya.robertimpey.com:~
+/Users/robert/Library/CloudStorage/Dropbox
+
+config
+executables
+local-scripts
