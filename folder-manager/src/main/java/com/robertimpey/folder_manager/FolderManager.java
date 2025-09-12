@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +40,12 @@ public class FolderManager {
     public void listManagedFolders(PrintWriter outFile) {
         boolean topOfPrintingLocations = true;
         for (String location : this.locations) {
-            Path locationPath = Paths.get(location);
+            var locationPath = Paths.get(location);
             if (Files.exists(locationPath)) {
                 boolean topOfPrintingFolders = true;
                 for (String folder : this.folders) {
 
-                    Path folderPath = locationPath.resolve(folder);
+                    var folderPath = locationPath.resolve(folder);
                     if (Files.exists(folderPath)) {
                         if (topOfPrintingLocations) {
                             topOfPrintingLocations = false;
@@ -75,9 +74,9 @@ public class FolderManager {
                     continue; // Skip if both locations are the same
                 }
 
-                Path scriptPath = getScriptPath(autoGenFolder, location1, location2);
-                Path sourcePath = Paths.get(location1);
-                Path destinationPath = Paths.get(location2);
+                var scriptPath = getScriptPath(autoGenFolder, location1, location2);
+                var sourcePath = Paths.get(location1);
+                var destinationPath = Paths.get(location2);
                 List<String> commonFolders = new ArrayList<>();
                 for (String folder : this.folders) {
 
@@ -100,7 +99,7 @@ public class FolderManager {
     }
 
     private static @Nonnull String getCleanLocationName(@Nonnull String location) {
-        String allLegal = location.replaceAll("[:\\\\/ ]+", "_");
+        var allLegal = location.replaceAll("[:\\\\/ ]+", "_");
 
         return allLegal.replaceAll("_+$", "");
     }
@@ -185,14 +184,13 @@ public class FolderManager {
     public static void writeAutoGenHeader(@Nonnull PrintWriter outFile) {
         outFile.println("# AUTOGEN'D FILE - DO NOT EDIT");
 
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        var zonedDateTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
         // Define a custom time format
-        DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+        var formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
 
         // Format the time
-        String formattedDateTime = zonedDateTime.format(formatter);
+        var formattedDateTime = zonedDateTime.format(formatter);
         outFile.printf("# Created: %s%n%n", formattedDateTime);
     }
 

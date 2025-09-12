@@ -1,10 +1,8 @@
 package com.robertimpey.folder_manager;
 
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
@@ -36,23 +34,23 @@ public class ListManagedFoldersCommand implements Callable<Integer> {
         }
 
         System.out.printf("Reading locations from: %s%n", locationsFile);
-        Path locationsPath = Paths.get(locationsFile);
+        var locationsPath = Paths.get(locationsFile);
 
         System.out.printf("Reading folders from: %s%n", foldersFile);
-        Path foldersPath = Paths.get(foldersFile);
+        var foldersPath = Paths.get(foldersFile);
 
-        FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
+        var folderManager = FolderManager.create(locationsPath, foldersPath);
 
         PrintWriter outFile;
         if (managedFoldersFile == null || managedFoldersFile.isEmpty()) {
             outFile = new PrintWriter(System.out, true);
         } else {
             System.out.printf("Writing the list of managed folders to: %s%n", managedFoldersFile);
-            Path managedFoldersPath = Paths.get(managedFoldersFile);
+            var managedFoldersPath = Paths.get(managedFoldersFile);
             if (!Files.exists(managedFoldersPath)) {
                 Files.createDirectories(managedFoldersPath.getParent());
             }
-            OutputStream outputStream = Files.newOutputStream(managedFoldersPath);
+            var outputStream = Files.newOutputStream(managedFoldersPath);
             outFile = new PrintWriter(new OutputStreamWriter(outputStream), true);
 
             FolderManager.writeAutoGenHeader(outFile);

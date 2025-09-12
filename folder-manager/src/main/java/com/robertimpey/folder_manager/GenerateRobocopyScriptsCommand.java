@@ -1,6 +1,5 @@
 package com.robertimpey.folder_manager;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
@@ -36,13 +35,13 @@ public class GenerateRobocopyScriptsCommand implements Callable<Integer> {
         }
 
         System.out.printf("Reading locations from: %s%n", locationsFile);
-        Path locationsPath = Paths.get(locationsFile);
+        var locationsPath = Paths.get(locationsFile);
 
         System.out.printf("Reading folders from: %s%n", foldersFile);
-        Path foldersPath = Paths.get(foldersFile);
+        var foldersPath = Paths.get(foldersFile);
 
         System.out.printf("Using auto-generated folder: %s%n", autoGenFolder);
-        Path autoGenPath = Paths.get(autoGenFolder);
+        var autoGenPath = Paths.get(autoGenFolder);
 
         FolderManager folderManager = FolderManager.create(locationsPath, foldersPath);
         folderManager.generateRobocopyScripts(autoGenPath);
