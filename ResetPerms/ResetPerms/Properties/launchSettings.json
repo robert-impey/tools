@@ -3,10 +3,6 @@
     "ResetPerms": {
       "commandName": "Project",
       "commandLineArgs": ""
-    } ,
-    "ResetPermsDryRun": {
-      "commandName": "Project",
-      "commandLineArgs": "--dry-run"
     }
   }
 }

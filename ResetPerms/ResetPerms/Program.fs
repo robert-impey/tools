@@ -5,10 +5,11 @@ open FolderManager
 open Microsoft.Extensions.Logging
 
 let fileHasShebang (fileName: string) =
-    let firstLine = File.ReadAllLines fileName |> Seq.take 1 |> Seq.toArray
+    use reader = new StreamReader(fileName)
+    let firstLine = reader.ReadLine()
 
     match firstLine.Length with
-    | 1 -> firstLine.[0].StartsWith("#!")
+    | 1 -> firstLine.StartsWith("#!")
     | _ -> false
 
 let findFilesWithShebang (scriptsDir: string) =
