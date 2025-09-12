@@ -2,7 +2,7 @@
   "profiles": {
     "GenerateWindowsConfigSynchScripts": {
       "commandName": "Project",
-      "commandLineArgs": "--logs C:\\Users\\rober\\logs\\synch --autogen C:\\Users\\rober\\autogen --files C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\synch\\config-Windows\\files.txt --source C:\\Users\\rober\\Dropbox\\config\\_Common\\Windows --destination C:\\Users\\rober"
+      "commandLineArgs": "--logs C:\\Users\\rober\\logs\\synch --autogen C:\\Users\\rober\\autogen\\synch --files C:\\Users\\rober\\Dropbox\\local-scripts\\_Common\\synch\\config-Windows\\files.txt --source C:\\Users\\rober\\Dropbox\\config\\_Common\\Windows --destination C:\\Users\\rober"
     }
   }
 }
