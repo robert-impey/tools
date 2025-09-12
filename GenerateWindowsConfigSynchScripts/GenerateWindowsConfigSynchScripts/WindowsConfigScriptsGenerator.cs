@@ -1,6 +1,4 @@
-﻿using FolderManager;
-using Microsoft.Extensions.Logging;
-using System.Globalization;
+﻿using Microsoft.Extensions.Logging;
 
 namespace GenerateWindowsConfigSynchScripts;
 
