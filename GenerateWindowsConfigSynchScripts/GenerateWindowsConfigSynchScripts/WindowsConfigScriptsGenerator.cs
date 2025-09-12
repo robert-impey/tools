@@ -57,15 +57,20 @@ internal class WindowsConfigScriptsGenerator
         using var outputScriptWriter = new StreamWriter(outputScriptPath);
         await outputScriptWriter.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!");
 
-        // Get current local time with offset
-        var zonedDateTime = DateTimeOffset.Now;
-
-        // Format using RFC1123
-        var formattedDateTime = zonedDateTime.ToString("R", CultureInfo.InvariantCulture); // "R" = RFC1123
-
-        await outputScriptWriter.WriteLineAsync($"# Written {formattedDateTime}");
+        await outputScriptWriter.WriteLineAsync($"# Written {DateTimeOffset.Now:R}");
         await outputScriptWriter.WriteLineAsync();
 
-        await Task.CompletedTask;
+        foreach (var file in await File.ReadAllLinesAsync(_files))
+        {
+            if (string.IsNullOrWhiteSpace(file) || file.StartsWith('#'))
+            {
+                continue;
+            }
+
+            await outputScriptWriter.WriteLineAsync($"ROBOCOPY \"{_source}\" \"{_destination}\" /xo {file}");
+            await outputScriptWriter.WriteLineAsync($"ROBOCOPY \"{_destination}\" \"{_source}\" /xo {file}");
+
+            await outputScriptWriter.WriteLineAsync();
+        }
     }
 }
