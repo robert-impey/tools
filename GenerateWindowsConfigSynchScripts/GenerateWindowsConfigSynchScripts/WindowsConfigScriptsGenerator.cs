@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FolderManager;
+using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace GenerateWindowsConfigSynchScripts;
 
@@ -53,7 +55,16 @@ internal class WindowsConfigScriptsGenerator
         }
 
         using var outputScriptWriter = new StreamWriter(outputScriptPath);
-        outputScriptWriter.WriteLine("# AUTOGEN'D - DO NOT EDIT!");
+        await outputScriptWriter.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!");
+
+        // Get current local time with offset
+        var zonedDateTime = DateTimeOffset.Now;
+
+        // Format using RFC1123
+        var formattedDateTime = zonedDateTime.ToString("R", CultureInfo.InvariantCulture); // "R" = RFC1123
+
+        await outputScriptWriter.WriteLineAsync($"# Written {formattedDateTime}");
+        await outputScriptWriter.WriteLineAsync();
 
         await Task.CompletedTask;
     }
