@@ -95,7 +95,7 @@ public class FolderManager {
     }
 
     private static @Nonnull Path getScriptPath(@Nonnull Path autoGenFolder, @Nonnull String location1, @Nonnull String location2) {
-        return autoGenFolder.resolve("synch").resolve(getCleanLocationName(location1)).resolve(getCleanLocationName(location2));
+        return autoGenFolder.resolve(getCleanLocationName(location1)).resolve(getCleanLocationName(location2));
     }
 
     private static @Nonnull String getCleanLocationName(@Nonnull String location) {
