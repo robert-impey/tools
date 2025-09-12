@@ -96,7 +96,7 @@ func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 }
 
 func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
-	fmt.Printf("Generating scripts in %v\n", scriptsInfo.dir)
+	fmt.Printf("Generating scripts in %v\n", autoGenDir)
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
 	fmt.Printf("Destination: %v\n", scriptsInfo.dst)
