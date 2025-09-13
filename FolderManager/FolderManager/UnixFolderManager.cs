@@ -21,6 +21,10 @@ public abstract class UnixFolderManager(ILogger<FolderManager> logger) : FolderM
             throw new ApplicationException("Unable to find the local scripts folder!");
         }
 
-        return Path.Join(localScriptsPathParts.ToArray());
+        var localScriptsFolder = Path.Combine(localScriptsPathParts.ToArray());
+        var symlink = new FileInfo(localScriptsFolder);
+        var target = symlink.ResolveLinkTarget(true); // true = follow to final target
+
+        return target is null ? localScriptsFolder : target.FullName;
     }
 }

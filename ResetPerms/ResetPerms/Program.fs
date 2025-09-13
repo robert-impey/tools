@@ -8,9 +8,7 @@ let fileHasShebang (fileName: string) =
     use reader = new StreamReader(fileName)
     let firstLine = reader.ReadLine()
 
-    match firstLine.Length with
-    | 1 -> firstLine.StartsWith("#!")
-    | _ -> false
+    firstLine.StartsWith("#!")
 
 let findFilesWithShebang (scriptsDir: string) =
     let matchingFiles =
