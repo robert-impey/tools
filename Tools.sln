@@ -18,6 +18,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA3949B0-4E73-45D0-ACB3-864DFFAC824A}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		ReadMe.md = ReadMe.md
+		LICENSE = LICENSE
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWindowsConfigSynchScripts", "GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts\GenerateWindowsConfigSynchScripts.csproj", "{27E24689-E272-46BF-553B-F5E0E962902A}"
