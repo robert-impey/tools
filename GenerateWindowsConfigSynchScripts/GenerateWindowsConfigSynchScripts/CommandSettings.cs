@@ -9,6 +9,10 @@ public class CommandSettings : Spectre.Console.Cli.CommandSettings
     [Description("Autogen directory")]
     public string? Autogen { get; set; }
 
+    [CommandOption("-c|--script")]
+    [Description("Name of script to generate")]
+    public string? Script { get; set; }
+
     [CommandOption("-f|--files <FILES>")]
     [Description("File with a list of files to be synch'd")]
     public string? Files { get; set; }

@@ -28,6 +28,7 @@ public class Command : AsyncCommand<CommandSettings>
         }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Autogen);
+        ArgumentException.ThrowIfNullOrWhiteSpace(settings.Script);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Files);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Source);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Destination);
@@ -35,7 +36,8 @@ public class Command : AsyncCommand<CommandSettings>
         var generator = new WindowsConfigScriptsGenerator(
             logger: logger,
             logsDirectory: settings.LogsDirectory,
-            autogen: settings.Autogen,
+            autogen: settings.Autogen, 
+            script: settings.Script,
             files: settings.Files,
             source: settings.Source,
             destination: settings.Destination);

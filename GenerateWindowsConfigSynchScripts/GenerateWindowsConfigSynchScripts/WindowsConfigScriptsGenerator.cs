@@ -6,12 +6,13 @@ internal class WindowsConfigScriptsGenerator
 {
     private readonly ILogger<WindowsConfigScriptsGenerator> _logger;
 
-    private readonly string _autogen, _files, _source, _destination;
+    private readonly string _autogen, _script, _files, _source, _destination;
 
     public WindowsConfigScriptsGenerator(
         ILogger<WindowsConfigScriptsGenerator> logger,
         string logsDirectory,
         string autogen,
+        string script,
         string files,
         string source,
         string destination
@@ -20,12 +21,14 @@ internal class WindowsConfigScriptsGenerator
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(logsDirectory);
         ArgumentNullException.ThrowIfNull(autogen);
+        ArgumentNullException.ThrowIfNull(script);
         ArgumentNullException.ThrowIfNull(files);
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(destination);
 
         _logger = logger;
         _autogen = autogen;
+        _script = script;
         _files = files;
         _source = source;
         _destination = destination;
@@ -34,6 +37,7 @@ internal class WindowsConfigScriptsGenerator
 
         _logger.LogInformation($"LogsDirectory: {logsDirectory}");
         _logger.LogInformation($"Autogen: {_autogen}");
+        _logger.LogInformation($"Script: {_script}");
         _logger.LogInformation($"Files: {_files}");
         _logger.LogInformation($"Source: {_source}");
         _logger.LogInformation($"Destination: {_destination}");
@@ -43,7 +47,7 @@ internal class WindowsConfigScriptsGenerator
     {
         _logger.LogInformation("Generating scripts...");
         
-        var outputScriptPath = Path.Combine(_autogen, "config-Windows.ps1");
+        var outputScriptPath = Path.Combine(_autogen, $"{_script}.ps1");
 
         if (File.Exists(outputScriptPath))
         {
