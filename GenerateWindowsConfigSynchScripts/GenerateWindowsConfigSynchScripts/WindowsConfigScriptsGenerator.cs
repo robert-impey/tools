@@ -6,7 +6,7 @@ internal class WindowsConfigScriptsGenerator
 {
     private readonly ILogger<WindowsConfigScriptsGenerator> _logger;
 
-    private readonly string _logsDirectory, _autogen, _files, _source, _destination;
+    private readonly string _autogen, _files, _source, _destination;
 
     public WindowsConfigScriptsGenerator(
         ILogger<WindowsConfigScriptsGenerator> logger,
@@ -25,7 +25,6 @@ internal class WindowsConfigScriptsGenerator
         ArgumentNullException.ThrowIfNull(destination);
 
         _logger = logger;
-        _logsDirectory = logsDirectory;
         _autogen = autogen;
         _files = files;
         _source = source;
@@ -33,7 +32,7 @@ internal class WindowsConfigScriptsGenerator
 
         _logger.LogInformation("Creating WindowsConfigScriptsGenerator");
 
-        _logger.LogInformation($"LogsDirectory: {_logsDirectory}");
+        _logger.LogInformation($"LogsDirectory: {logsDirectory}");
         _logger.LogInformation($"Autogen: {_autogen}");
         _logger.LogInformation($"Files: {_files}");
         _logger.LogInformation($"Source: {_source}");
@@ -52,7 +51,7 @@ internal class WindowsConfigScriptsGenerator
             File.Delete(outputScriptPath);
         }
 
-        using var outputScriptWriter = new StreamWriter(outputScriptPath);
+        await using var outputScriptWriter = new StreamWriter(outputScriptPath);
         await outputScriptWriter.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!");
 
         await outputScriptWriter.WriteLineAsync($"# Written {DateTimeOffset.Now:R}");
