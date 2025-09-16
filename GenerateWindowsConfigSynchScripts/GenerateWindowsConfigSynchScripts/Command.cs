@@ -11,12 +11,14 @@ public class Command : AsyncCommand<CommandSettings>
         ArgumentNullException.ThrowIfNull(settings);
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.LogsDirectory);
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(settings.Script);
+        
         ILogger<WindowsConfigScriptsGenerator> logger;
 
         if (settings.Logged)
         {
-            logger = LogsFileFinder.GetLogger<WindowsConfigScriptsGenerator>(settings.LogsDirectory, "WindowsConfigScriptsGenerator");
+            logger = LogsFileFinder.GetLogger<WindowsConfigScriptsGenerator>(
+                settings.LogsDirectory, $"WindowsConfigScriptsGenerator-{settings.Script}");
         }
         else
         {
@@ -28,7 +30,6 @@ public class Command : AsyncCommand<CommandSettings>
         }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Autogen);
-        ArgumentException.ThrowIfNullOrWhiteSpace(settings.Script);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Files);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Source);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Destination);
