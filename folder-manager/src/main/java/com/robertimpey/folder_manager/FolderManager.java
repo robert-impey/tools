@@ -171,7 +171,10 @@ public class FolderManager {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath)))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    lines.add(line);
+                    if (line.isBlank() || line.startsWith("#")) {
+                        continue;
+                    }
+                    lines.add(line.trim());
                 }
             }
         } else {
