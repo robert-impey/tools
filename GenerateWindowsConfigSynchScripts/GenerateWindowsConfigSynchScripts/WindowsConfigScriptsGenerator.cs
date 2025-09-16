@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace GenerateWindowsConfigSynchScripts;
 
@@ -55,23 +56,33 @@ internal class WindowsConfigScriptsGenerator
             File.Delete(outputScriptPath);
         }
 
-        await using var outputScriptWriter = new StreamWriter(outputScriptPath);
-        await outputScriptWriter.WriteLineAsync("# AUTOGEN'D - DO NOT EDIT!");
+        var sb = new StringBuilder();
+        sb.Append("# AUTOGEN'D - DO NOT EDIT!\n");
 
-        await outputScriptWriter.WriteLineAsync($"# Written {DateTimeOffset.Now:R}");
-        await outputScriptWriter.WriteLineAsync();
+        sb.Append($"# Written {DateTimeOffset.Now:R}\n\n");
 
+        var first = true;
         foreach (var file in await File.ReadAllLinesAsync(_files))
         {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.Append('\n');
+            }
+            
             if (string.IsNullOrWhiteSpace(file) || file.StartsWith('#'))
             {
                 continue;
             }
 
-            await outputScriptWriter.WriteLineAsync($"ROBOCOPY \"{_source}\" \"{_destination}\" /xo {file}");
-            await outputScriptWriter.WriteLineAsync($"ROBOCOPY \"{_destination}\" \"{_source}\" /xo {file}");
-
-            await outputScriptWriter.WriteLineAsync();
+            sb.Append($"ROBOCOPY \"{_source}\" \"{_destination}\" /xo {file}\n");
+            sb.Append($"ROBOCOPY \"{_destination}\" \"{_source}\" /xo {file}\n");
         }
+
+        await using var outputScriptWriter = new StreamWriter(outputScriptPath);
+        await outputScriptWriter.WriteAsync(sb);
     }
 }
