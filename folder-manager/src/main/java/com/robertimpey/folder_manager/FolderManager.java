@@ -118,7 +118,7 @@ public class FolderManager {
             writer.println("Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"");
             writer.println();
 
-            writer.printf("$folder = \"%s\"%n", folder);
+            writer.printf("$folder = \"%s\"%n%n", folder);
             writer.printf("$src = \"%s\"%n", sourcePath.toAbsolutePath());
             writer.printf("$dst = \"%s\"%n", destinationPath.toAbsolutePath());
             writer.println();
