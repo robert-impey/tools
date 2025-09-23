@@ -2,11 +2,15 @@
   "profiles": {
     "ResetPerms (macOs)": {
       "commandName": "Project",
-      "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/Dropbox/local-scripts/"
+      "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/Dropbox/local-scripts"
     },
     "ResetPerms (Linux)": {
       "commandName": "Project",
-      "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts/"
+      "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts"
+    },
+    "ResetPerms (Linux) | Logged": {
+      "commandName": "Project",
+      "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts --logged --logsDirectory /home/robert/logs/reset-perms"
     }
   }
 }

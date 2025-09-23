@@ -1,4 +1,5 @@
-﻿open System.ComponentModel
+﻿open System
+open System.ComponentModel
 open System.IO
 open System.Linq
 open FolderManager
@@ -39,6 +40,9 @@ type DefaultCommand() =
     override _.Execute (context: CommandContext, settings: CliSettings): int =
         let logger =
             if settings.Logged then
+                if String.IsNullOrWhiteSpace(settings.LogsDirectory) then
+                    raise (ArgumentNullException(settings.LogsDirectory))
+                    
                 LogsFileFinder.GetLogger<DefaultCommand>(settings.LogsDirectory, "ResetPerms")
             else
                 use loggerFactory =
