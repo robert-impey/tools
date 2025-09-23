@@ -1,8 +1,9 @@
-﻿open System.CommandLine
+﻿open System.ComponentModel
 open System.IO
 open System.Linq
 open FolderManager
 open Microsoft.Extensions.Logging
+open Spectre.Console.Cli
 
 let fileHasShebang (fileName: string) =
     use reader = new StreamReader(fileName)
@@ -16,21 +17,36 @@ let findFilesWithShebang (scriptsDir: string) =
 
     matchingFiles |> Seq.filter fileHasShebang
 
-[<EntryPoint>]
-let main args =
-    let rootCommand = RootCommand("Reset permissions for files that have a shebang")
 
-    let handler () =
+type CliSettings() =
+    inherit CommandSettings()
+
+    [<CommandOption("-s|--scriptsDirectory")>]
+    [<Description("Path to the scripts directory")>]
+    member val ScriptsDirectory: string = "" with get, set
+    
+    [<CommandOption("--logged")>]
+    [<Description("Logged or not")>]
+    member val Logged: bool = false with get, set
+    
+    [<CommandOption("-l|--logsDirectory")>]
+    [<Description("Path to the logs directory")>]
+    member val LogsDirectory: string = "" with get, set
+
+type DefaultCommand() =
+    inherit Command<CliSettings>()
+
+    override _.Execute (context: CommandContext, settings: CliSettings): int =
         let logger =
-            LoggerFactory
-                .Create(fun builder ->
-                    builder.ClearProviders() |> ignore
-                    builder.AddConsole() |> ignore)
-                .CreateLogger<FolderManager>()
+            if settings.Logged then
+                LogsFileFinder.GetLogger<DefaultCommand>(settings.LogsDirectory, "ResetPerms")
+            else
+                use loggerFactory =
+                    LoggerFactory.Create(fun builder ->
+                        builder.AddConsole() |> ignore)
+                loggerFactory.CreateLogger<DefaultCommand>()
 
-        let folderManager = FolderManager.GetFolderManager(logger)
-
-        let filesWithShebang = findFilesWithShebang (folderManager.GetLocalScriptsFolder())
+        let filesWithShebang = findFilesWithShebang settings.ScriptsDirectory
 
         logger.LogInformation $"Found {filesWithShebang.Count()} files with shebangs"
 
@@ -47,7 +63,12 @@ let main args =
                 ||| UnixFileMode.OtherRead
                 ||| UnixFileMode.OtherExecute
             )
+        0
 
-    rootCommand.SetHandler(handler)
-
-    rootCommand.Invoke(args)
+[<EntryPoint>]
+let main args =
+    let app = CommandApp<DefaultCommand>()
+    app.Configure(fun config ->
+        config.SetApplicationName("Reset Perms") |> ignore
+    )
+    app.Run(args)
