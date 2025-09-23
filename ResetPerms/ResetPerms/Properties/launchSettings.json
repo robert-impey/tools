@@ -3,6 +3,10 @@
     "ResetPerms (macOs)": {
       "commandName": "Project",
       "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/Dropbox/local-scripts/"
+    },
+    "ResetPerms (Linux)": {
+      "commandName": "Project",
+      "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts/"
     }
   }
 }
