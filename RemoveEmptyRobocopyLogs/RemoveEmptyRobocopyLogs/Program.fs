@@ -7,7 +7,7 @@ open System.ComponentModel
 open RobocopyLogs
 
 // Define the settings for the command
-type LogSettings() =
+type CliSettings() =
     inherit CommandSettings()
 
     [<CommandOption("-l|--logsDirectory")>]
@@ -16,7 +16,7 @@ type LogSettings() =
 
 // Define the command logic
 type DefaultCommand() =
-    inherit Command<LogSettings>()
+    inherit Command<CliSettings>()
 
     override _.Execute(context, settings) =
         printfn "Looking for Robocopy Log Files"
