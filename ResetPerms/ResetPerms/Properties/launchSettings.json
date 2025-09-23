@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "ResetPerms": {
+    "ResetPerms (macOs)": {
       "commandName": "Project",
-      "commandLineArgs": ""
+      "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/Dropbox/local-scripts/"
     }
   }
 }
