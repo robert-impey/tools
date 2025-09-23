@@ -43,10 +43,9 @@ type DefaultCommand() =
                 File.Delete(logFile)
         0
 
-// Entry point
 [<EntryPoint>]
 let main argv =
-    let app = CommandApp<DefaultCommand>() // Set default command here
+    let app = CommandApp<DefaultCommand>()
     app.Configure(fun config ->
         config.SetApplicationName("LogViewer") |> ignore
     )
