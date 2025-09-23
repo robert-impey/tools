@@ -26,7 +26,7 @@ public class CommandSettings : Spectre.Console.Cli.CommandSettings
     public string? Destination { get; set; }
 
     [CommandOption("--logged")]
-    [Description("Logged")]
+    [Description("Logged or not")]
     public bool Logged { get; set; }
 
     [CommandOption("-l|--logs <LOGS>")]
