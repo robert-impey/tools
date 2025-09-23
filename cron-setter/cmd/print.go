@@ -83,7 +83,7 @@ func getListManagedFoldersScript() string {
 
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms.sh")
+	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms-linux.sh")
 }
 
 func getTidyFolderScript() string {
