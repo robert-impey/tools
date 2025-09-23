@@ -44,9 +44,9 @@ type DefaultCommand() =
         0
 
 [<EntryPoint>]
-let main argv =
+let main args =
     let app = CommandApp<DefaultCommand>()
     app.Configure(fun config ->
         config.SetApplicationName("LogViewer") |> ignore
     )
-    app.Run(argv)
+    app.Run(args)
