@@ -6,7 +6,6 @@ open System.ComponentModel
 
 open RobocopyLogs
 
-// Define the settings for the command
 type CliSettings() =
     inherit CommandSettings()
 
@@ -14,7 +13,6 @@ type CliSettings() =
     [<Description("Path to the logs directory")>]
     member val LogsDirectory: string = "" with get, set
 
-// Define the command logic
 type DefaultCommand() =
     inherit Command<CliSettings>()
 
@@ -53,4 +51,3 @@ let main argv =
         config.SetApplicationName("LogViewer") |> ignore
     )
     app.Run(argv)
-
