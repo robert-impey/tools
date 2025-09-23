@@ -19,26 +19,21 @@ type DefaultCommand() =
     inherit Command<LogSettings>()
 
     override _.Execute(context, settings) =
-        AnsiConsole.MarkupLine($"[green]Logs directory:[/] {settings.LogsDirectory}")
-
         printfn "Looking for Robocopy Log Files"
 
-        let synchLogsDirectory =
-            Path.Combine(settings.LogsDirectory, "synch")
-
-        printfn "Synch logs directory: %s" synchLogsDirectory
+        AnsiConsole.MarkupLine($"[green]Logs directory:[/] {settings.LogsDirectory}")
 
         let synchLogsDirMessage =
-            if Directory.Exists(synchLogsDirectory) then
-                $"synch logs directory %s{synchLogsDirectory} exists"
+            if Directory.Exists(settings.LogsDirectory) then
+                $"synch logs directory %s{settings.LogsDirectory} exists"
             else
-                $"Synch logs directory %s{synchLogsDirectory} does not exist"
+                $"Synch logs directory %s{settings.LogsDirectory} does not exist"
 
         printfn $"%s{synchLogsDirMessage}"
 
         let matcher = Matcher()
         matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"})
-        let matchingFiles = matcher.GetResultsInFullPath(synchLogsDirectory)
+        let matchingFiles = matcher.GetResultsInFullPath(settings.LogsDirectory)
 
         printfn "There are %d log files" (Seq.length matchingFiles)
 

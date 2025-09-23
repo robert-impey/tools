@@ -2,7 +2,7 @@
   "profiles": {
     "RemoveEmptyRobocopyLogs": {
       "commandName": "Project",
-      "commandLineArgs": "--logsDirectory \"C:\\Users\\rober\\logs\""
+      "commandLineArgs": "--logsDirectory \"C:\\Users\\rober\\logs\\synch\""
     }
   }
 }
