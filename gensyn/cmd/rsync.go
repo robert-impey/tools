@@ -29,25 +29,22 @@ to quickly create a Cobra application.`,
 	},
 }
 
+var files bool
 var autoGenDir string
 
 func init() {
 	rootCmd.AddCommand(rsyncCmd)
 
+	rsyncCmd.Flags().BoolVarP(&files, "files", "f", false, "Generate the scripts for files rather than directories")
 	rsyncCmd.Flags().StringVarP(&autoGenDir, "autogenDir", "a", "", "autogenDir")
 }
 
 func rsync(args []string) {
-	gssFiles := make([]string, 0)
-
-	for _, arg := range args {
-		_, err := os.Stat(arg)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Unable to process %v - %v\n", arg, err)
-			continue
-		}
-		gssFiles = append(gssFiles, arg)
+	if len(args) != 1 {
+		log.Fatalln(fmt.Errorf("expected 1 argument got %v", len(args)))
 	}
+
+	gssFile := args[0]
 
 	if autoGenDir == "" {
 		log.Fatalln("You must set the autogenDir parameter")
@@ -57,11 +54,8 @@ func rsync(args []string) {
 		log.Fatalln(err.Error())
 	}
 
-	for _, gssFile := range gssFiles {
-		err := lib.GenerateSynchScripts(autoGenDir, gssFile)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Unable to generate the scripts for %v - %v\n", gssFile, err)
-			continue
-		}
+	err := lib.GenerateSynchScripts(files, autoGenDir, gssFile)
+	if err != nil {
+		log.Fatalf("Unable to generate the scripts for %v - %v\n", gssFile, err)
 	}
 }

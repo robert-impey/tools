@@ -24,7 +24,7 @@ func TestParseGSSFile(t *testing.T) {
 		"rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/home/robert/local-scripts/_Common/synch/rsync-excluded.txt")
 	assert.Equal(t, scriptsInfo.src, "robert@merneith.robertimpey.com:~")
 	assert.Equal(t, scriptsInfo.dst, "/home/robert")
-	assert.Equal(t, len(scriptsInfo.dirs), 4)
+	assert.Equal(t, len(scriptsInfo.items), 4)
 }
 
 func TestParseGSSFileBadFile(t *testing.T) {
@@ -34,10 +34,10 @@ func TestParseGSSFileBadFile(t *testing.T) {
 	assert.Nil(t, scriptsInfo)
 }
 
-func TestGenerateSynchScripts(t *testing.T) {
+func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(outputDir, "merneith.txt")
+	err := GenerateSynchScripts(false, outputDir, "merneith.txt")
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "merneith.sh")
@@ -53,5 +53,17 @@ func TestGenerateSynchScripts(t *testing.T) {
 	configScript := path.Join(scriptsDir, "config.sh")
 	if _, err := os.Stat(configScript); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("config script file %s doesn't exist", configScript)
+	}
+}
+
+func TestGenerateFilesSynchScripts(t *testing.T) {
+	outputDir := t.TempDir()
+
+	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt")
+	assert.Nil(t, err)
+
+	scriptsFile := path.Join(outputDir, "ssh-config.sh")
+	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
 }

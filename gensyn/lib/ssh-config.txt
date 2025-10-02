@@ -1,0 +1,6 @@
+rsync --update --verbose --times --iconv=utf8 --perms
+/home/robert/config/_Common/ssh
+/home/robert/.ssh
+
+config
+.gitignore

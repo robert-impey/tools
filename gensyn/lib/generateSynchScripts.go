@@ -19,14 +19,15 @@ import (
 	mapset "github.com/deckarep/golang-set/v2"
 )
 
-const cmdLineTemplate = "%v %v/%v/ %v/%v"
+const filesCmdLineTemplate = "%v %v/%v %v/"
+const dirsCmdLineTemplate = "%v %v/%v/ %v/%v"
 
 type ScriptsInfo struct {
 	name, dir, synch, src, dst string
-	dirs                       []string
+	items                      []string
 }
 
-func GenerateSynchScripts(autoGenDir string, gssFile string) error {
+func GenerateSynchScripts(files bool, autoGenDir string, gssFile string) error {
 	fmt.Printf("Generating synch scripts for %v\n", gssFile)
 
 	scriptInfo, err := ParseGSSFile(gssFile)
@@ -35,8 +36,8 @@ func GenerateSynchScripts(autoGenDir string, gssFile string) error {
 		return err
 	}
 
-	if err := writeAllDirs(autoGenDir, scriptInfo); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to write all dirs script for %v - %v\n", gssFile, err)
+	if err := writeScripts(files, autoGenDir, scriptInfo); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to write all items script for %v - %v\n", gssFile, err)
 		return err
 	}
 	return nil
@@ -90,18 +91,18 @@ func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 	}
 	dirsSlice := dirs.ToSlice()
 	sort.Strings(dirsSlice)
-	scriptsInfo.dirs = dirsSlice
+	scriptsInfo.items = dirsSlice
 
 	return scriptsInfo, nil
 }
 
-func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
+func writeScripts(files bool, autoGenDir string, scriptsInfo *ScriptsInfo) error {
 	fmt.Printf("Generating scripts in %v\n", autoGenDir)
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
 	fmt.Printf("Destination: %v\n", scriptsInfo.dst)
 	fmt.Println("Directories to synch:")
-	for _, dir := range scriptsInfo.dirs {
+	for _, dir := range scriptsInfo.items {
 		fmt.Println(dir)
 	}
 	fmt.Println()
@@ -123,8 +124,9 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 	allScriptsBuffer.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
 	allScriptsBuffer.WriteString("date\n\n")
 
-	for _, dir := range scriptsInfo.dirs {
+	for _, dir := range scriptsInfo.items {
 		to := getCmdLine(
+			files,
 			scriptsInfo.synch,
 			dir,
 			scriptsInfo.src,
@@ -133,6 +135,7 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 		allScriptsBuffer.WriteString(to + "\n")
 
 		from := getCmdLine(
+			files,
 			scriptsInfo.synch,
 			dir,
 			scriptsInfo.dst,
@@ -150,7 +153,11 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 		fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
 	}
 
-	if len(scriptsInfo.dirs) > 1 {
+	if files {
+		return nil
+	}
+
+	if len(scriptsInfo.items) > 1 {
 		fileDir := filepath.Join(autoGenDir, scriptsInfo.name)
 
 		if _, err := os.Stat(fileDir); errors.Is(err, os.ErrNotExist) {
@@ -161,7 +168,7 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 			}
 		}
 
-		for _, dir := range scriptsInfo.dirs {
+		for _, dir := range scriptsInfo.items {
 			scriptName := fmt.Sprintf("%s.sh", dir)
 			scriptFileName := filepath.Join(fileDir, scriptName)
 
@@ -180,6 +187,7 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 			scriptBuffer.WriteString("date\n\n")
 
 			to := getCmdLine(
+				false,
 				scriptsInfo.synch,
 				dir,
 				scriptsInfo.src,
@@ -188,6 +196,7 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 			scriptBuffer.WriteString(to + "\n")
 
 			from := getCmdLine(
+				false,
 				scriptsInfo.synch,
 				dir,
 				scriptsInfo.dst,
@@ -209,12 +218,19 @@ func writeAllDirs(autoGenDir string, scriptsInfo *ScriptsInfo) error {
 	return nil
 }
 
-func getCmdLine(synchRoot, dir, src, dst string) string {
+func getCmdLine(files bool, synchRoot, item, src, dst string) string {
+	if files {
+		return fmt.Sprintf(
+			filesCmdLineTemplate,
+			synchRoot,
+			src, item,
+			dst)
+	}
 	return fmt.Sprintf(
-		cmdLineTemplate,
+		dirsCmdLineTemplate,
 		synchRoot,
-		src, dir,
-		dst, dir)
+		src, item,
+		dst, item)
 }
 
 func getEchoLine(cmd string) string {
