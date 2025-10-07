@@ -37,7 +37,7 @@ type CliSettings() =
 type DefaultCommand() =
     inherit Command<CliSettings>()
 
-    override _.Execute (context: CommandContext, settings: CliSettings): int =
+    override _.Execute (_: CommandContext, settings: CliSettings): int =
         let logger =
             if settings.Logged then
                 if String.IsNullOrWhiteSpace(settings.LogsDirectory) then
