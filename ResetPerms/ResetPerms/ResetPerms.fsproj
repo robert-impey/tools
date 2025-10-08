@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.9" />
     <PackageReference Include="NLog.Extensions.Logging" Version="6.0.4" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.51.1" />
+    <PackageReference Update="FSharp.Core" Version="9.0.303" />
   </ItemGroup>
 
   <ItemGroup>
