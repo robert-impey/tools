@@ -1,8 +1,8 @@
 ﻿open System.IO
 open Microsoft.Extensions.FileSystemGlobbing
-open Spectre.Console
 open Spectre.Console.Cli
 open System.ComponentModel
+open Microsoft.Extensions.Logging
 
 open RobocopyLogs
 
@@ -16,30 +16,33 @@ type CliSettings() =
 type DefaultCommand() =
     inherit Command<CliSettings>()
 
-    override _.Execute(context, settings) =
-        printfn "Looking for Robocopy Log Files"
+    override _.Execute(_: CommandContext, settings: CliSettings) =
+        let logger =
+            use loggerFactory =
+                LoggerFactory.Create(fun builder ->
+                    builder.AddConsole() |> ignore)
+            loggerFactory.CreateLogger<DefaultCommand>()
+        
+        logger.LogInformation "Looking for Robocopy Log Files"
 
-        AnsiConsole.MarkupLine($"[green]Logs directory:[/] {settings.LogsDirectory}")
+        logger.LogInformation $"Logs directory: {settings.LogsDirectory}"
 
-        let synchLogsDirMessage =
-            if Directory.Exists(settings.LogsDirectory) then
-                $"synch logs directory %s{settings.LogsDirectory} exists"
-            else
-                $"Synch logs directory %s{settings.LogsDirectory} does not exist"
-
-        printfn $"%s{synchLogsDirMessage}"
+        if Directory.Exists(settings.LogsDirectory) then
+            logger.LogInformation $"synch logs directory %s{settings.LogsDirectory} exists"
+        else
+            logger.LogInformation $"Synch logs directory %s{settings.LogsDirectory} does not exist"
 
         let matcher = Matcher()
         matcher.AddIncludePatterns(seq { "*.robocopy-synch.log"})
         let matchingFiles = matcher.GetResultsInFullPath(settings.LogsDirectory)
 
-        printfn "There are %d log files" (Seq.length matchingFiles)
+        logger.LogInformation $"There are {Seq.length matchingFiles} log files"
 
         for logFile in matchingFiles do
             if fileHasCopies logFile then
-                printfn "%s has copies - keeping" logFile
+                logger.LogInformation $"{logFile} has copies - keeping"
             else
-                printfn "%s has no copies - deleting" logFile
+                logger.LogInformation $"{logFile} has no copies - deleting"
                 File.Delete(logFile)
         0
 
@@ -47,6 +50,6 @@ type DefaultCommand() =
 let main args =
     let app = CommandApp<DefaultCommand>()
     app.Configure(fun config ->
-        config.SetApplicationName("LogViewer") |> ignore
+        config.SetApplicationName("RemoveEmptyRobocopyLogs") |> ignore
     )
     app.Run(args)
