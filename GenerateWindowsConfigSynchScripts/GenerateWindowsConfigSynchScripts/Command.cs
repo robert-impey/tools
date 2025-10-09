@@ -10,13 +10,13 @@ public class Command : AsyncCommand<CommandSettings>
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(settings.LogsDirectory);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Script);
         
         ILogger<WindowsConfigScriptsGenerator> logger;
 
         if (settings.Logged)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(settings.LogsDirectory);
             logger = LogsFileFinder.GetLogger<WindowsConfigScriptsGenerator>(
                 settings.LogsDirectory, $"WindowsConfigScriptsGenerator-{settings.Script}");
         }
@@ -31,17 +31,16 @@ public class Command : AsyncCommand<CommandSettings>
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Autogen);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Files);
-        ArgumentException.ThrowIfNullOrWhiteSpace(settings.Source);
-        ArgumentException.ThrowIfNullOrWhiteSpace(settings.Destination);
+
+        var synchFile = await SynchFileParser.ParseFile(settings.Files);
 
         var generator = new WindowsConfigScriptsGenerator(
             logger: logger,
-            logsDirectory: settings.LogsDirectory,
             autogen: settings.Autogen, 
             script: settings.Script,
-            files: settings.Files,
-            source: settings.Source,
-            destination: settings.Destination);
+            source: synchFile.Source,
+            destination: synchFile.Destination,
+            files: synchFile.Files);
 
         await generator.Generate();
 

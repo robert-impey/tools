@@ -14,16 +14,8 @@ public class CommandSettings : Spectre.Console.Cli.CommandSettings
     public string? Script { get; set; }
 
     [CommandOption("-f|--files <FILES>")]
-    [Description("File with a list of files to be synch'd")]
+    [Description("File with source, destination, and a list of files to be synch'd")]
     public string? Files { get; set; }
-
-    [CommandOption("-s|--source <SOURCE>")]
-    [Description("Source directory")]
-    public string? Source { get; set; }
-
-    [CommandOption("-d|--destination <DEST>")]
-    [Description("Destination directory")]
-    public string? Destination { get; set; }
 
     [CommandOption("--logged")]
     [Description("Logged or not")]
