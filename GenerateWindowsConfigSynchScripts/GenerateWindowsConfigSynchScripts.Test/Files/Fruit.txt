@@ -1,0 +1,6 @@
+﻿C:\
+D:\
+
+apples.txt
+bananas.docx
+cherries.pdf
