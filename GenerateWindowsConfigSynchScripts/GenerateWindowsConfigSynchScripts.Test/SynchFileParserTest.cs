@@ -8,7 +8,7 @@ public class SynchFileParserTest
     public async Task ParseFile_ShouldReturnCorrectSourceAndDestinationPaths()
     {
         // Arrange
-        var filePath = @"Files\Fruit.txt";
+        var filePath = "Files/Fruit.txt";
         
         // Act
         var synchFile = await SynchFileParser.ParseFile(filePath);
@@ -28,8 +28,8 @@ public class SynchFileParserTest
     }
 
     [Theory]
-    [InlineData(@"Files\NoFiles.txt")]
-    [InlineData(@"Files\NoBlankLine.txt")]
+    [InlineData("Files/NoFiles.txt")]
+    [InlineData("Files/NoBlankLine.txt")]
     public async Task ParseFile_ShouldThrowIfNoFiles(string filePath)
     {
         await Should.ThrowAsync<InvalidOperationException>(async () =>
