@@ -5,7 +5,7 @@ namespace GenerateWindowsConfigSynchScripts.Test;
 public class SynchFileParserTest
 {
     [Fact]
-    public async Task ShouldReturnCorrectSourceAndDestinationPaths()
+    public async Task ParseFile_ShouldReturnCorrectSourceAndDestinationPaths()
     {
         // Arrange
         var filePath = @"Files\Fruit.txt";
@@ -26,4 +26,16 @@ public class SynchFileParserTest
         synchFile.Files.ShouldContain("bananas.docx");
         synchFile.Files.ShouldContain("cherries.pdf");
     }
+
+    [Theory]
+    [InlineData(@"Files\NoFiles.txt")]
+    [InlineData(@"Files\NoBlankLine.txt")]
+    public async Task ParseFile_ShouldThrowIfNoFiles(string filePath)
+    {
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+        {
+            await SynchFileParser.ParseFile(filePath);
+        });
+    }
+
 }

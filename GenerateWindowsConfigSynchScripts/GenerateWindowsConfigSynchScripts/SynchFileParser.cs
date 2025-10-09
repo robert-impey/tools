@@ -8,13 +8,13 @@ public static class SynchFileParser
         
         var lines = await File.ReadAllLinesAsync(filePath);
         
-        if (lines.Length < 3)
+        if (lines.Length < 4)
         {
-            throw new InvalidOperationException("The file must contain at least three lines: source path, destination path, and at least one file.");
+            throw new InvalidOperationException("The file must contain at least four lines: source path, destination path, a blank line, and at least one file.");
         }
         var source = lines[0].Trim();
         var destination = lines[1].Trim();
-        var files = lines.Skip(2).Select(line => line.Trim()).Where(line => !string.IsNullOrWhiteSpace(line)).ToList();
+        var files = lines.Skip(3).Select(line => line.Trim()).Where(line => !string.IsNullOrWhiteSpace(line)).ToList();
         if (string.IsNullOrWhiteSpace(source))
         {
             throw new InvalidOperationException("The source path cannot be empty.");

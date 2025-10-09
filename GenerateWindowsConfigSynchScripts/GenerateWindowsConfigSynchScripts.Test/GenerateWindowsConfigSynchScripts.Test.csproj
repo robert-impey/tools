@@ -11,10 +11,17 @@
 
   <ItemGroup>
     <None Remove="Files\Fruit.txt" />
+    <None Remove="Files\NoFiles.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Files\Fruit.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\NoBlankLine.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\NoFiles.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
