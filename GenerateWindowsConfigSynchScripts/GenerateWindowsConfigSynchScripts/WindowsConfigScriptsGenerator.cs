@@ -39,7 +39,7 @@ internal class WindowsConfigScriptsGenerator
         _logger.LogInformation($"Script: {_script}");
         _logger.LogInformation($"Source: {_source}");
         _logger.LogInformation($"Destination: {_destination}");
-        _logger.LogInformation($"Files: {_files}");
+        _logger.LogInformation($"Files: {string.Join(", ", _files)}");
     }
 
     public async Task Generate()
