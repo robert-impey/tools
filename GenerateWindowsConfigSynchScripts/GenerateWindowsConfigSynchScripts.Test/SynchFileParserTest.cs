@@ -30,6 +30,7 @@ public class SynchFileParserTest
     [Theory]
     [InlineData("Files/NoFiles.txt")]
     [InlineData("Files/NoBlankLine.txt")]
+    [InlineData("Files/Empty.txt")]
     public async Task ParseFile_ShouldThrowIfNoFiles(string filePath)
     {
         await Should.ThrowAsync<InvalidOperationException>(async () =>

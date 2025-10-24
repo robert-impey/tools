@@ -24,6 +24,10 @@
     <Content Include="Files\NoFiles.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="Files\Empty.txt" />
+    <Content Include="Files\Empty.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
