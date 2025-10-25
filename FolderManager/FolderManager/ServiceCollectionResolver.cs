@@ -2,14 +2,9 @@
 
 namespace FolderManager
 {
-    public sealed class ServiceCollectionResolver : ITypeResolver, IDisposable
+    public sealed class ServiceCollectionResolver(IServiceProvider provider) : ITypeResolver, IDisposable
     {
-        private readonly IServiceProvider _provider;
-
-        public ServiceCollectionResolver(IServiceProvider provider)
-        {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-        }
+        private readonly IServiceProvider _provider = provider ?? throw new ArgumentNullException(nameof(provider));
 
         public object? Resolve(Type? type)
         {
