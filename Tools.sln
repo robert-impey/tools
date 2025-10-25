@@ -5,10 +5,6 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderManager", "FolderManager\FolderManager\FolderManager.csproj", "{5C48DCE9-8151-47FA-9D77-47E96F5B1365}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "RemoveEmptyRobocopyLogs", "RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs.fsproj", "{7344C599-082A-4541-A204-1A2AF49E0EDA}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "RobocopyLogs.Test", "RemoveEmptyRobocopyLogs\RobocopyLogs.Test\RobocopyLogs.Test.fsproj", "{0B54A42A-0683-4C3D-A864-FE05E9B7DCD4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA3949B0-4E73-45D0-ACB3-864DFFAC824A}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
@@ -24,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms", "ResetPerms\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms.Test", "ResetPerms\ResetPerms.Test\ResetPerms.Test.csproj", "{D3C01972-4ABB-419A-8AB7-6E1FF396537A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveEmptyRobocopyLogs", "RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs.csproj", "{20C82CD7-4412-2B71-3673-5CEE3B2BFA6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveEmptyRobocopyLogs.Test", "RemoveEmptyRobocopyLogs\RemoveEmptyRobocopyLogs.Test\RemoveEmptyRobocopyLogs.Test.csproj", "{E7BE2828-0133-22C0-626D-019BB5AEC14A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,14 +34,6 @@ Global
 		{5C48DCE9-8151-47FA-9D77-47E96F5B1365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C48DCE9-8151-47FA-9D77-47E96F5B1365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C48DCE9-8151-47FA-9D77-47E96F5B1365}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7344C599-082A-4541-A204-1A2AF49E0EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7344C599-082A-4541-A204-1A2AF49E0EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7344C599-082A-4541-A204-1A2AF49E0EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7344C599-082A-4541-A204-1A2AF49E0EDA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B54A42A-0683-4C3D-A864-FE05E9B7DCD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B54A42A-0683-4C3D-A864-FE05E9B7DCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B54A42A-0683-4C3D-A864-FE05E9B7DCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B54A42A-0683-4C3D-A864-FE05E9B7DCD4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27E24689-E272-46BF-553B-F5E0E962902A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{27E24689-E272-46BF-553B-F5E0E962902A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E24689-E272-46BF-553B-F5E0E962902A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,6 +50,14 @@ Global
 		{D3C01972-4ABB-419A-8AB7-6E1FF396537A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3C01972-4ABB-419A-8AB7-6E1FF396537A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3C01972-4ABB-419A-8AB7-6E1FF396537A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C82CD7-4412-2B71-3673-5CEE3B2BFA6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C82CD7-4412-2B71-3673-5CEE3B2BFA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C82CD7-4412-2B71-3673-5CEE3B2BFA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C82CD7-4412-2B71-3673-5CEE3B2BFA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7BE2828-0133-22C0-626D-019BB5AEC14A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7BE2828-0133-22C0-626D-019BB5AEC14A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7BE2828-0133-22C0-626D-019BB5AEC14A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7BE2828-0133-22C0-626D-019BB5AEC14A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
