@@ -1,9 +1,24 @@
-﻿namespace RemoveEmptyRobocopyLogs;
+﻿using FolderManager;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using RemoveEmptyRobocopyLogs;
+using Spectre.Console.Cli;
 
-internal class Program
+var services = new ServiceCollection();
+services.AddLogging(configure =>
 {
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello, World!");
-    }
-}
+    configure.AddConsole();
+    configure.SetMinimumLevel(LogLevel.Information);
+});
+var registrar = new ServiceCollectionRegistrar(services);
+
+var app = new CommandApp<DefaultCommand>(registrar);
+
+app.Configure(config =>
+{
+    config.SetApplicationName("RemoveEmptyRobocopyLogs");
+    config.AddCommand<DefaultCommand>("default")
+        .WithDescription("Removes Robocopy log files that report zero copied files.");
+});
+
+return app.Run(args);

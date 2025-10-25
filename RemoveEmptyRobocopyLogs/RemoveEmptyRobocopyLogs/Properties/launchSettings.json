@@ -1,6 +1,9 @@
 {
   "profiles": {
     "RemoveEmptyRobocopyLogs": {
+      "commandName": "Project"
+    },
+    "RemoveEmptyRobocopyLogs | Logs": {
       "commandName": "Project",
       "commandLineArgs": "--logsDirectory \"C:\\Users\\rober\\logs\\synch\""
     }
