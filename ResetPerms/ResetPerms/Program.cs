@@ -1,3 +1,18 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using ResetPerms;
+using Spectre.Console.Cli;
+using System.Runtime.InteropServices;
 
-Console.WriteLine("Hello, World!");
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    Console.Error.WriteLine("This program should only be run on Linux or macOs");
+    return 1;
+}
+
+var app = new CommandApp<DefaultCommand>();
+
+app.Configure(config =>
+{
+    config.SetApplicationName("Reset Perms");
+});
+
+return app.Run(args);
