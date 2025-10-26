@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ResetPerms;
 
-public class CommandSettings : Spectre.Console.Cli.CommandSettings
+public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-s|--scriptsDirectory")]
     [Description("Path to the scripts directory")]
