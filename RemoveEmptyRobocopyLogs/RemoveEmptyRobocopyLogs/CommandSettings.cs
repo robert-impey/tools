@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace RemoveEmptyRobocopyLogs;
 
-public sealed class CliSettings : CommandSettings
+public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-l|--logsDirectory <PATH>")]
     [Description("Path to the logs directory")]

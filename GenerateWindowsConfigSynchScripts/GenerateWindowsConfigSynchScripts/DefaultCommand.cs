@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace GenerateWindowsConfigSynchScripts;
 
-public class Command : AsyncCommand<CommandSettings>
+public class DefaultCommand : AsyncCommand<CommandSettings>
 {
     public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings)
     {

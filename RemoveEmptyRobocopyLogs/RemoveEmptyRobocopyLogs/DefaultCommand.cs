@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace RemoveEmptyRobocopyLogs;
 
-public sealed class DefaultCommand : Command<CliSettings>
+public sealed class DefaultCommand : Command<CommandSettings>
 {
     // C# uses constructor injection for ILogger, which is set up in Program.cs
     private readonly ILogger<DefaultCommand> _logger;
@@ -14,7 +14,7 @@ public sealed class DefaultCommand : Command<CliSettings>
         _logger = logger;
     }
 
-    public override int Execute(CommandContext context, CliSettings settings)
+    public override int Execute(CommandContext context, CommandSettings settings)
     {
         _logger.LogInformation("Looking for Robocopy Log Files");
         _logger.LogInformation("Logs directory: {LogsDirectory}", settings.LogsDirectory);

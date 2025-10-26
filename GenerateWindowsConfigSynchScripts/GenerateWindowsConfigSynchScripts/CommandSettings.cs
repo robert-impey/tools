@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace GenerateWindowsConfigSynchScripts;
 
-public class CommandSettings : Spectre.Console.Cli.CommandSettings
+public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-a|--autogen")]
     [Description("Autogen directory")]
