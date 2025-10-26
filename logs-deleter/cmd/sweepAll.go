@@ -6,7 +6,6 @@ Copyright © 2022 Robert Impey, robert-impey@users.noreply.github.com
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -54,7 +53,7 @@ func sweepLogsDirWithLogs() {
 	if sweepErr != nil {
 		log.Fatalln(sweepErr)
 	} else if Verbose {
-		fmt.Println("Success")
+		log.Println("Success")
 	}
 }
 
