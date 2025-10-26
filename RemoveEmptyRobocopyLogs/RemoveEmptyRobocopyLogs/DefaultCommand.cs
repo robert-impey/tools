@@ -6,7 +6,6 @@ namespace RemoveEmptyRobocopyLogs;
 
 public sealed class DefaultCommand : Command<CommandSettings>
 {
-    // C# uses constructor injection for ILogger, which is set up in Program.cs
     private readonly ILogger<DefaultCommand> _logger;
 
     public DefaultCommand(ILogger<DefaultCommand> logger)
@@ -26,27 +25,20 @@ public sealed class DefaultCommand : Command<CommandSettings>
         else
         {
             _logger.LogWarning("Synch logs directory {LogsDirectory} does not exist. Exiting.", settings.LogsDirectory);
-            // If the directory doesn't exist, we should probably exit with a non-zero code.
             return 1;
         }
 
-        // Setup Globbing Matcher
         var matcher = new Matcher();
-        // The F# code used a sequence; in C#, we add patterns directly.
-        matcher.AddInclude("**/*.robocopy-synch.log"); // Using ** for recursive search is common, or just * if non-recursive
+        matcher.AddInclude("**/*.robocopy-synch.log");
 
-        // Get matching files
-        // Note: GetResultsInFullPath returns a string enumerable directly in C#
         var matchingFiles = matcher.GetResultsInFullPath(settings.LogsDirectory).ToList();
 
         _logger.LogInformation("There are {FileCount} log files", matchingFiles.Count);
 
-        // --- File Processing Loop ---
         foreach (var logFile in matchingFiles)
         {
             try
             {
-                // This assumes RobocopyLogs.FileHasCopies is a static method as per previous translation
                 if (RobocopyLogsParser.FileHasCopies(logFile))
                 {
                     _logger.LogInformation("{LogFile} has copies - keeping", logFile);
@@ -63,6 +55,6 @@ public sealed class DefaultCommand : Command<CommandSettings>
             }
         }
 
-        return 0; // Success
+        return 0; 
     }
 }
