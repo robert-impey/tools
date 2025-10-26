@@ -116,7 +116,7 @@ func SetActionForFile(fileName string, action Action) error {
 		return err
 	}
 
-	fmt.Printf("Marking: '%v'!\n", absFileName)
+	log.Printf("Marking: '%v'!\n", absFileName)
 	fileBase := filepath.Base(absFileName)
 	sdFileName, err := GetSdFile(absFileName)
 
@@ -126,11 +126,11 @@ func SetActionForFile(fileName string, action Action) error {
 		return err
 	}
 
-	fmt.Printf("SD File: '%v'!\n", sdFileName)
+	log.Printf("SD File: '%v'!\n", sdFileName)
 	sdFolder := filepath.Dir(sdFileName)
 
 	if _, err := os.Stat(sdFolder); os.IsNotExist(err) {
-		fmt.Printf("Making directory '%v'\n", sdFolder)
+		log.Printf("Making directory '%v'\n", sdFolder)
 		err := os.Mkdir(sdFolder, 0755)
 		if err != nil {
 			return err
@@ -191,10 +191,8 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 func SweepFrom(sweepFromFileName string, expiryMonths int, verbose bool) error {
 	var directoriesToSweepFrom, err = ReadSweepFromFile(sweepFromFileName)
 	if err != nil {
-		_, err := fmt.Fprintf(os.Stderr, "Unable to read file to sweep from '%v' - '%v'\n", sweepFromFileName, err)
-		if err != nil {
-			return err
-		}
+		log.Printf("Unable to read file to sweep from '%v' - '%v'\n", sweepFromFileName, err)
+		return err
 	}
 
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
@@ -345,7 +343,7 @@ func deleteFilesToDelete(filesToDelete []fileToDelete) {
 		if len(fileToDelete.SDFile) > 0 {
 			deleteMessage += fmt.Sprintf(" as instructed by '%v'", fileToDelete.SDFile)
 		}
-		fmt.Printf("%v\n", deleteMessage)
+		log.Printf("%v\n", deleteMessage)
 
 		err := os.RemoveAll(fileToDelete.Path)
 		if err != nil {

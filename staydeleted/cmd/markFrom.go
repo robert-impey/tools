@@ -6,7 +6,6 @@ Copyright © 2022 - 2025 Robert Impey robert-impey@users.noreply.github.com
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -27,7 +26,7 @@ var markFromCmd = &cobra.Command{
 			if err != nil {
 				log.Println(err.Error())
 			} else {
-				fmt.Println("Success")
+				log.Println("Success")
 			}
 		}
 	},
@@ -38,7 +37,7 @@ func init() {
 }
 
 func markFrom(markFromFileName string) error {
-	fmt.Printf("Reading %v\n", markFromFileName)
+	log.Printf("Reading %v\n", markFromFileName)
 
 	markFromFile, err := os.Open(markFromFileName)
 
@@ -69,7 +68,7 @@ func markFrom(markFromFileName string) error {
 		if err != nil {
 			log.Println(err.Error())
 		} else {
-			fmt.Printf("Marked %v as %v\n", fileToMark, action)
+			log.Printf("Marked %v as %v\n", fileToMark, action)
 		}
 	}
 
