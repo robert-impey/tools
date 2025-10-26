@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tidy Folder | Unix Config" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="Tidy Folder | Home Config" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="buildProfileId" value="dev" />
     <option name="command" value="run --package tidy_folder --bin tidy_folder -- $USER_HOME$/config" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$/tidy_folder" />
