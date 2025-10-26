@@ -8,7 +8,7 @@ public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-l|--logsDirectory <PATH>")]
     [Description("Path to the logs directory")]
-    public string LogsDirectory { get; set; } = string.Empty;
+    public string? LogsDirectory { get; init; }
 
     // Optional: Add validation logic
     public override ValidationResult Validate()

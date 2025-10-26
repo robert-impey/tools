@@ -7,21 +7,21 @@ public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-a|--autogen")]
     [Description("Autogen directory")]
-    public string? Autogen { get; set; }
+    public string? Autogen { get; init; }
 
     [CommandOption("-c|--script")]
     [Description("Name of script to generate")]
-    public string? Script { get; set; }
+    public string? Script { get; init; }
 
     [CommandOption("-f|--files <FILES>")]
     [Description("File with source, destination, and a list of files to be synch'd")]
-    public string? Files { get; set; }
+    public string? Files { get; init; }
 
     [CommandOption("--logged")]
     [Description("Logged or not")]
-    public bool Logged { get; set; }
+    public bool Logged { get; init; }
 
     [CommandOption("-l|--logs <LOGS>")]
     [Description("Logs directory")]
-    public string? LogsDirectory { get; set; }
+    public string? LogsDirectory { get; init; }
 }
