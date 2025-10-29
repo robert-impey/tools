@@ -264,7 +264,7 @@ func findFilesToDelete(absDirectoryToSweep string, sdExpiryCutoff time.Time, ver
 
 			// Remove emptied sd folders
 			if len(sdFiles) == 0 {
-				fmt.Printf("Adding empty SD folder '%s' to the delete list\n", sdFolder)
+				log.Printf("Adding empty SD folder '%s' to the delete list\n", sdFolder)
 				filesToDelete = append(filesToDelete, fileToDelete{Path: sdFolder, SDFile: ""})
 			}
 
@@ -276,14 +276,14 @@ func findFilesToDelete(absDirectoryToSweep string, sdExpiryCutoff time.Time, ver
 				}
 
 				if !isSdFile(sdStat) {
-					fmt.Printf("'%v' is not a legal name for SD file - deleting.\n",
+					log.Printf("'%v' is not a legal name for SD file - deleting.\n",
 						sdFile)
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
 					continue
 				}
 
 				if sdStat.ModTime().Before(sdExpiryCutoff) {
-					fmt.Printf("Adding old SD file '%v' from %s to the delete list\n",
+					log.Printf("Adding old SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
@@ -291,7 +291,7 @@ func findFilesToDelete(absDirectoryToSweep string, sdExpiryCutoff time.Time, ver
 				}
 
 				if verbose {
-					fmt.Printf("SD File '%v'\n", sdFile)
+					log.Printf("SD File '%v'\n", sdFile)
 				}
 				actionForFile, err := GetActionForFile(sdFile, containingFolder)
 				if err != nil {
@@ -302,20 +302,20 @@ func findFilesToDelete(absDirectoryToSweep string, sdExpiryCutoff time.Time, ver
 				if actionForFile.Action == Delete {
 					if _, err := os.Stat(actionForFile.File); os.IsNotExist(err) {
 						if verbose {
-							fmt.Printf("'%v' already deleted.\n", actionForFile.File)
+							log.Printf("'%v' already deleted.\n", actionForFile.File)
 						}
 						continue
 					}
-					fmt.Printf("Adding '%v' to the delete list\n", actionForFile.File)
+					log.Printf("Adding '%v' to the delete list\n", actionForFile.File)
 					filesToDelete = append(filesToDelete, fileToDelete{actionForFile.File, actionForFile.SdFile})
 				} else if actionForFile.Action == Keep {
 					if verbose {
-						fmt.Printf("Keeping '%v'\n", actionForFile.File)
+						log.Printf("Keeping '%v'\n", actionForFile.File)
 					}
 				} else {
 					log.Printf("Unrecognised action '%v' from '%v'!\n",
 						actionForFile.Action, sdFile)
-					fmt.Printf("Adding unreadable SD file '%v' from %s to the delete list\n",
+					log.Printf("Adding unreadable SD file '%v' from %s to the delete list\n",
 						sdFile,
 						sdStat.ModTime().Format("2006-01-02 15:04:05"))
 					filesToDelete = append(filesToDelete, fileToDelete{sdFile, ""})
