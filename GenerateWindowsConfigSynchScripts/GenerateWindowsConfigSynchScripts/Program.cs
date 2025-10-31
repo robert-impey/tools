@@ -10,6 +10,9 @@ services.AddLogging(configure =>
     configure.AddConsole();
     configure.SetMinimumLevel(LogLevel.Information);
 });
+
+services.AddSingleton<WindowsConfigScriptsGenerator>();
+
 var registrar = new ServiceCollectionRegistrar(services);
 
 var app = new CommandApp<DefaultCommand>(registrar);
