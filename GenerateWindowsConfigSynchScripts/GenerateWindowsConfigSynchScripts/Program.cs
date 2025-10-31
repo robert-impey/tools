@@ -1,4 +1,5 @@
 ﻿using FolderManager;
+using GenerateWindowsConfigSynchScripts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
@@ -11,5 +12,11 @@ services.AddLogging(configure =>
 });
 var registrar = new ServiceCollectionRegistrar(services);
 
-var app = new CommandApp<GenerateWindowsConfigSynchScripts.DefaultCommand>(registrar);
+var app = new CommandApp<DefaultCommand>(registrar);
+
+app.Configure(config =>
+{
+    config.SetApplicationName("GenerateWindowsConfigSynchScripts");
+});
+
 await app.RunAsync(args);
