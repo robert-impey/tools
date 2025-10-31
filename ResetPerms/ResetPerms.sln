@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms", "ResetPerms\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms.Test", "ResetPerms.Test\ResetPerms.Test.csproj", "{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderManager", "..\FolderManager\FolderManager\FolderManager.csproj", "{47D1C9DC-E36A-41D1-B920-336323B374AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
