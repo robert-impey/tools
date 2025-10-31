@@ -16,12 +16,4 @@ public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
     [CommandOption("-f|--files <FILES>")]
     [Description("File with source, destination, and a list of files to be synch'd")]
     public string? Files { get; init; }
-
-    [CommandOption("--logged")]
-    [Description("Logged or not")]
-    public bool Logged { get; init; }
-
-    [CommandOption("-l|--logs <LOGS>")]
-    [Description("Logs directory")]
-    public string? LogsDirectory { get; init; }
 }

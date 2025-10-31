@@ -1,33 +1,23 @@
-﻿using FolderManager;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
 namespace GenerateWindowsConfigSynchScripts;
 
-public class DefaultCommand : AsyncCommand<CommandSettings>
+internal class DefaultCommand : AsyncCommand<CommandSettings>
 {
+    private readonly ILogger<WindowsConfigScriptsGenerator> _logger;
+
+    public DefaultCommand(ILogger<WindowsConfigScriptsGenerator> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+        _logger = logger;
+    }
+
     public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Script);
-        
-        ILogger<WindowsConfigScriptsGenerator> logger;
-
-        if (settings.Logged)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(settings.LogsDirectory);
-            logger = LogsFileFinder.GetLogger<WindowsConfigScriptsGenerator>(
-                settings.LogsDirectory, $"WindowsConfigScriptsGenerator-{settings.Script}");
-        }
-        else
-        {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-            logger = loggerFactory.CreateLogger<WindowsConfigScriptsGenerator>();
-        }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Autogen);
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.Files);
@@ -35,7 +25,7 @@ public class DefaultCommand : AsyncCommand<CommandSettings>
         var synchFile = await SynchFileParser.ParseFile(settings.Files);
 
         var generator = new WindowsConfigScriptsGenerator(
-            logger: logger,
+            logger: _logger,
             autogen: settings.Autogen, 
             script: settings.Script,
             source: synchFile.Source,
