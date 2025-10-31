@@ -10,6 +10,8 @@ public sealed class DefaultCommand : Command<CommandSettings>
 
     public DefaultCommand(ILogger<DefaultCommand> logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+
         _logger = logger;
     }
 
@@ -55,6 +57,6 @@ public sealed class DefaultCommand : Command<CommandSettings>
             }
         }
 
-        return 0; 
+        return 0;
     }
 }
