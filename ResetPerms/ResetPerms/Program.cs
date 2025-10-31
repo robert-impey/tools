@@ -1,4 +1,7 @@
-﻿using ResetPerms;
+﻿using FolderManager;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using ResetPerms;
 using Spectre.Console.Cli;
 using System.Runtime.InteropServices;
 
@@ -8,7 +11,15 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     return 1;
 }
 
-var app = new CommandApp<DefaultCommand>();
+var services = new ServiceCollection();
+services.AddLogging(configure =>
+{
+    configure.AddConsole();
+    configure.SetMinimumLevel(LogLevel.Information);
+});
+var registrar = new ServiceCollectionRegistrar(services);
+
+var app = new CommandApp<DefaultCommand>(registrar);
 
 app.Configure(config =>
 {

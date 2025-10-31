@@ -7,10 +7,6 @@
     "ResetPerms (Linux)": {
       "commandName": "Project",
       "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts"
-    },
-    "ResetPerms (Linux) | Logged": {
-      "commandName": "Project",
-      "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts --logged --logsDirectory /home/robert/logs/reset-perms"
     }
   }
 }
