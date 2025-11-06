@@ -13,7 +13,7 @@ internal class DefaultCommand : AsyncCommand<CommandSettings>
         _generator = generator;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

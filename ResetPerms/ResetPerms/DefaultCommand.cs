@@ -13,11 +13,11 @@ public class DefaultCommand : Command<CommandSettings>
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
     }
-    
-    public override int Execute(CommandContext context, CommandSettings settings)
+
+    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.ScriptsDirectory);
-        
+
         var filesWithShebang = ScriptsFinder.FindFilesWithShebang(settings.ScriptsDirectory).ToImmutableArray();
 
         _logger.LogInformation("Found {Length} files with shebangs", filesWithShebang.Length);

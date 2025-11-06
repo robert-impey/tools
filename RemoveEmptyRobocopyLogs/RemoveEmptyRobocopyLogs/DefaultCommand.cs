@@ -15,7 +15,7 @@ public sealed class DefaultCommand : Command<CommandSettings>
         _logger = logger;
     }
 
-    public override int Execute(CommandContext context, CommandSettings settings)
+    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Looking for Robocopy Log Files");
         _logger.LogInformation("Logs directory: {LogsDirectory}", settings.LogsDirectory);
