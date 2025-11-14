@@ -1,6 +1,5 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
-    "dotnet.defaultSolution": "disable",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic"
 }
