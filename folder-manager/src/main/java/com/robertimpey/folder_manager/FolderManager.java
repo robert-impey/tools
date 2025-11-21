@@ -46,7 +46,9 @@ public class FolderManager {
                 for (String folder : this.folders) {
 
                     var folderPath = locationPath.resolve(folder);
-                    if (Files.exists(folderPath)) {
+                    if (Files.exists(folderPath)
+                            && Files.isDirectory(folderPath)
+                            && !Files.isSymbolicLink(folderPath)) {
                         if (topOfPrintingLocations) {
                             topOfPrintingLocations = false;
                         } else {
