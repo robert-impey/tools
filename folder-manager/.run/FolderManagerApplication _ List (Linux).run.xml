@@ -7,7 +7,7 @@
         <option name="value" value="when_authorized" />
       </param>
     </additionalParameters>
-    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.sdkman/candidates/java/21.0.7-tem" />
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.sdkman/candidates/java/current" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <module name="folder-manager" />
     <option name="PROGRAM_PARAMETERS" value="list --locations $USER_HOME$/local-scripts/_Common/linux/locations.txt --folders $USER_HOME$/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
