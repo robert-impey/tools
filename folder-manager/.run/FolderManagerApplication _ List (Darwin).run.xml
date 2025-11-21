@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="FolderManagerApplication | List (Darwin)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.sdkman/candidates/java/current" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <module name="folder-manager" />
     <option name="PROGRAM_PARAMETERS" value="list --locations $USER_HOME$/local-scripts/_Common/darwin/locations.txt --folders $USER_HOME$/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.robertimpey.folder_manager.FolderManagerApplication" />
