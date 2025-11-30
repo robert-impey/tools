@@ -1,7 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: .NET CI
 
 on:
   push:
@@ -10,56 +7,38 @@ on:
       - "prod"
 
 jobs:
-  build_generate_windows_config_synch_scripts:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - GenerateWindowsConfigSynchScripts
+          - ResetPerms
+          - RemoveEmptyRobocopyLogs
     defaults:
       run:
-        working-directory: ./GenerateWindowsConfigSynchScripts
+        working-directory: ./${{ matrix.project }}
     steps:
       - uses: actions/checkout@v5
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-        
-  build_reset_perms:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./ResetPerms
-    steps:
-      - uses: actions/checkout@v5
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
 
-  build_remove_empty_robocopy_logs:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./RemoveEmptyRobocopyLogs
-    steps:
-      - uses: actions/checkout@v5
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+
+      - name: Build (Debug)
+        run: dotnet build --no-restore --configuration Debug
+
+      - name: Test (Debug)
+        run: dotnet test --no-build --verbosity normal --configuration Debug
