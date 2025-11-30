@@ -1,7 +1,4 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Go CI
 
 on:
   push:
@@ -10,11 +7,18 @@ on:
       - "prod"
 
 jobs:
-  build_cron_setter:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - cron-setter
+          - gensyn
+          - logs-deleter
+          - staydeleted
     defaults:
       run:
-        working-directory: ./cron-setter
+        working-directory: ./${{ matrix.project }}
     steps:
       - uses: actions/checkout@v5
 
@@ -23,62 +27,15 @@ jobs:
         with:
           go-version: "1.24"
 
-      - name: Build
-        run: go build -v ./...
-
-      - name: Test
-        run: go test -v ./...
-
-  build_gensyn:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./gensyn
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Cache Go modules
+        uses: actions/cache@v4
         with:
-          go-version: "1.24"
-
-      - name: Build
-        run: go build -v ./...
-
-      - name: Test
-        run: go test -v ./...
-
-  build_logs_deleter:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./logs-deleter
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
-
-      - name: Build
-        run: go build -v ./...
-
-      - name: Test
-        run: go test -v ./...
-
-  build_stay_deleted:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./staydeleted
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
+          path: |
+            ~/.cache/go-build
+            $GOPATH/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Build
         run: go build -v ./...
