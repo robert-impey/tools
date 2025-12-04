@@ -15,6 +15,7 @@ jobs:
           - GenerateWindowsConfigSynchScripts
           - ResetPerms
           - RemoveEmptyRobocopyLogs
+          - RunCliTests
     defaults:
       run:
         working-directory: ./${{ matrix.project }}
