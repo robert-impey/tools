@@ -1,14 +1,22 @@
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace RunCliTests;
 
-public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
+public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private const string TestsDirName = "tests";
+    private readonly ILogger<DefaultCommand> _logger;
 
-    // --- Entry Point ---
+    public DefaultCommand(ILogger<DefaultCommand> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+    }
+
     public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         // 1. Normalize and Absolutize Paths

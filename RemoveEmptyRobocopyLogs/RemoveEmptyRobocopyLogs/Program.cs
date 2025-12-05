@@ -1,4 +1,4 @@
-﻿using FolderManager;
+using FolderManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RemoveEmptyRobocopyLogs;
@@ -21,4 +21,4 @@ app.Configure(config =>
         .WithDescription("Removes Robocopy log files that report zero copied files.");
 });
 
-return app.Run(args);
+await app.RunAsync(args);
