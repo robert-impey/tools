@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace ResetPerms;
 
-public class DefaultCommand : Command<CommandSettings>
+public class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private readonly ILogger<DefaultCommand> _logger;
 
@@ -14,7 +14,7 @@ public class DefaultCommand : Command<CommandSettings>
         _logger = logger;
     }
 
-    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.ScriptsDirectory);
 

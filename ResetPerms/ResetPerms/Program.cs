@@ -1,4 +1,4 @@
-﻿using FolderManager;
+using FolderManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ResetPerms;
@@ -8,22 +8,25 @@ using System.Runtime.InteropServices;
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {
     Console.Error.WriteLine("This program should only be run on Linux or macOs");
-    return 1;
 }
-
-var services = new ServiceCollection();
-services.AddLogging(configure =>
+else
 {
-    configure.AddConsole();
-    configure.SetMinimumLevel(LogLevel.Information);
-});
-var registrar = new ServiceCollectionRegistrar(services);
+    var services = new ServiceCollection();
 
-var app = new CommandApp<DefaultCommand>(registrar);
+    services.AddLogging(configure =>
+    {
+        configure.AddConsole();
+        configure.SetMinimumLevel(LogLevel.Information);
+    });
 
-app.Configure(config =>
-{
-    config.SetApplicationName("Reset Perms");
-});
+    var registrar = new ServiceCollectionRegistrar(services);
 
-return app.Run(args);
+    var app = new CommandApp<DefaultCommand>(registrar);
+
+    app.Configure(config =>
+    {
+        config.SetApplicationName("Reset Perms");
+    });
+
+    await app.RunAsync(args);
+}
