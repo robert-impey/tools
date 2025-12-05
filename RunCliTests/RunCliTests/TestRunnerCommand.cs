@@ -32,6 +32,12 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
 
         foreach (var programDir in programDirs)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                AnsiConsole.MarkupLine("\n[yellow]Operation cancelled.[/]");
+                return 1;
+            }
+
             var testDirPath = Path.Combine(programDir, TestsDirName);
 
             if (settings.Verbose)
@@ -63,7 +69,7 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
                     if (!string.IsNullOrEmpty(testType))
                     {
                         tests++;
-                        if (RunTest(testFile, testDataDir, settings.Verbose, testType, programDir))
+                        if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir, cancellationToken))
                         {
                             successes++;
                         }
@@ -94,7 +100,7 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
 
     // --- Helper Methods ---
 
-    private bool RunTest(string testFile, string testDataDir, bool verbose, string testType, string programDir)
+    private async Task<bool> RunTestAsync(string testFile, string testDataDir, bool verbose, string testType, string programDir, CancellationToken cancellationToken)
     {
         if (verbose) PrintSeparator('-', 40);
 
@@ -113,7 +119,7 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
         }
 
         // Execute Command
-        var (commandOutput, exitCode) = ExecuteCommand(command, programDir, testType);
+        var (commandOutput, exitCode) = await ExecuteCommandAsync(command, programDir, testType, cancellationToken);
 
         if (verbose)
         {
@@ -180,10 +186,10 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private (string output, int exitCode) ExecuteCommand(string command, string workingDirectory, string outputType)
+    private async Task<(string output, int exitCode)> ExecuteCommandAsync(string command, string workingDirectory, string outputType, CancellationToken cancellationToken)
     {
         var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        var executable = parts.Length > 0 ? parts[0] : string.Empty;
+        var executable = parts[0];
         var arguments = parts.Length > 1 ? parts[1] : string.Empty;
 
         using var process = new Process
@@ -197,17 +203,38 @@ public sealed class TestRunnerCommand : AsyncCommand<CommandSettings>
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
-            }
+            },
+            EnableRaisingEvents = true // Allows events to fire
         };
 
-        process.Start();
-        process.WaitForExit();
+        try
+        {
+            process.Start();
 
-        var output = outputType == "out"
-            ? process.StandardOutput.ReadToEnd()
-            : process.StandardError.ReadToEnd();
+            // Asynchronously wait for the process to exit, passing the token
+            await process.WaitForExitAsync(cancellationToken);
 
-        return (output.TrimEnd('\r', '\n'), process.ExitCode);
+            // Note: If the token is cancelled, the process still runs but WaitForExitAsync throws.
+            // We read the output regardless, as the process might have finished just before cancellation.
+
+            // Read output asynchronously
+            var outputTask = outputType == "out"
+                ? process.StandardOutput.ReadToEndAsync()
+                : process.StandardError.ReadToEndAsync();
+
+            var output = await outputTask;
+
+            return (output.TrimEnd('\r', '\n'), process.ExitCode);
+        }
+        catch (TaskCanceledException)
+        {
+            // If the user cancels the operation, kill the running process.
+            if (!process.HasExited)
+            {
+                process.Kill();
+            }
+            throw; // Re-throw the exception to be caught by the calling function
+        }
     }
 
     private void PrintSeparator(char character, int repetitions)
