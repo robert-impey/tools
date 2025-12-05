@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace RemoveEmptyRobocopyLogs;
 
@@ -22,9 +22,22 @@ public static partial class RobocopyLogsParser
         return false;
     }
 
-    public static bool FileHasCopies(string fileName)
+    public static async Task<bool> FileHasCopies(string fileName, CancellationToken cancellationToken)
     {
-        return File.ReadAllLines(fileName).Any(IsFilesCopiedLine);
+        var lines = await File.ReadAllLinesAsync(fileName, cancellationToken);
+
+        // iterate backwards
+        for (int i = lines.Length - 1; i >= 0; i--)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (IsFilesCopiedLine(lines[i]))
+            {
+                return true; // found a match near the end
+            }
+        }
+
+        return false; // no match found
     }
 
     [GeneratedRegex(@"\s*Files\s*:\s+\d+\s+(\d+)\s+")]

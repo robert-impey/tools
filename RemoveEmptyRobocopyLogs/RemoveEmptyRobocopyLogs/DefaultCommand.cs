@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
 namespace RemoveEmptyRobocopyLogs;
 
-public sealed class DefaultCommand : Command<CommandSettings>
+public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private readonly ILogger<DefaultCommand> _logger;
 
@@ -15,7 +15,7 @@ public sealed class DefaultCommand : Command<CommandSettings>
         _logger = logger;
     }
 
-    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Looking for Robocopy Log Files");
         _logger.LogInformation("Logs directory: {LogsDirectory}", settings.LogsDirectory);
@@ -37,25 +37,27 @@ public sealed class DefaultCommand : Command<CommandSettings>
 
         _logger.LogInformation("There are {FileCount} log files", matchingFiles.Count);
 
-        foreach (var logFile in matchingFiles)
+        var tasks = matchingFiles.Select(async logFile =>
         {
             try
             {
-                if (RobocopyLogsParser.FileHasCopies(logFile))
+                if (await RobocopyLogsParser.FileHasCopies(logFile, cancellationToken))
                 {
                     _logger.LogInformation("{LogFile} has copies - keeping", logFile);
                 }
                 else
                 {
                     _logger.LogInformation("{LogFile} has no copies - deleting", logFile);
-                    File.Delete(logFile);
+                    File.Delete(logFile); // still synchronous
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to process or delete file: {LogFile}", logFile);
             }
-        }
+        });
+
+        await Task.WhenAll(tasks);
 
         return 0;
     }
