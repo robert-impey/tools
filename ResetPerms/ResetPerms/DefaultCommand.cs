@@ -14,7 +14,7 @@ public class DefaultCommand : AsyncCommand<CommandSettings>
         _logger = logger;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.ScriptsDirectory);
 
@@ -40,6 +40,6 @@ public class DefaultCommand : AsyncCommand<CommandSettings>
 #pragma warning restore CA1416
         }
 
-        return 0;
+        return Task.FromResult(0);
     }
 }
