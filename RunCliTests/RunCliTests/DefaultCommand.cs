@@ -199,11 +199,13 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         var executable = parts[0];
         var arguments = parts.Length > 1 ? parts[1] : string.Empty;
 
+        var executablePath = Path.Join(workingDirectory, executable);
+
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = executable,
+                FileName = executablePath,
                 Arguments = arguments,
                 WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true,
