@@ -130,6 +130,8 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             PrintSeparator('.', 40);
             AnsiConsole.WriteLine(commandOutput);
             PrintSeparator('.', 40);
+            AnsiConsole.WriteLine($"Exit code: {exitCode}");
+            PrintSeparator('.', 40);
         }
 
         var success = commandOutput.TrimEnd('\r', '\n') == expectedOutput.TrimEnd('\r', '\n');
@@ -189,20 +191,18 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 
         var executablePath = Path.Join(workingDirectory, executable);
 
-        using var process = new Process
+        using var process = new Process();
+        process.StartInfo = new ProcessStartInfo
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = executablePath,
-                Arguments = arguments,
-                WorkingDirectory = workingDirectory,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            },
-            EnableRaisingEvents = true // Allows events to fire
+            FileName = executablePath,
+            Arguments = arguments,
+            WorkingDirectory = workingDirectory,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
+        process.EnableRaisingEvents = true; // Allows events to fire
 
         try
         {
@@ -231,7 +231,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
                 process.Kill();
             }
 
-            throw; // Re-throw the exception to be caught by the calling function
+            throw;
         }
     }
 
