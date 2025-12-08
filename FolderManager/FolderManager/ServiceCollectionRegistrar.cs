@@ -7,10 +7,7 @@ public sealed class ServiceCollectionRegistrar(IServiceCollection services) : IT
 {
     private readonly IServiceCollection _services = services ?? throw new ArgumentNullException(nameof(services));
 
-    public ITypeResolver Build()
-    {
-        return new ServiceCollectionResolver(_services.BuildServiceProvider());
-    }
+    public ITypeResolver Build() => new ServiceCollectionResolver(_services.BuildServiceProvider());
 
     public void Register(Type service, Type implementation)
     {

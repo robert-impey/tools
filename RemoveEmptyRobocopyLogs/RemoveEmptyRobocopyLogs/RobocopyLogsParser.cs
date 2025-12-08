@@ -4,7 +4,7 @@ namespace RemoveEmptyRobocopyLogs;
 
 public static partial class RobocopyLogsParser
 {
-    private static readonly Regex filesLineRegex = FilesLineRegex();
+    private readonly static Regex filesLineRegex = FilesLineRegex();
 
     public static bool IsFilesCopiedLine(string line)
     {
@@ -12,22 +12,23 @@ public static partial class RobocopyLogsParser
 
         if (match.Success)
         {
-            string copiedCountString = match.Groups[1].Value;
+            var copiedCountString = match.Groups[1].Value;
 
-            if (int.TryParse(copiedCountString, out int copiedCount))
+            if (int.TryParse(copiedCountString, out var copiedCount))
             {
                 return copiedCount > 0;
             }
         }
+
         return false;
     }
 
-    public static async Task<bool> FileHasCopies(string fileName, CancellationToken cancellationToken)
+    public async static Task<bool> FileHasCopies(string fileName, CancellationToken cancellationToken)
     {
         var lines = await File.ReadAllLinesAsync(fileName, cancellationToken);
 
         // iterate backwards
-        for (int i = lines.Length - 1; i >= 0; i--)
+        for (var i = lines.Length - 1; i >= 0; i--)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

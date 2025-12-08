@@ -15,7 +15,11 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         _logger = logger;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        CommandSettings settings,
+        CancellationToken cancellationToken
+        )
     {
         _logger.LogInformation("Looking for Robocopy Log Files");
         _logger.LogInformation("Logs directory: {LogsDirectory}", settings.LogsDirectory);

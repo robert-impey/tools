@@ -6,7 +6,7 @@ public static class ScriptsFinder
     {
         using var reader = new StreamReader(fileName);
 
-        string? firstLine = reader.ReadLine();
+        var firstLine = reader.ReadLine();
 
         return firstLine != null && firstLine.StartsWith("#!");
     }
@@ -14,8 +14,8 @@ public static class ScriptsFinder
     public static IEnumerable<string> FindFilesWithShebang(string scriptsDir)
     {
         var matchingFiles = Directory.EnumerateFiles(
-            scriptsDir, 
-            "*", 
+            scriptsDir,
+            "*",
             SearchOption.AllDirectories
         );
 

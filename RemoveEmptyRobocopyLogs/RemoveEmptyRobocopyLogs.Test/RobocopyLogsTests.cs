@@ -2,7 +2,7 @@ using Shouldly;
 
 namespace RemoveEmptyRobocopyLogs.Test;
 
- public class RobocopyLogsTests
+public class RobocopyLogsTests
 {
     // The class containing the logic (RobocopyLogs) must be available.
     // Assuming the function is a static method:
@@ -11,7 +11,7 @@ namespace RemoveEmptyRobocopyLogs.Test;
     [Fact]
     public void NoFilesCopied()
     {
-        string line = "    Files :       5117          0       5117          0          0          0";
+        var line = "    Files :       5117          0       5117          0          0          0";
 
         RobocopyLogsParser.IsFilesCopiedLine(line).ShouldBeFalse();
     }
@@ -19,7 +19,7 @@ namespace RemoveEmptyRobocopyLogs.Test;
     [Fact]
     public void FilesCopied()
     {
-        string line = "    Files :       5117          123       5117          0          0          0";
+        var line = "    Files :       5117          123       5117          0          0          0";
 
         RobocopyLogsParser.IsFilesCopiedLine(line).ShouldBeTrue();
     }

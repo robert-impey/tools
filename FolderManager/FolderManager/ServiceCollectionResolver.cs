@@ -6,11 +6,6 @@ public sealed class ServiceCollectionResolver(IServiceProvider provider) : IType
 {
     private readonly IServiceProvider _provider = provider ?? throw new ArgumentNullException(nameof(provider));
 
-    public object? Resolve(Type? type)
-    {
-        return type is null ? null : _provider.GetService(type);
-    }
-
     public void Dispose()
     {
         if (_provider is IDisposable disposable)
@@ -18,4 +13,6 @@ public sealed class ServiceCollectionResolver(IServiceProvider provider) : IType
             disposable.Dispose();
         }
     }
+
+    public object? Resolve(Type? type) => type is null ? null : _provider.GetService(type);
 }

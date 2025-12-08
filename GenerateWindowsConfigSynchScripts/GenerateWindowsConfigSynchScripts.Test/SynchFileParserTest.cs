@@ -9,7 +9,7 @@ public class SynchFileParserTest
     {
         // Arrange
         var filePath = "Files/Fruit.txt";
-        
+
         // Act
         var synchFile = await SynchFileParser.ParseFile(filePath);
 
@@ -38,5 +38,4 @@ public class SynchFileParserTest
             await SynchFileParser.ParseFile(filePath);
         });
     }
-
 }

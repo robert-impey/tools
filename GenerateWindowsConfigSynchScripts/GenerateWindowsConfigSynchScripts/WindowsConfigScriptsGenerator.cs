@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace GenerateWindowsConfigSynchScripts;
 
@@ -9,7 +9,6 @@ internal class WindowsConfigScriptsGenerator
 
     public WindowsConfigScriptsGenerator(
         ILogger<WindowsConfigScriptsGenerator> logger
-
         )
     {
         ArgumentNullException.ThrowIfNull(logger);
@@ -26,7 +25,8 @@ internal class WindowsConfigScriptsGenerator
         string script,
         string source,
         string destination,
-        IEnumerable<string> files)
+        IEnumerable<string> files
+        )
     {
         ArgumentNullException.ThrowIfNull(autogen);
         ArgumentNullException.ThrowIfNull(script);

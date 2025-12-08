@@ -1,6 +1,6 @@
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using System.Collections.Immutable;
 
 namespace ResetPerms;
 

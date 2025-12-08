@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -8,15 +7,6 @@ namespace RunCliTests;
 public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private const string TestsDirName = "tests";
-
-    private readonly ILogger<DefaultCommand> _logger;
-
-    public DefaultCommand(ILogger<DefaultCommand> logger)
-    {
-        ArgumentNullException.ThrowIfNull(logger);
-
-        _logger = logger;
-    }
 
     public override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -114,7 +104,10 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         CancellationToken cancellationToken
         )
     {
-        if (verbose) PrintSeparator('-', 40);
+        if (verbose)
+        {
+            PrintSeparator('-', 40);
+        }
 
         var fileName = Path.GetFileName(testFile);
         AnsiConsole.Write($"Test file: {fileName}{(verbose ? "\n" : " ")}");
@@ -143,7 +136,10 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 
         AnsiConsole.MarkupLine(success ? "[green]OK[/]" : "[red]FAIL[/]");
 
-        if (verbose) PrintSeparator('-', 40);
+        if (verbose)
+        {
+            PrintSeparator('-', 40);
+        }
 
         return success;
     }

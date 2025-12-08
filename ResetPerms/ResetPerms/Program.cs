@@ -1,9 +1,9 @@
+using System.Runtime.InteropServices;
 using FolderManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ResetPerms;
 using Spectre.Console.Cli;
-using System.Runtime.InteropServices;
 
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {

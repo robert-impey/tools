@@ -13,7 +13,11 @@ internal class DefaultCommand : AsyncCommand<CommandSettings>
         _generator = generator;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        CommandSettings settings,
+        CancellationToken cancellationToken
+        )
     {
         ArgumentNullException.ThrowIfNull(settings);
 
@@ -24,11 +28,11 @@ internal class DefaultCommand : AsyncCommand<CommandSettings>
         var synchFile = await SynchFileParser.ParseFile(settings.Files);
 
         await _generator.Generate(
-            autogen: settings.Autogen,
-            script: settings.Script,
-            source: synchFile.Source,
-            destination: synchFile.Destination,
-            files: synchFile.Files);
+            settings.Autogen,
+            settings.Script,
+            synchFile.Source,
+            synchFile.Destination,
+            synchFile.Files);
 
         return 0;
     }
