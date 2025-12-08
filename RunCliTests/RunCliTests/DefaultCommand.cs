@@ -8,6 +8,7 @@ namespace RunCliTests;
 public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private const string TestsDirName = "tests";
+
     private readonly ILogger<DefaultCommand> _logger;
 
     public DefaultCommand(ILogger<DefaultCommand> logger)
@@ -17,9 +18,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         _logger = logger;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        CommandSettings settings,
+        CancellationToken cancellationToken
+        )
     {
-        // 1. Normalize and Absolutize Paths
         var dir = Path.GetFullPath(settings.Directory);
         var testDataDir = Path.GetFullPath(settings.TestDataDirectory);
 
@@ -31,11 +35,10 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             AnsiConsole.WriteLine($"Searching {dir}");
         }
 
-        // 2. Directory Traversal (Recursive search)
         // Includes the root directory and all non-hidden subdirectories
         var programDirs = Directory.EnumerateDirectories(dir, "*", SearchOption.AllDirectories)
             .Prepend(dir) // Include the starting directory itself
-            .Where(d => !Path.GetFileName(d).StartsWith(".")) // Skip hidden directories
+            .Where(d => !Path.GetFileName(d).StartsWith('.')) // Skip hidden directories
             .ToList();
 
         foreach (var programDir in programDirs)
@@ -57,7 +60,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             if (Directory.Exists(testDirPath))
             {
                 var testFiles = Directory.EnumerateFiles(testDirPath)
-                    .OrderBy(f => Path.GetFileName(f)); // Sort for consistent order
+                    .OrderBy(Path.GetFileName); // Sort for consistent order
 
                 // Group and run .txt and .err tests
                 foreach (var testFile in testFiles)
@@ -90,31 +93,32 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             }
         }
 
-        // 3. Final Summary
         if (tests == 0)
         {
             AnsiConsole.MarkupLine("[red]No tests found![/]");
             return 1; // Return non-zero for error/warning
         }
-        else
-        {
-            var successRate = (double)successes / tests * 100.0;
-            AnsiConsole.MarkupLine($"Success rate: [green]{successes}[/]/[bold]{tests}[/] ([green]{successRate:F1}%[/])");
-        }
+
+        var successRate = (double)successes / tests * 100.0;
+        AnsiConsole.MarkupLine($"Success rate: [green]{successes}[/]/[bold]{tests}[/] ([green]{successRate:F1}%[/])");
 
         return 0; // Success
     }
 
-    // --- Helper Methods ---
-
-    private async Task<bool> RunTestAsync(string testFile, string testDataDir, bool verbose, string testType, string programDir, CancellationToken cancellationToken)
+    private async static Task<bool> RunTestAsync(
+        string testFile,
+        string testDataDir,
+        bool verbose,
+        string testType,
+        string programDir,
+        CancellationToken cancellationToken
+        )
     {
         if (verbose) PrintSeparator('-', 40);
 
         var fileName = Path.GetFileName(testFile);
         AnsiConsole.Write($"Test file: {fileName}{(verbose ? "\n" : " ")}");
 
-        // Read command and expected output
         var (command, expectedOutput) = ReadTestFile(testFile, testDataDir, verbose);
 
         if (verbose)
@@ -125,7 +129,6 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             PrintSeparator('.', 40);
         }
 
-        // Execute Command
         var (commandOutput, exitCode) = await ExecuteCommandAsync(command, programDir, testType, cancellationToken);
 
         if (verbose)
@@ -136,24 +139,16 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             PrintSeparator('.', 40);
         }
 
-        // Compare output
         var success = commandOutput.TrimEnd('\r', '\n') == expectedOutput.TrimEnd('\r', '\n');
 
-        if (success)
-        {
-            AnsiConsole.MarkupLine("[green]OK[/]");
-        }
-        else
-        {
-            AnsiConsole.MarkupLine("[red]FAIL[/]");
-        }
+        AnsiConsole.MarkupLine(success ? "[green]OK[/]" : "[red]FAIL[/]");
 
         if (verbose) PrintSeparator('-', 40);
 
         return success;
     }
 
-    private (string command, string testOutput) ReadTestFile(string testFile, string testDataDir, bool verbose)
+    private static (string command, string testOutput) ReadTestFile(string testFile, string testDataDir, bool verbose)
     {
         var lines = File.ReadAllLines(testFile);
 
@@ -162,7 +157,6 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             throw new InvalidOperationException($"Malformed test file: {testFile}. Must contain at least 3 lines.");
         }
 
-        // Line 1: Command
         var command = lines[0].Trim();
 
         if (string.IsNullOrEmpty(command))
@@ -173,19 +167,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         // Handle path substitution
         command = command.Replace("TEST_DATA_DIR", testDataDir);
 
-        // Prepend "./" for relative paths if necessary (Approximation of Perl's behavior)
-        if (!Path.IsPathRooted(command) && !command.StartsWith("./"))
-        {
-            command = $"./{command}";
-        }
-
         if (verbose)
         {
             AnsiConsole.WriteLine($"Command: {command}");
         }
 
         // Line 2 is ignored
-
         // Remaining lines: Expected Test Output
         // Skip the first two lines and rejoin the rest
         var testOutput = string.Join(Environment.NewLine, lines.Skip(2));
@@ -193,7 +180,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private async Task<(string output, int exitCode)> ExecuteCommandAsync(string command, string workingDirectory, string outputType, CancellationToken cancellationToken)
+    private async static Task<(string output, int exitCode)> ExecuteCommandAsync(
+        string command,
+        string workingDirectory,
+        string outputType,
+        CancellationToken cancellationToken
+        )
     {
         var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
         var executable = parts[0];
@@ -228,8 +220,8 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 
             // Read output asynchronously
             var outputTask = outputType == "out"
-                ? process.StandardOutput.ReadToEndAsync()
-                : process.StandardError.ReadToEndAsync();
+                ? process.StandardOutput.ReadToEndAsync(cancellationToken)
+                : process.StandardError.ReadToEndAsync(cancellationToken);
 
             var output = await outputTask;
 
@@ -242,11 +234,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             {
                 process.Kill();
             }
+
             throw; // Re-throw the exception to be caught by the calling function
         }
     }
 
-    private void PrintSeparator(char character, int repetitions)
+    private static void PrintSeparator(char character, int repetitions)
     {
         var line = new string(character, repetitions);
         AnsiConsole.WriteLine($"\n{line}\n");
