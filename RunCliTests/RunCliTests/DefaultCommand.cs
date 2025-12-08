@@ -63,24 +63,23 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
                 foreach (var testFile in testFiles)
                 {
                     var extension = Path.GetExtension(testFile).ToLowerInvariant();
-                    string testType = string.Empty;
 
-                    if (extension == ".txt")
+                    var testType = extension switch
                     {
-                        testType = "out";
-                    }
-                    else if (extension == ".err")
+                        ".txt" => "out",
+                        ".err" => "err",
+                        _ => string.Empty
+                    };
+
+                    if (string.IsNullOrEmpty(testType))
                     {
-                        testType = "err";
+                        continue;
                     }
 
-                    if (!string.IsNullOrEmpty(testType))
+                    tests++;
+                    if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir, cancellationToken))
                     {
-                        tests++;
-                        if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir, cancellationToken))
-                        {
-                            successes++;
-                        }
+                        successes++;
                     }
                 }
             }

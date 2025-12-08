@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using RunCliTests;
 using Spectre.Console.Cli;
 
+// This is a modernization of https://github.com/robert-impey/run-cli-tests
+
 var services = new ServiceCollection();
 
 services.AddLogging(configure =>
