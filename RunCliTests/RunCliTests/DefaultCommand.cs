@@ -12,7 +12,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         CommandContext context,
         CommandSettings settings,
         CancellationToken cancellationToken
-        )
+    )
     {
         var dir = Path.GetFullPath(settings.Directory);
         var testDataDir = Path.GetFullPath(settings.TestDataDirectory);
@@ -25,11 +25,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             AnsiConsole.WriteLine($"Searching {dir}");
         }
 
-        // Includes the root directory and all non-hidden subdirectories
-        var programDirs = Directory.EnumerateDirectories(dir, "*", SearchOption.AllDirectories)
-            .Prepend(dir) // Include the starting directory itself
-            .Where(d => !Path.GetFileName(d).StartsWith('.')) // Skip hidden directories
-            .ToList();
+        var programDirs = EnumerateFilteredDirectories(dir);
 
         foreach (var programDir in programDirs)
         {
@@ -70,7 +66,8 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
                     }
 
                     tests++;
-                    if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir, cancellationToken))
+                    if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir,
+                            cancellationToken))
                     {
                         successes++;
                     }
@@ -95,14 +92,45 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return 0; // Success
     }
 
-    private async static Task<bool> RunTestAsync(
+    private static List<string> EnumerateFilteredDirectories(string rootDir)
+    {
+        var programDirs = new List<string> { rootDir }; // Start with the root directory
+
+        // Use a queue for a breadth-first search (more memory efficient than pure recursion)
+        var queue = new Queue<string>();
+        queue.Enqueue(rootDir);
+
+        while (queue.Count > 0)
+        {
+            string currentDir = queue.Dequeue();
+
+            foreach (string subDir in Directory.EnumerateDirectories(currentDir))
+            {
+                string dirName = Path.GetFileName(subDir);
+
+                // Apply the filter BEFORE adding to the list and before queuing for further search
+                if (!dirName.StartsWith('.') && !subDir.EndsWith(".dSYM"))
+                {
+                    programDirs.Add(subDir);
+                    queue.Enqueue(subDir); // Queue the valid directory for further searching
+                }
+                // If the filter fails, we simply skip it and do NOT queue it,
+                // preventing the search from descending into it.
+            }
+        }
+
+        return programDirs;
+    }
+
+
+    private static async Task<bool> RunTestAsync(
         string testFile,
         string testDataDir,
         bool verbose,
         string testType,
         string programDir,
         CancellationToken cancellationToken
-        )
+    )
     {
         if (verbose)
         {
@@ -183,7 +211,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         string workingDirectory,
         string outputType,
         CancellationToken cancellationToken
-        )
+    )
     {
         var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
         var executable = parts[0];
