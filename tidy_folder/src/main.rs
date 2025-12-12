@@ -31,47 +31,44 @@ fn main() {
         }
 
         let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
+
         for (_dir, files) in dirs_and_files {
             for file in files.iter().cloned() {
                 let path = file.path();
 
-                if let Some(file_stem) = path.file_stem() {
-                    match path.extension() {
-                        Some(extension) => {
-                            let extension_string = extension.to_str().unwrap();
+                let file_stem = match path.file_stem().and_then(|s| s.to_str()) {
+                    Some(s) => s,
+                    None => continue,
+                };
 
-                            for other_file in files.iter().cloned() {
-                                let other_path = other_file.path();
+                let extension = match path.extension().and_then(|s| s.to_str()) {
+                    Some(ext) => ext,
+                    None => continue,
+                };
 
-                                let other_file_stem = other_path.file_stem().unwrap();
+                for other_file in files.iter().cloned() {
+                    let other_path = other_file.path();
 
-                                match other_path.extension() {
-                                    Some(other_extension) => {
-                                        let other_extension_str = other_extension.to_str().unwrap();
+                    let other_stem = match other_path.file_stem().and_then(|s| s.to_str()) {
+                        Some(s) => s,
+                        None => continue,
+                    };
 
-                                        if extension_string == other_extension_str {
-                                            if other_file_stem != file_stem {
-                                                if let Some(other_file_stem_str) =
-                                                    other_file_stem.to_str()
-                                                {
-                                                    if let Some(file_stem_str) = file_stem.to_str()
-                                                    {
-                                                        if other_file_stem_str
-                                                            .starts_with(file_stem_str)
-                                                        {
-                                                            matching_stems
-                                                                .push((file.clone(), other_file));
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    None => (),
-                                }
-                            }
-                        }
-                        None => (),
+                    let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
+                        Some(ext) => ext,
+                        None => continue,
+                    };
+
+                    if extension != other_extension {
+                        continue;
+                    }
+
+                    if other_stem == file_stem {
+                        continue;
+                    }
+
+                    if other_stem.starts_with(file_stem) {
+                        matching_stems.push((file.clone(), other_file));
                     }
                 }
             }
