@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.51", features = ["derive"] }
 walkdir = { version = "2.5.0", features = [] }
+itertools = "0.14.0"
