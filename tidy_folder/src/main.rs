@@ -13,78 +13,96 @@ fn main() {
     let cli = Cli::parse();
 
     if let Some(name) = cli.directory.as_deref() {
-        let mut dirs_and_files: HashMap<OsString, Vec<DirEntry>> = HashMap::new();
+        let dirs_and_files =build_dirs_and_files(name);
 
-        for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
-            if entry.file_type().is_dir() {
-                continue;
-            }
+        let matching_stems = find_matching_stems(dirs_and_files);
 
-            let path = entry.path();
+        print_matching_stems(name, matching_stems);
+    }
+}
 
-            if let Some(parent) = path.parent() {
-                dirs_and_files
-                    .entry(parent.to_path_buf().into_os_string())
-                    .or_insert_with(Vec::new)
-                    .push(entry);
-            }
+fn build_dirs_and_files(name: &str) -> HashMap<OsString, Vec<DirEntry>> {
+    let mut dirs_and_files: HashMap<OsString, Vec<DirEntry>> = HashMap::new();
+
+    for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
+        if entry.file_type().is_dir() {
+            continue;
         }
 
-        let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
+        let path = entry.path();
 
-        for (_dir, files) in dirs_and_files {
-            for file in files.iter().cloned() {
-                let path = file.path();
+        if let Some(parent) = path.parent() {
+            dirs_and_files
+                .entry(parent.to_path_buf().into_os_string())
+                .or_insert_with(Vec::new)
+                .push(entry);
+        }
+    }
 
-                let file_stem = match path.file_stem().and_then(|s| s.to_str()) {
+    dirs_and_files
+}
+
+fn find_matching_stems(
+    dirs_and_files: HashMap<OsString, Vec<DirEntry>>
+) -> Vec<(DirEntry, DirEntry)> {
+    let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
+
+    for (_dir, files) in dirs_and_files {
+        for file in files.iter().cloned() {
+            let path = file.path();
+
+            let file_stem = match path.file_stem().and_then(|s| s.to_str()) {
+                Some(s) => s,
+                None => continue,
+            };
+
+            let extension = match path.extension().and_then(|s| s.to_str()) {
+                Some(ext) => ext,
+                None => continue,
+            };
+
+            for other_file in files.iter().cloned() {
+                let other_path = other_file.path();
+
+                let other_stem = match other_path.file_stem().and_then(|s| s.to_str()) {
                     Some(s) => s,
                     None => continue,
                 };
 
-                let extension = match path.extension().and_then(|s| s.to_str()) {
+                let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
                     Some(ext) => ext,
                     None => continue,
                 };
 
-                for other_file in files.iter().cloned() {
-                    let other_path = other_file.path();
+                if extension != other_extension {
+                    continue;
+                }
 
-                    let other_stem = match other_path.file_stem().and_then(|s| s.to_str()) {
-                        Some(s) => s,
-                        None => continue,
-                    };
+                if other_stem == file_stem {
+                    continue;
+                }
 
-                    let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
-                        Some(ext) => ext,
-                        None => continue,
-                    };
-
-                    if extension != other_extension {
-                        continue;
-                    }
-
-                    if other_stem == file_stem {
-                        continue;
-                    }
-
-                    if other_stem.starts_with(file_stem) {
-                        matching_stems.push((file.clone(), other_file));
-                    }
+                if other_stem.starts_with(file_stem) {
+                    matching_stems.push((file.clone(), other_file));
                 }
             }
         }
+    }
 
-        if !matching_stems.is_empty() {
-            println!("Value for directory: {name}");
-            println!("Matching stems:");
-            for (file, other_file) in matching_stems {
-                println!(
-                    "Matching stems in {}",
-                    file.path().parent().unwrap().display()
-                );
-                println!("\t{}", file.file_name().to_str().unwrap());
-                println!("\t{}", other_file.file_name().to_str().unwrap());
-            }
+    matching_stems
+}
+
+fn print_matching_stems(name: &str, matching_stems: Vec<(DirEntry, DirEntry)>) {
+    if !matching_stems.is_empty() {
+        println!("Value for directory: {name}");
+        println!("Matching stems:");
+        for (file, other_file) in matching_stems {
+            println!(
+                "Matching stems in {}",
+                file.path().parent().unwrap().display()
+            );
+            println!("\t{}", file.file_name().to_str().unwrap());
+            println!("\t{}", other_file.file_name().to_str().unwrap());
         }
     }
 }
