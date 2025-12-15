@@ -2,7 +2,6 @@ use std::{collections::HashMap, ffi::OsString};
 
 use clap::Parser;
 use walkdir::{DirEntry, WalkDir};
-use itertools::Itertools; // Add `itertools = "0.13"` to Cargo.toml
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -31,32 +30,49 @@ fn main() {
             }
         }
 
-        let matching_stems: Vec<(DirEntry, DirEntry)> = dirs_and_files
-            .into_iter()
-            .flat_map(|(_dir, files)| {
-                files
-                    .into_iter()
-                    .tuple_combinations() // Generates all unique pairs (a, b) where a != b
-                    .filter_map(|(file, other_file)| {
-                        let path = file.path();
-                        let file_stem = path.file_stem()?.to_str()?;
-                        let extension = path.extension()?.to_str()?;
+        let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
 
-                        let other_path = other_file.path();
-                        let other_stem = other_path.file_stem()?.to_str()?;
-                        let other_extension = other_path.extension()?.to_str()?;
+        for (_dir, files) in dirs_and_files {
+            for file in files.iter().cloned() {
+                let path = file.path();
 
-                        if extension == other_extension
-                            && other_stem.starts_with(file_stem)
-                        {
-                            Some((file, other_file))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .collect();
+                let file_stem = match path.file_stem().and_then(|s| s.to_str()) {
+                    Some(s) => s,
+                    None => continue,
+                };
+
+                let extension = match path.extension().and_then(|s| s.to_str()) {
+                    Some(ext) => ext,
+                    None => continue,
+                };
+
+                for other_file in files.iter().cloned() {
+                    let other_path = other_file.path();
+
+                    let other_stem = match other_path.file_stem().and_then(|s| s.to_str()) {
+                        Some(s) => s,
+                        None => continue,
+                    };
+
+                    let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
+                        Some(ext) => ext,
+                        None => continue,
+                    };
+
+                    if extension != other_extension {
+                        continue;
+                    }
+
+                    if other_stem == file_stem {
+                        continue;
+                    }
+
+                    if other_stem.starts_with(file_stem) {
+                        matching_stems.push((file.clone(), other_file));
+                    }
+                }
+            }
+        }
 
         if !matching_stems.is_empty() {
             println!("Value for directory: {name}");
