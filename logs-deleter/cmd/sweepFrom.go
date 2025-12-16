@@ -42,14 +42,11 @@ func sweepFrom() error {
 		return errors.New("tool not set")
 	}
 
-	var logsDir string
 	if LogsDirectory == "" {
 		log.Fatalln("LogsDirectory not set")
-	} else {
-		logsDir = LogsDirectory
 	}
 
-	var toolPath = filepath.Join(logsDir, Tool)
+	var toolPath = filepath.Join(LogsDirectory, Tool)
 
 	_, err1 := os.Stat(toolPath)
 	if err1 != nil {
