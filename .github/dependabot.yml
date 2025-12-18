@@ -1,0 +1,46 @@
+version: 2
+updates:
+# --- C# / .NET (NuGet) ---
+- package-ecosystem: "nuget"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
+
+# --- Java / Spring Boot (Maven) ---
+- package-ecosystem: "maven"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
+
+# --- Rust / Cargo ---
+- package-ecosystem: "cargo"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
+
+# --- Go modules ---
+- package-ecosystem: "gomod"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
+
+# --- GitHub Actions (optional but recommended) ---
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
