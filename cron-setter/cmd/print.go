@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"os/user"
 	"path/filepath"
 	"time"
@@ -64,6 +65,10 @@ func printHeaderComment() {
 }
 
 func getLocalScripts() string {
+	if envPath := os.Getenv("LOCAL_SCRIPTS"); envPath != "" {
+		return envPath
+	}
+
 	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatal(nil)
@@ -103,7 +108,7 @@ func getSynchScript() string {
 
 func getLogsDeleterScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "zsh-cron-runner.sh")
+	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "Clear-LogsDeleterLogs.ps1")
 }
 
 func printStayDeletedRun(startHour int, endHour int) {
@@ -121,7 +126,7 @@ func printLogsDeleter(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getLogsDeleterScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
+	fmt.Printf("%d %d * * * /snap/bin/pwsh %s\n",
 		minutes, hour, script)
 }
 
