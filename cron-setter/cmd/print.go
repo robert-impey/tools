@@ -108,7 +108,7 @@ func getSynchScript() string {
 
 func getLogsDeleterScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "Clear-LogsDeleterLogs.ps1")
+	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "Clear-OldLogs.ps1")
 }
 
 func printStayDeletedRun(startHour int, endHour int) {
