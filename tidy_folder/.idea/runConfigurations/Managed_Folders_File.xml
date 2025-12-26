@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Windows | Camera Roll" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-    <option name="buildProfileId" value="dev" />
-    <option name="command" value="run -- search &quot;$USER_HOME$/OneDrive/Pictures/Camera Roll&quot; --logs-dir $USER_HOME$/logs/tidy-folder" />
+  <configuration default="false" name="Managed Folders File" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="command" value="run -- search-from $USER_HOME$/autogen/managed-folders.txt --logs-dir $USER_HOME$/logs/tidy-folder" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <envs />
     <option name="emulateTerminal" value="true" />

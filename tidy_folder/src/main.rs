@@ -1,24 +1,124 @@
 use std::{collections::HashMap, ffi::OsString};
 
-use clap::Parser;
+use chrono::Local;
+use clap::{Parser, Subcommand};
+use std::io::{self, Write};
+use std::path::Path;
+use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-struct Cli {
-    directory: Option<String>,
+#[command(author, version, about)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
 }
 
-fn main() {
+#[derive(Subcommand)]
+pub enum Commands {
+    /// Search a single directory
+    Search {
+        /// Directory to search
+        directory: PathBuf,
+
+        /// Directory where logs should be written
+        #[arg(long = "logs-dir")]
+        logs_dir: PathBuf,
+    },
+
+    /// Search multiple directories listed in a text file
+    SearchFrom {
+        /// File containing directories to process
+        directories_file: PathBuf,
+
+        /// Directory where logs should be written
+        #[arg(long = "logs-dir")]
+        logs_dir: PathBuf,
+    },
+}
+
+fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
-    if let Some(name) = cli.directory.as_deref() {
-        let dirs_and_files =build_dirs_and_files(name);
+    match cli.command {
+        Commands::Search {
+            directory,
+            logs_dir,
+        } => {
+            process_directory(&directory.to_string_lossy(), &logs_dir)?;
+        }
 
-        let matching_stems = find_matching_stems(dirs_and_files);
-
-        print_matching_stems(name, matching_stems);
+        Commands::SearchFrom {
+            directories_file,
+            logs_dir,
+        } => {
+            let dirs = read_directories(&directories_file)?;
+            for dir in dirs {
+                process_directory(&dir, &logs_dir)?;
+            }
+        }
     }
+
+    Ok(())
+}
+
+fn read_directories(path: &PathBuf) -> std::io::Result<Vec<String>> {
+    use std::io::{BufRead, BufReader};
+    use unicode_normalization::UnicodeNormalization;
+
+    let file = std::fs::File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let mut dirs = Vec::new();
+
+    for line in reader.lines() {
+        let mut line = line?.trim().to_string();
+
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+
+        line = line.nfc().collect();
+        dirs.push(line);
+    }
+
+    Ok(dirs)
+}
+
+fn process_directory(dir: &str, logs_dir: &Path) -> anyhow::Result<()> {
+    // Build log-safe filename
+    let safe = dir.replace('/', "_").replace('\\', "_").replace(':', "");
+
+    let timestamp = get_log_time(); // your existing function
+    let log_path = logs_dir.join(format!("{timestamp}-search-{safe}.log"));
+    let err_path = logs_dir.join(format!("{timestamp}-search-{safe}.err"));
+
+    let mut log_file = std::fs::File::create(log_path)?;
+    let mut err_file = std::fs::File::create(err_path)?;
+
+    // Capture stdout/stderr manually
+    use std::io::Write;
+
+    // Wrap your logic so you can write logs deterministically
+    match (|| {
+        let dirs_and_files = build_dirs_and_files(dir);
+        let matching_stems = find_matching_stems(dirs_and_files);
+        print_matching_stems(&mut log_file, dir, &matching_stems)?;
+        Ok::<_, anyhow::Error>(())
+    })() {
+        Ok(_) => {
+            println!("OK: processed {dir}");
+        }
+        Err(e) => {
+            writeln!(err_file, "ERROR processing {dir}: {e}")?;
+        }
+    }
+
+    Ok(())
+}
+
+fn get_log_time() -> String {
+    Local::now().format("%Y-%m-%d_%H.%M.%S").to_string()
 }
 
 fn build_dirs_and_files(name: &str) -> HashMap<OsString, Vec<DirEntry>> {
@@ -43,7 +143,7 @@ fn build_dirs_and_files(name: &str) -> HashMap<OsString, Vec<DirEntry>> {
 }
 
 fn find_matching_stems(
-    dirs_and_files: HashMap<OsString, Vec<DirEntry>>
+    dirs_and_files: HashMap<OsString, Vec<DirEntry>>,
 ) -> Vec<(DirEntry, DirEntry)> {
     let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
 
@@ -92,17 +192,27 @@ fn find_matching_stems(
     matching_stems
 }
 
-fn print_matching_stems(name: &str, matching_stems: Vec<(DirEntry, DirEntry)>) {
-    if !matching_stems.is_empty() {
-        println!("Value for directory: {name}");
-        println!("Matching stems:");
-        for (file, other_file) in matching_stems {
-            println!(
-                "Matching stems in {}",
-                file.path().parent().unwrap().display()
-            );
-            println!("\t{}", file.file_name().to_str().unwrap());
-            println!("\t{}", other_file.file_name().to_str().unwrap());
-        }
+fn print_matching_stems<W: Write>(
+    mut out: W,
+    name: &str,
+    matching_stems: &[(DirEntry, DirEntry)],
+) -> io::Result<()> {
+    if matching_stems.is_empty() {
+        return Ok(());
     }
+
+    writeln!(out, "Value for directory: {name}")?;
+    writeln!(out, "Matching stems:")?;
+
+    for (file, other_file) in matching_stems {
+        writeln!(
+            out,
+            "Matching stems in {}",
+            file.path().parent().unwrap().display()
+        )?;
+        writeln!(out, "\t{}", file.file_name().to_string_lossy())?;
+        writeln!(out, "\t{}", other_file.file_name().to_string_lossy())?;
+    }
+
+    Ok(())
 }
