@@ -185,7 +185,11 @@ fn print_matching_stems<W: Write>(
     for (file, other_file) in matching_stems {
         // parent().unwrap() is risky if the path is the root;
         // display() handles the rest nicely.
-        let parent = file.path().parent().map(|p| p.display().to_string()).unwrap_or_default();
+        let parent = file
+            .path()
+            .parent()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         writeln!(out, "{}", parent)?;
         writeln!(out, "\t{}", file.file_name().to_string_lossy())?;
