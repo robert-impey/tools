@@ -5,8 +5,10 @@ use clap::{Parser, Subcommand};
 use std::io::{self, Write};
 use std::path::Path;
 use std::path::PathBuf;
-use walkdir::{DirEntry, WalkDir};
-use tidy_folder::read_directories;
+use tidy_folder::{build_dirs_and_files, read_directories};
+use walkdir::DirEntry;
+
+use std::fs::File;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -22,9 +24,9 @@ pub enum Commands {
         /// Directory to search
         directory: PathBuf,
 
-        /// Directory where logs should be written
+        /// Directory where logs should be written (Optional)
         #[arg(long = "logs-dir")]
-        logs_dir: PathBuf,
+        logs_dir: Option<PathBuf>, // Becomes --logs-dir <PATH>
     },
 
     /// Search multiple directories listed in a text file
@@ -46,16 +48,20 @@ fn main() -> anyhow::Result<()> {
             directory,
             logs_dir,
         } => {
-            process_directory(&directory.to_string_lossy(), &logs_dir)?;
+            // logs_dir is Option<PathBuf>
+            // .as_deref() converts Option<PathBuf> to Option<&Path>
+            process_directory(&directory.to_string_lossy(), logs_dir.as_deref())?;
         }
 
         Commands::SearchFrom {
             directories_file,
             logs_dir,
         } => {
+            // logs_dir is PathBuf
             let dirs = read_directories(&directories_file)?;
             for dir in dirs {
-                process_directory(&dir, &logs_dir)?;
+                // We wrap it in Some() to match the Option<&Path> signature
+                process_directory(&dir, Some(&logs_dir))?;
             }
         }
     }
@@ -63,32 +69,47 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn process_directory(dir: &str, logs_dir: &Path) -> anyhow::Result<()> {
-    // Build log-safe filename
-    let safe = dir.replace('/', "_").replace('\\', "_").replace(':', "");
+fn process_directory(dir: &str, logs_dir: Option<&Path>) -> anyhow::Result<()> {
+    // 1. Determine our sinks (Log vs Stdout)
+    let mut log_sink: Box<dyn Write> = match logs_dir {
+        Some(path) => {
+            let safe = dir.replace(['/', '\\', ':'], "_");
+            let timestamp = get_log_time();
+            let log_path = path.join(format!("{timestamp}-search-{safe}.log"));
+            Box::new(File::create(log_path)?)
+        }
+        None => Box::new(io::stdout()), // Fallback to stdout
+    };
 
-    let timestamp = get_log_time(); // your existing function
-    let log_path = logs_dir.join(format!("{timestamp}-search-{safe}.log"));
-    let err_path = logs_dir.join(format!("{timestamp}-search-{safe}.err"));
+    // 2. Determine our error sink (File vs Stderr)
+    let mut err_sink: Box<dyn Write> = match logs_dir {
+        Some(path) => {
+            let safe = dir.replace(['/', '\\', ':'], "_");
+            let timestamp = get_log_time();
+            let err_path = path.join(format!("{timestamp}-search-{safe}.err"));
+            Box::new(File::create(err_path)?)
+        }
+        None => Box::new(io::stderr()), // Fallback to stderr
+    };
 
-    let mut log_file = std::fs::File::create(log_path)?;
-    let mut err_file = std::fs::File::create(err_path)?;
-
-    // Capture stdout/stderr manually
-    use std::io::Write;
-
-    // Wrap your logic so you can write logs deterministically
+    // 3. Wrap logic to use these sinks
     match (|| {
         let dirs_and_files = build_dirs_and_files(dir);
         let matching_stems = find_matching_stems(dirs_and_files);
-        print_matching_stems(&mut log_file, dir, &matching_stems)?;
+
+        // Ensure print_matching_stems accepts &mut dyn Write
+        print_matching_stems(&mut *log_sink, dir, &matching_stems)?;
         Ok::<_, anyhow::Error>(())
     })() {
         Ok(_) => {
-            println!("OK: processed {dir}");
+            // We use eprintln so this status message doesn't get
+            // mixed into the data if log_sink is currently stdout
+            if logs_dir.is_some() {
+                println!("OK: processed {dir}");
+            }
         }
         Err(e) => {
-            writeln!(err_file, "ERROR processing {dir}: {e}")?;
+            writeln!(err_sink, "ERROR processing {dir}: {e}")?;
         }
     }
 
@@ -97,27 +118,6 @@ fn process_directory(dir: &str, logs_dir: &Path) -> anyhow::Result<()> {
 
 fn get_log_time() -> String {
     Local::now().format("%Y-%m-%d_%H.%M.%S").to_string()
-}
-
-fn build_dirs_and_files(name: &str) -> HashMap<OsString, Vec<DirEntry>> {
-    let mut dirs_and_files: HashMap<OsString, Vec<DirEntry>> = HashMap::new();
-
-    for entry in WalkDir::new(name).into_iter().filter_map(|e| e.ok()) {
-        if entry.file_type().is_dir() {
-            continue;
-        }
-
-        let path = entry.path();
-
-        if let Some(parent) = path.parent() {
-            dirs_and_files
-                .entry(parent.to_path_buf().into_os_string())
-                .or_insert_with(Vec::new)
-                .push(entry);
-        }
-    }
-
-    dirs_and_files
 }
 
 fn find_matching_stems(
