@@ -1,5 +1,6 @@
 // tests/read_directories_test.rs
 use std::path::PathBuf;
+use unicode_normalization::UnicodeNormalization;
 use tidy_folder::read_directories;
 
 #[test]
@@ -57,6 +58,20 @@ fn test_read_directories_unicode_normalization() {
     let path = PathBuf::from("tests/data/directories_unicode.txt");
     let result = read_directories(&path).expect("Failed to read directories");
 
-    // This tests that NFC normalization is applied
-    assert!(result.len() > 0);
+
+    // Verify each path is in NFC (composed) form
+    for dir in &result {
+        let nfc_normalized: String = dir.chars().nfc().collect();
+        assert_eq!(
+            dir, &nfc_normalized,
+            "Path '{}' should be NFC normalized",
+            dir
+        );
+    }
+
+    // Also verify we got the expected paths
+    assert_eq!(result.len(), 3);
+    assert!(result.contains(&"/Users/foo/café".to_string()));
+    assert!(result.contains(&"/Users/foo/naïve".to_string()));
+    assert!(result.contains(&"/Users/foo/résumé".to_string()));
 }

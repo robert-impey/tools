@@ -1,2 +1,3 @@
 /Users/foo/café
 /Users/foo/naïve
+/Users/foo/résumé
