@@ -179,15 +179,15 @@ fn print_matching_stems<W: Write>(
         return Ok(());
     }
 
-    writeln!(out, "Value for directory: {name}")?;
-    writeln!(out, "Matching stems:")?;
+    // A simple visual separator makes stdout much more readable
+    writeln!(out, "\n--- Results for: {} ---", name)?;
 
     for (file, other_file) in matching_stems {
-        writeln!(
-            out,
-            "Matching stems in {}",
-            file.path().parent().unwrap().display()
-        )?;
+        // parent().unwrap() is risky if the path is the root;
+        // display() handles the rest nicely.
+        let parent = file.path().parent().map(|p| p.display().to_string()).unwrap_or_default();
+
+        writeln!(out, "Location: {}", parent)?;
         writeln!(out, "\t{}", file.file_name().to_string_lossy())?;
         writeln!(out, "\t{}", other_file.file_name().to_string_lossy())?;
     }
