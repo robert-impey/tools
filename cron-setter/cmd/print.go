@@ -16,6 +16,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	ZshPath  string = "/usr/bin/zsh"
+	PwshPath string = "/snap/bin/pwsh"
+)
+
 // printCmd represents the print command
 var printCmd = &cobra.Command{
 	Use:   "print",
@@ -116,8 +121,8 @@ func printStayDeletedRun(startHour int, endHour int) {
 
 	for i := startHour; i < endHour; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
-			stayDeletedMinutes, i, script)
+		fmt.Printf("%d %d * * * %s %s\n",
+			stayDeletedMinutes, i, ZshPath, script)
 	}
 	fmt.Println()
 }
@@ -126,24 +131,24 @@ func printLogsDeleter(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getLogsDeleterScript()
-	fmt.Printf("%d %d * * * /snap/bin/pwsh %s\n",
-		minutes, hour, script)
+	fmt.Printf("%d %d * * * %s %s\n",
+		minutes, hour, PwshPath, script)
 }
 
 func printResetPerms(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getResetPermsScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
-		minutes, hour, script)
+	fmt.Printf("%d %d * * * %s %s\n",
+		minutes, hour, ZshPath, script)
 }
 
 func printTidyFolder(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getTidyFolderScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
-		minutes, hour, script)
+	fmt.Printf("%d %d * * * %s %s\n",
+		minutes, hour, ZshPath, script)
 }
 
 func printSynch(earliestHour int32, hoursRange int32) {
@@ -152,20 +157,20 @@ func printSynch(earliestHour int32, hoursRange int32) {
 	synchMinutes := rand.Int31n(60)
 	synchHours := rand.Int31n(hoursRange) + earliestHour
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n",
-		synchMinutes, synchHours, synchScript)
+	fmt.Printf("%d %d * * * %s %s\n",
+		synchMinutes, synchHours, ZshPath, synchScript)
 }
 
 func printListManagedFolders(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getListManagedFoldersScript()
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n", minutes, hour, script)
+	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, ZshPath, script)
 }
 
 func printBuild(hour int) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * /usr/bin/zsh %s\n", minutes, hour, script)
+	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, ZshPath, script)
 }
