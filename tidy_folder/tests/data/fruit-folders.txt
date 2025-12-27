@@ -1,0 +1,6 @@
+# AUTOGEN'D FILE - DO NOT EDIT
+# Created: Fri, 26 Dec 2025 12:21:01 GMT
+
+/Users/foo/apples
+/Users/foo/bananas
+/Users/foo/coconuts

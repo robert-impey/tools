@@ -6,6 +6,7 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
+use tidy_folder::read_directories;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -60,29 +61,6 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
-}
-
-fn read_directories(path: &PathBuf) -> std::io::Result<Vec<String>> {
-    use std::io::{BufRead, BufReader};
-    use unicode_normalization::UnicodeNormalization;
-
-    let file = std::fs::File::open(path)?;
-    let reader = BufReader::new(file);
-
-    let mut dirs = Vec::new();
-
-    for line in reader.lines() {
-        let mut line = line?.trim().to_string();
-
-        if line.is_empty() || line.starts_with('#') {
-            continue;
-        }
-
-        line = line.nfc().collect();
-        dirs.push(line);
-    }
-
-    Ok(dirs)
 }
 
 fn process_directory(dir: &str, logs_dir: &Path) -> anyhow::Result<()> {
