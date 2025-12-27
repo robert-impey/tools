@@ -98,7 +98,7 @@ func getResetPermsScript() string {
 
 func getTidyFolderScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "tidy_folder", "search.sh")
+	return filepath.Join(localScriptsDir, "_Common", "tidy_folder", "Search-ManagedFolders.ps1")
 }
 
 func getStayDeletedScript() string {
@@ -148,7 +148,7 @@ func printTidyFolder(hour int) {
 
 	script := getTidyFolderScript()
 	fmt.Printf("%d %d * * * %s %s\n",
-		minutes, hour, ZshPath, script)
+		minutes, hour, PwshPath, script)
 }
 
 func printSynch(earliestHour int32, hoursRange int32) {
