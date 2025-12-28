@@ -61,10 +61,10 @@ pub fn find_matching_stems(
                 None => continue,
             };
 
-            let extension = match path.extension().and_then(|s| s.to_str()) {
-                Some(ext) => ext,
-                None => continue,
-            };
+            // Treat missing extension as empty string
+            let extension = path.extension()
+                .and_then(|s| s.to_str())
+                .unwrap_or("");
 
             for other_file in files.iter().cloned() {
                 let other_path = other_file.path();
@@ -74,10 +74,10 @@ pub fn find_matching_stems(
                     None => continue,
                 };
 
-                let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
-                    Some(ext) => ext,
-                    None => continue,
-                };
+                // Treat missing extension as empty string
+                let other_extension = other_path.extension()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("");
 
                 if extension != other_extension {
                     continue;
