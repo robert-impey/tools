@@ -143,19 +143,19 @@ mod tests {
         assert_eq!(results.len(), 0);
     }
 
-    // #[test]
-    // fn test_files_without_extensions() {
-    //     let temp_dir = TempDir::new().unwrap();
-    //     let files = create_test_files(&temp_dir, &["README", "README_backup"]);
-    //
-    //     let mut dirs_and_files = HashMap::new();
-    //     dirs_and_files.insert(OsString::from("test_dir"), files);
-    //
-    //     let results = find_matching_stems(dirs_and_files);
-    //
-    //     // Files without extensions should be skipped
-    //     assert_eq!(results.len(), 0);
-    // }
+    #[test]
+    fn test_files_without_extensions() {
+        let temp_dir = TempDir::new().unwrap();
+        let files = create_test_files(&temp_dir, &["README", "README_backup"]);
+
+        let mut dirs_and_files = HashMap::new();
+        dirs_and_files.insert(OsString::from("test_dir"), files);
+
+        let results = find_matching_stems(dirs_and_files);
+
+        // Files without extensions should be found
+        assert_eq!(results.len(), 1);
+    }
 
     #[test]
     fn test_multiple_directories() {
