@@ -46,3 +46,53 @@ pub fn build_dirs_and_files(name: &str) -> HashMap<OsString, Vec<DirEntry>> {
 
     dirs_and_files
 }
+
+pub fn find_matching_stems(
+    dirs_and_files: HashMap<OsString, Vec<DirEntry>>,
+) -> Vec<(DirEntry, DirEntry)> {
+    let mut matching_stems: Vec<(DirEntry, DirEntry)> = Vec::new();
+
+    for (_dir, files) in dirs_and_files {
+        for file in files.iter().cloned() {
+            let path = file.path();
+
+            let file_stem = match path.file_stem().and_then(|s| s.to_str()) {
+                Some(s) => s,
+                None => continue,
+            };
+
+            let extension = match path.extension().and_then(|s| s.to_str()) {
+                Some(ext) => ext,
+                None => continue,
+            };
+
+            for other_file in files.iter().cloned() {
+                let other_path = other_file.path();
+
+                let other_stem = match other_path.file_stem().and_then(|s| s.to_str()) {
+                    Some(s) => s,
+                    None => continue,
+                };
+
+                let other_extension = match other_path.extension().and_then(|s| s.to_str()) {
+                    Some(ext) => ext,
+                    None => continue,
+                };
+
+                if extension != other_extension {
+                    continue;
+                }
+
+                if other_stem == file_stem {
+                    continue;
+                }
+
+                if other_stem.starts_with(file_stem) {
+                    matching_stems.push((file.clone(), other_file));
+                }
+            }
+        }
+    }
+
+    matching_stems
+}
