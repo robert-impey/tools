@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,5 +110,19 @@ class FolderManagerTest {
         );
 
         assertTrue(ex.getMessage().contains("File does not exist"));
+    }
+
+    @Test
+    void getCleanLocationName_removesSpecialCharacters() {
+        assertEquals("C_Data", FolderManager.getCleanLocationName("C:\\Data"));
+        assertEquals("D_Archive", FolderManager.getCleanLocationName("D:/Archive/"));
+        assertEquals("E_My_Documents", FolderManager.getCleanLocationName("E:\\My Documents"));
+    }
+
+    @Test
+    void getScriptPath_buildsCorrectPath() {
+        Path autoGen = Paths.get("C:\\AutoGen");
+        Path expected = autoGen.resolve("C_Data").resolve("D_Backup");
+        assertEquals(expected, FolderManager.getScriptPath(autoGen, "C:\\Data", "D:\\Backup"));
     }
 }

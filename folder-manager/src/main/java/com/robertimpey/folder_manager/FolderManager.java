@@ -104,11 +104,11 @@ public class FolderManager {
         }
     }
 
-    private static @Nonnull Path getScriptPath(@Nonnull Path autoGenFolder, @Nonnull String location1, @Nonnull String location2) {
+    static @Nonnull Path getScriptPath(@Nonnull Path autoGenFolder, @Nonnull String location1, @Nonnull String location2) {
         return autoGenFolder.resolve(getCleanLocationName(location1)).resolve(getCleanLocationName(location2));
     }
 
-    private static @Nonnull String getCleanLocationName(@Nonnull String location) {
+    static @Nonnull String getCleanLocationName(@Nonnull String location) {
         var allLegal = location.replaceAll("[:\\\\/ ]+", "_");
 
         return allLegal.replaceAll("_+$", "");
