@@ -27,6 +27,8 @@ public class FolderManagerCreateAllFoldersRobocopySynchScriptTest {
         List<String> lines = Files.readAllLines(scriptPath);
 
         assertTrue(lines.stream().anyMatch(l -> l.contains("$folders = \"Folder1\", \"Folder2\"")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("$src = \"" + sourcePath.toAbsolutePath() + "\"")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("$dst = \"" + destinationPath.toAbsolutePath() + "\"")));
         assertTrue(lines.stream().anyMatch(l -> l.contains("foreach ($folder in $folders)")));
     }
 }

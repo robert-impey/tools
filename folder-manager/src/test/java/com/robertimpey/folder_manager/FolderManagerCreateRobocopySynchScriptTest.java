@@ -26,8 +26,8 @@ public class FolderManagerCreateRobocopySynchScriptTest {
         List<String> lines = Files.readAllLines(scriptPath);
 
         assertTrue(lines.stream().anyMatch(l -> l.contains("$folder = \"MyFolder\"")));
-        assertTrue(lines.stream().anyMatch(l -> l.contains("$src = \"C:\\Source\"")));
-        assertTrue(lines.stream().anyMatch(l -> l.contains("$dst = \"D:\\Destination\"")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("$src = \"" + sourcePath.toAbsolutePath() + "\"")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("$dst = \"" + destinationPath.toAbsolutePath() + "\"")));
         assertTrue(lines.stream().anyMatch(l -> l.contains("Synch $folder $src $dst $logged")));
     }
 }
