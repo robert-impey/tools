@@ -1,5 +1,7 @@
 package com.robertimpey.folder_manager;
 
+import jakarta.annotation.Nonnull;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,16 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
-
-public class FolderManager {
-    private final List<String> locations;
-    private final List<String> folders;
-
-    public FolderManager(List<String> locations, List<String> folders) {
-        this.locations = locations;
-        this.folders = folders;
-    }
+public record FolderManager(List<String> locations, List<String> folders) {
 
     public static @Nonnull FolderManager create(Path locationsPath, Path foldersPath) throws Exception {
         List<String> locations = readLinesFromPath(locationsPath);
@@ -37,73 +30,6 @@ public class FolderManager {
         return new FolderManager(locations, folders);
     }
 
-    public List<String> getLocations() {
-        return locations;
-    }
-
-    public List<String> getFolders() {
-        return folders;
-    }
-
-    public void listManagedFolders(PrintWriter outFile) {
-        boolean topOfPrintingLocations = true;
-        for (String location : this.locations) {
-            var locationPath = Paths.get(location);
-            if (Files.exists(locationPath)) {
-                boolean topOfPrintingFolders = true;
-                for (String folder : this.folders) {
-
-                    var folderPath = locationPath.resolve(folder);
-                    if (Files.exists(folderPath)
-                            && Files.isDirectory(folderPath)
-                            && !Files.isSymbolicLink(folderPath)) {
-                        if (topOfPrintingLocations) {
-                            topOfPrintingLocations = false;
-                        } else {
-                            if (topOfPrintingFolders) {
-                                outFile.println();
-                            }
-                        }
-
-                        outFile.println(folderPath.toAbsolutePath());
-                        topOfPrintingFolders = false;
-                    }
-                }
-            }
-        }
-    }
-
-    public void generateRobocopyScripts(Path autoGenFolder) throws Exception {
-        if (autoGenFolder == null || !Files.exists(autoGenFolder)) {
-            throw new IllegalArgumentException("Auto-generated folder does not exist: " + autoGenFolder);
-        }
-
-        for (String location1 : this.locations) {
-            for (String location2 : this.locations) {
-                if (location1.equals(location2)) {
-                    continue; // Skip if both locations are the same
-                }
-
-                var scriptPath = getScriptPath(autoGenFolder, location1, location2);
-                var sourcePath = Paths.get(location1);
-                var destinationPath = Paths.get(location2);
-                List<String> commonFolders = new ArrayList<>();
-                for (String folder : this.folders) {
-
-                    if (Files.exists(sourcePath.resolve(folder)) && Files.exists(destinationPath.resolve(folder))) {
-                        commonFolders.add(folder);
-
-                        createRobocopySynchScript(folder, scriptPath.resolve(folder + ".ps1"), sourcePath, destinationPath);
-                    }
-                }
-
-                if (!commonFolders.isEmpty()) {
-                    createAllFoldersRobocopySynchScript(commonFolders, scriptPath.resolve("_all.ps1"), sourcePath, destinationPath);
-                }
-            }
-        }
-    }
-
     static @Nonnull Path getScriptPath(@Nonnull Path autoGenFolder, @Nonnull String location1, @Nonnull String location2) {
         return autoGenFolder.resolve(getCleanLocationName(location1)).resolve(getCleanLocationName(location2));
     }
@@ -114,7 +40,7 @@ public class FolderManager {
         return allLegal.replaceAll("_+$", "");
     }
 
-    private static void createRobocopySynchScript(@Nonnull String folder, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
+    static void createRobocopySynchScript(@Nonnull String folder, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
         }
@@ -137,7 +63,7 @@ public class FolderManager {
         }
     }
 
-    private static void createAllFoldersRobocopySynchScript(@Nonnull List<String> commonFolders, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
+    static void createAllFoldersRobocopySynchScript(@Nonnull List<String> commonFolders, @Nonnull Path scriptPath, @Nonnull Path sourcePath, @Nonnull Path destinationPath) throws Exception {
         if (!Files.exists(scriptPath.getParent())) {
             Files.createDirectories(scriptPath.getParent());
         }
@@ -213,5 +139,64 @@ public class FolderManager {
         outFile.println("    [switch]$logged = $False");
         outFile.println(")");
         outFile.println();
+    }
+
+    public void listManagedFolders(PrintWriter outFile) {
+        boolean topOfPrintingLocations = true;
+        for (String location : this.locations) {
+            var locationPath = Paths.get(location);
+            if (Files.exists(locationPath)) {
+                boolean topOfPrintingFolders = true;
+                for (String folder : this.folders) {
+
+                    var folderPath = locationPath.resolve(folder);
+                    if (Files.exists(folderPath)
+                            && Files.isDirectory(folderPath)
+                            && !Files.isSymbolicLink(folderPath)) {
+                        if (topOfPrintingLocations) {
+                            topOfPrintingLocations = false;
+                        } else {
+                            if (topOfPrintingFolders) {
+                                outFile.println();
+                            }
+                        }
+
+                        outFile.println(folderPath.toAbsolutePath());
+                        topOfPrintingFolders = false;
+                    }
+                }
+            }
+        }
+    }
+
+    public void generateRobocopyScripts(Path autoGenFolder) throws Exception {
+        if (autoGenFolder == null || !Files.exists(autoGenFolder)) {
+            throw new IllegalArgumentException("Auto-generated folder does not exist: " + autoGenFolder);
+        }
+
+        for (String location1 : this.locations) {
+            for (String location2 : this.locations) {
+                if (location1.equals(location2)) {
+                    continue; // Skip if both locations are the same
+                }
+
+                var scriptPath = getScriptPath(autoGenFolder, location1, location2);
+                var sourcePath = Paths.get(location1);
+                var destinationPath = Paths.get(location2);
+                List<String> commonFolders = new ArrayList<>();
+                for (String folder : this.folders) {
+
+                    if (Files.exists(sourcePath.resolve(folder)) && Files.exists(destinationPath.resolve(folder))) {
+                        commonFolders.add(folder);
+
+                        createRobocopySynchScript(folder, scriptPath.resolve(folder + ".ps1"), sourcePath, destinationPath);
+                    }
+                }
+
+                if (!commonFolders.isEmpty()) {
+                    createAllFoldersRobocopySynchScript(commonFolders, scriptPath.resolve("_all.ps1"), sourcePath, destinationPath);
+                }
+            }
+        }
     }
 }
