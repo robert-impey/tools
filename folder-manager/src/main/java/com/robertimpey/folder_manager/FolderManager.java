@@ -37,6 +37,14 @@ public class FolderManager {
         return new FolderManager(locations, folders);
     }
 
+    public List<String> getLocations() {
+        return locations;
+    }
+
+    public List<String> getFolders() {
+        return folders;
+    }
+
     public void listManagedFolders(PrintWriter outFile) {
         boolean topOfPrintingLocations = true;
         for (String location : this.locations) {
