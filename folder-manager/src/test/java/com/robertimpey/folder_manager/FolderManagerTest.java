@@ -8,8 +8,6 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FolderManagerTest {
-
-
     @Test
     void getCleanLocationName_removesSpecialCharacters() {
         assertEquals("C_Data", FolderManager.getCleanLocationName("C:\\Data"));
