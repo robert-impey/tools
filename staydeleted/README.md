@@ -10,13 +10,13 @@ This leads to deleted files being restored from the backup folder.
 
 To get around this, a file or folder can be `marked` for deletion:
 
-`PS C:\foo>staydelelted mark bar.txt`
+`PS C:\foo>staydeleted mark bar.txt`
 
 This creates a special file in a subfolder of the directory containing the file to be deleted.
 
 On a schedule, that folder can be swept clean:
 
-`staydelted sweep C:\foo`
+`staydeleted sweep C:\foo`
 
 The program will search that folder and its subfolders for the special files and delete the marked files.
 
