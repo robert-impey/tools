@@ -1,10 +1,14 @@
-﻿namespace GenerateWindowsConfigSynchScripts;
+using System.IO;
+
+namespace GenerateWindowsConfigSynchScripts;
 
 public static class SynchFileParser
 {
     public async static Task<SynchFile> ParseFile(string filePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+
+        var id = Path.GetFileNameWithoutExtension(filePath);
 
         var lines = await File.ReadAllLinesAsync(filePath);
 
@@ -32,6 +36,6 @@ public static class SynchFileParser
             throw new InvalidOperationException("At least one file must be specified.");
         }
 
-        return new SynchFile(source, destination, files);
+        return new SynchFile(id, source, destination, files);
     }
 }

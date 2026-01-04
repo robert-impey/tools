@@ -1,4 +1,4 @@
-﻿using Spectre.Console.Cli;
+using Spectre.Console.Cli;
 
 namespace GenerateWindowsConfigSynchScripts;
 
@@ -28,6 +28,7 @@ internal class DefaultCommand : AsyncCommand<CommandSettings>
         var synchFile = await SynchFileParser.ParseFile(settings.Files);
 
         await _generator.Generate(
+            synchFile.Id,
             settings.Autogen,
             settings.Script,
             synchFile.Source,

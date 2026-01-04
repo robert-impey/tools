@@ -1,4 +1,4 @@
-﻿using Shouldly;
+using Shouldly;
 
 namespace GenerateWindowsConfigSynchScripts.Test;
 
@@ -15,6 +15,8 @@ public class SynchFileParserTest
 
         // Assert
         synchFile.ShouldNotBeNull();
+
+        synchFile.Id.ShouldBe("Fruit");
 
         synchFile.Source.ShouldBe(@"C:\");
         synchFile.Destination.ShouldBe(@"D:\");
