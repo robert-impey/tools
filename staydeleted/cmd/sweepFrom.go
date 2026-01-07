@@ -59,7 +59,13 @@ func sweepFrom(paths []string) {
 		if stat.IsDir() {
 			log.Printf("%v\n is a directory!", path)
 		} else {
-			err := sdlib.SweepFrom(path, ExpiryMonths, Verbose)
+			var directoriesToSweepFrom, err = sdlib.ReadSweepFromFile(path)
+			if err != nil {
+				log.Printf("Unable to read file to sweep from '%v' - '%v'\n", path, err)
+				log.Fatalln(err)
+			}
+
+			err = sdlib.SweepFrom(directoriesToSweepFrom, ExpiryMonths, Verbose)
 			if err != nil {
 				log.Fatalln(err)
 			}

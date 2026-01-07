@@ -188,13 +188,7 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 	return directoriesToSweep, nil
 }
 
-func SweepFrom(sweepFromFileName string, expiryMonths int, verbose bool) error {
-	var directoriesToSweepFrom, err = ReadSweepFromFile(sweepFromFileName)
-	if err != nil {
-		log.Printf("Unable to read file to sweep from '%v' - '%v'\n", sweepFromFileName, err)
-		return err
-	}
-
+func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) error {
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
 		err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose)
 		if err != nil {
