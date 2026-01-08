@@ -144,3 +144,50 @@ func TestSweepFrom(t *testing.T) {
 		t.Fatalf("expected %s to be kept, stat err=%v", keepFile2, err)
 	}
 }
+
+// Desired behavior: SweepFrom should continue when a directory in the list is missing
+// and process the remaining directories instead of stopping at the first error.
+// It should also return aggregated errors (future change), but for now we assert
+// it does not fail the whole run. This test will currently fail until SweepFrom
+// is updated to continue past missing directories.
+func TestSweepFrom_ContinuesOnMissingDirectory(t *testing.T) {
+	// dir1 and dir3 exist; dirMissing does not
+	dir1 := t.TempDir()
+	dir3 := t.TempDir()
+	dirMissing := filepath.Join(t.TempDir(), "does-not-exist") // do not create
+
+	// Mark a file in dir1 for deletion
+	delFile1 := filepath.Join(dir1, "delete_me.txt")
+	if err := os.WriteFile(delFile1, []byte("x"), 0644); err != nil {
+		t.Fatalf("write delFile1: %v", err)
+	}
+	if err := SetActionForFile(delFile1, Delete); err != nil {
+		t.Fatalf("SetActionForFile(delFile1, Delete): %v", err)
+	}
+
+	// Mark a file in dir3 for deletion (should still be processed even if one dir is missing)
+	delFile3 := filepath.Join(dir3, "delete_me_too.txt")
+	if err := os.WriteFile(delFile3, []byte("z"), 0644); err != nil {
+		t.Fatalf("write delFile3: %v", err)
+	}
+	if err := SetActionForFile(delFile3, Delete); err != nil {
+		t.Fatalf("SetActionForFile(delFile3, Delete): %v", err)
+	}
+
+	// Call SweepFrom with a missing directory in the middle
+	if err := SweepFrom([]string{dir1, dirMissing, dir3}, 6, false); err != nil {
+		// Once implemented, SweepFrom should not return a single error here; it should
+		// continue and (eventually) return an aggregated list of errors.
+		t.Fatalf("expected SweepFrom to continue on missing dir without failing the whole run, got err=%v", err)
+	}
+
+	// dir1's delete should have happened
+	if _, err := os.Stat(delFile1); !os.IsNotExist(err) {
+		t.Fatalf("expected %s to be deleted, got err=%v", delFile1, err)
+	}
+
+	// dir3 should have been processed even though dirMissing did not exist
+	if _, err := os.Stat(delFile3); !os.IsNotExist(err) {
+		t.Fatalf("expected %s to be deleted even with a missing directory present, got err=%v", delFile3, err)
+	}
+}
