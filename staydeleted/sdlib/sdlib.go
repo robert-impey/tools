@@ -189,14 +189,19 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 }
 
 func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) error {
+func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) []error {
+	var errs []error
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
-		err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose)
-		if err != nil {
-			return err
+		if err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose); err != nil {
+			// collect the error but continue with remaining directories
+			errs = append(errs, fmt.Errorf("%s: %w", directoryToSweepFrom, err))
 		}
 	}
 
-	return nil
+	if len(errs) == 0 {
+		return nil
+	}
+	return errs
 }
 
 func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) error {

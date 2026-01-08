@@ -130,8 +130,8 @@ func TestSweepFrom(t *testing.T) {
 
 	// Call SweepFrom on both dirs. expiryMonths only affects removal of old SD metadata,
 	// not whether a file marked Delete is removed. We can use any reasonable value (e.g., 6).
-	if err := SweepFrom([]string{dir1, dir2}, 6, false); err != nil {
-		t.Fatalf("SweepFrom: %v", err)
+	if errs := SweepFrom([]string{dir1, dir2}, 6, false); errs != nil {
+		t.Fatalf("SweepFrom returned errors: %v", errs)
 	}
 
 	// Assert: delete_me.txt is gone
@@ -147,9 +147,7 @@ func TestSweepFrom(t *testing.T) {
 
 // Desired behavior: SweepFrom should continue when a directory in the list is missing
 // and process the remaining directories instead of stopping at the first error.
-// It should also return aggregated errors (future change), but for now we assert
-// it does not fail the whole run. This test will currently fail until SweepFrom
-// is updated to continue past missing directories.
+// It should also return aggregated errors and must not fail the whole run.
 func TestSweepFrom_ContinuesOnMissingDirectory(t *testing.T) {
 	// dir1 and dir3 exist; dirMissing does not
 	dir1 := t.TempDir()
@@ -175,10 +173,11 @@ func TestSweepFrom_ContinuesOnMissingDirectory(t *testing.T) {
 	}
 
 	// Call SweepFrom with a missing directory in the middle
-	if err := SweepFrom([]string{dir1, dirMissing, dir3}, 6, false); err != nil {
-		// Once implemented, SweepFrom should not return a single error here; it should
-		// continue and (eventually) return an aggregated list of errors.
-		t.Fatalf("expected SweepFrom to continue on missing dir without failing the whole run, got err=%v", err)
+	if errs := SweepFrom([]string{dir1, dirMissing, dir3}, 6, false); errs != nil {
+		// We expect exactly one error corresponding to the missing directory.
+		if len(errs) != 1 {
+			t.Fatalf("expected exactly 1 error for the missing directory, got %d: %v", len(errs), errs)
+		}
 	}
 
 	// dir1's delete should have happened
