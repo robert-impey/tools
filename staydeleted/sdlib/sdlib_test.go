@@ -104,3 +104,43 @@ func TestFindingSdFiles(t *testing.T) {
 		t.Errorf("got %d sd files, expecting 1!", foundFounds)
 	}
 }
+
+func TestSweepFrom(t *testing.T) {
+	// Create two separate directories to sweep from
+	dir1 := t.TempDir()
+	dir2 := t.TempDir()
+
+	// In dir1, create a file we intend to delete
+	delFile1 := filepath.Join(dir1, "delete_me.txt")
+	if err := os.WriteFile(delFile1, []byte("x"), 0644); err != nil {
+		t.Fatalf("write delFile1: %v", err)
+	}
+	if err := SetActionForFile(delFile1, Delete); err != nil {
+		t.Fatalf("SetActionForFile(delFile1, Delete): %v", err)
+	}
+
+	// In dir2, create a file we intend to keep
+	keepFile2 := filepath.Join(dir2, "keep_me.txt")
+	if err := os.WriteFile(keepFile2, []byte("y"), 0644); err != nil {
+		t.Fatalf("write keepFile2: %v", err)
+	}
+	if err := SetActionForFile(keepFile2, Keep); err != nil {
+		t.Fatalf("SetActionForFile(keepFile2, Keep): %v", err)
+	}
+
+	// Call SweepFrom on both dirs. expiryMonths only affects removal of old SD metadata,
+	// not whether a file marked Delete is removed. We can use any reasonable value (e.g., 6).
+	if err := SweepFrom([]string{dir1, dir2}, 6, false); err != nil {
+		t.Fatalf("SweepFrom: %v", err)
+	}
+
+	// Assert: delete_me.txt is gone
+	if _, err := os.Stat(delFile1); !os.IsNotExist(err) {
+		t.Fatalf("expected %s to be deleted, got err=%v", delFile1, err)
+	}
+
+	// Assert: keep_me.txt still exists
+	if _, err := os.Stat(keepFile2); err != nil {
+		t.Fatalf("expected %s to be kept, stat err=%v", keepFile2, err)
+	}
+}
