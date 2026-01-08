@@ -188,7 +188,6 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 	return directoriesToSweep, nil
 }
 
-func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) error {
 func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) []error {
 	var errs []error
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
