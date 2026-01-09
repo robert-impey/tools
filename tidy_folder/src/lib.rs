@@ -7,7 +7,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use walkdir::{DirEntry, WalkDir};
 
-pub fn process_directory(dir: &str, logs_dir: Option<&Path>) -> anyhow::Result<()> {
+pub fn search_directory(dir: &str, logs_dir: Option<&Path>) -> anyhow::Result<()> {
     // 1. Determine our sinks (Log vs Stdout)
     let mut log_sink: Box<dyn Write> = match logs_dir {
         Some(path) => {

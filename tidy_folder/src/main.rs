@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
-use tidy_folder::{process_directory, read_directories};
+use tidy_folder::{search_directory, read_directories};
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -42,7 +42,7 @@ fn main() -> anyhow::Result<()> {
         } => {
             // logs_dir is Option<PathBuf>
             // .as_deref() converts Option<PathBuf> to Option<&Path>
-            process_directory(&directory.to_string_lossy(), logs_dir.as_deref())?;
+            search_directory(&directory.to_string_lossy(), logs_dir.as_deref())?;
         }
 
         Commands::SearchFrom {
@@ -53,7 +53,7 @@ fn main() -> anyhow::Result<()> {
             let dirs = read_directories(&directories_file)?;
             for dir in dirs {
                 // We wrap it in Some() to match the Option<&Path> signature
-                process_directory(&dir, Some(&logs_dir))?;
+                search_directory(&dir, Some(&logs_dir))?;
             }
         }
     }
