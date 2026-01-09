@@ -188,7 +188,18 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 	return directoriesToSweep, nil
 }
 
-func SweepFrom(directoriesToSweepFrom []string, expiryMonths int, verbose bool) []error {
+func MarkFiles(filesToMark []string, action Action) {
+	for _, fileToMark := range filesToMark {
+		err := SetActionForFile(fileToMark, action)
+		if err != nil {
+			log.Println(err.Error())
+		} else {
+			log.Printf("Marked %v as %v\n", fileToMark, action)
+		}
+	}
+}
+
+func SweepFromDirectories(directoriesToSweepFrom []string, expiryMonths int, verbose bool) []error {
 	var errs []error
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
 		if err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose); err != nil {

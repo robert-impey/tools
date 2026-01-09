@@ -65,7 +65,7 @@ func sweepFrom(paths []string) {
 				log.Fatalln(err)
 			}
 
-			errs := sdlib.SweepFrom(directoriesToSweepFrom, ExpiryMonths, Verbose)
+			errs := sdlib.SweepFromDirectories(directoriesToSweepFrom, ExpiryMonths, Verbose)
 			if len(errs) > 0 {
 				for _, e := range errs {
 					log.Println(e)

@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/robert-impey/tools/staydeleted/sdlib"
-
 	"github.com/spf13/cobra"
 )
 
@@ -61,16 +60,7 @@ func markFrom(markFromFileName string) error {
 		filesToMark = append(filesToMark, fileToMark)
 	}
 
-	action := sdlib.Delete
-
-	for _, fileToMark := range filesToMark {
-		err := sdlib.SetActionForFile(fileToMark, action)
-		if err != nil {
-			log.Println(err.Error())
-		} else {
-			log.Printf("Marked %v as %v\n", fileToMark, action)
-		}
-	}
+	sdlib.MarkFiles(filesToMark, sdlib.Delete)
 
 	return nil
 }
