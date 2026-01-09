@@ -1,12 +1,6 @@
-use chrono::Local;
 use clap::{Parser, Subcommand};
-use std::io::{self, Write};
-use std::path::Path;
 use std::path::PathBuf;
-use tidy_folder::{build_dirs_and_files, find_matching_stems, read_directories};
-use walkdir::DirEntry;
-
-use std::fs::File;
+use tidy_folder::{process_directory, read_directories};
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -62,86 +56,6 @@ fn main() -> anyhow::Result<()> {
                 process_directory(&dir, Some(&logs_dir))?;
             }
         }
-    }
-
-    Ok(())
-}
-
-fn process_directory(dir: &str, logs_dir: Option<&Path>) -> anyhow::Result<()> {
-    // 1. Determine our sinks (Log vs Stdout)
-    let mut log_sink: Box<dyn Write> = match logs_dir {
-        Some(path) => {
-            let safe = dir.replace(['/', '\\', ':'], "_");
-            let timestamp = get_log_time();
-            let log_path = path.join(format!("{timestamp}-search-{safe}.log"));
-            Box::new(File::create(log_path)?)
-        }
-        None => Box::new(io::stdout()), // Fallback to stdout
-    };
-
-    // 2. Determine our error sink (File vs Stderr)
-    let mut err_sink: Box<dyn Write> = match logs_dir {
-        Some(path) => {
-            let safe = dir.replace(['/', '\\', ':'], "_");
-            let timestamp = get_log_time();
-            let err_path = path.join(format!("{timestamp}-search-{safe}.err"));
-            Box::new(File::create(err_path)?)
-        }
-        None => Box::new(io::stderr()), // Fallback to stderr
-    };
-
-    // 3. Wrap logic to use these sinks
-    match (|| {
-        let dirs_and_files = build_dirs_and_files(dir);
-        let matching_stems = find_matching_stems(dirs_and_files);
-
-        // Ensure print_matching_stems accepts &mut dyn Write
-        print_matching_stems(&mut *log_sink, dir, &matching_stems)?;
-        Ok::<_, anyhow::Error>(())
-    })() {
-        Ok(_) => {
-            // We use eprintln so this status message doesn't get
-            // mixed into the data if log_sink is currently stdout
-            if logs_dir.is_some() {
-                println!("OK: processed {dir}");
-            }
-        }
-        Err(e) => {
-            writeln!(err_sink, "ERROR processing {dir}: {e}")?;
-        }
-    }
-
-    Ok(())
-}
-
-fn get_log_time() -> String {
-    Local::now().format("%Y-%m-%d_%H.%M.%S").to_string()
-}
-
-fn print_matching_stems<W: Write>(
-    mut out: W,
-    name: &str,
-    matching_stems: &[(DirEntry, DirEntry)],
-) -> io::Result<()> {
-    if matching_stems.is_empty() {
-        return Ok(());
-    }
-
-    // A simple visual separator makes stdout much more readable
-    writeln!(out, "\n--- Results for: {} ---", name)?;
-
-    for (file, other_file) in matching_stems {
-        // parent().unwrap() is risky if the path is the root;
-        // display() handles the rest nicely.
-        let parent = file
-            .path()
-            .parent()
-            .map(|p| p.display().to_string())
-            .unwrap_or_default();
-
-        writeln!(out, "{}", parent)?;
-        writeln!(out, "\t{}", file.file_name().to_string_lossy())?;
-        writeln!(out, "\t{}", other_file.file_name().to_string_lossy())?;
     }
 
     Ok(())
