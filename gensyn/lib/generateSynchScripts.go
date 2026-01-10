@@ -101,10 +101,16 @@ func writeScripts(files bool, autoGenDir string, scriptsInfo *ScriptsInfo) error
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
 	fmt.Printf("Destination: %v\n", scriptsInfo.dst)
-	fmt.Println("Directories to synch:")
+
+	itemsName := "Directories"
+	if files {
+		itemsName = "Files"
+	}
+	fmt.Printf("%s to synch:\n", itemsName)
 	for _, dir := range scriptsInfo.items {
 		fmt.Println(dir)
 	}
+
 	fmt.Println()
 
 	scriptName := fmt.Sprintf("%s.sh", scriptsInfo.name)
