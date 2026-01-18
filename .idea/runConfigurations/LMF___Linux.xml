@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="LMF | Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="tools" />
+    <working_directory value="$PROJECT_DIR$/lmf" />
+    <parameters value=" --locations $USER_HOME$/local-scripts/_Common/linux/locations.txt --folders $USER_HOME$/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
+    <kind value="PACKAGE" />
+    <package value="github.com/robert-impey/tools/lmf" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
