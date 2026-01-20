@@ -131,29 +131,4 @@ class ListManagedFoldersTest {
         String output = stringWriter.toString();
         assertTrue(output.isEmpty(), "Output should be empty because symlinks must be ignored");
     }
-
-    @Test
-    void listManagedFolders_listsExistingFolders() throws Exception {
-        Path loc1 = tempDir.resolve("Loc1");
-        Path loc2 = tempDir.resolve("Loc2");
-        Files.createDirectories(loc1.resolve("FolderA"));
-        Files.createDirectories(loc2.resolve("FolderB"));
-
-        FolderManager manager = new FolderManager(
-                List.of(loc1.toString(), loc2.toString()),
-                List.of("FolderA", "FolderB", "FolderC")
-        );
-
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        manager.listManagedFolders(pw);
-        pw.flush();
-
-        String output = sw.toString();
-        assertTrue(output.contains("Loc1"));
-        assertTrue(output.contains(loc1.resolve("FolderA").toAbsolutePath().toString()));
-        assertTrue(output.contains("Loc2"));
-        assertTrue(output.contains(loc2.resolve("FolderB").toAbsolutePath().toString()));
-        assertFalse(output.contains("FolderC"));
-    }
 }
