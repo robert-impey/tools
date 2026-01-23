@@ -88,7 +88,7 @@ func getBuildScript() string {
 
 func getListManagedFoldersScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "list-managed-folders.sh")
+	return filepath.Join(localScriptsDir, "_Common", "Write-ManagedFoldersList.ps1")
 }
 
 func getResetPermsScript() string {
@@ -165,7 +165,7 @@ func printListManagedFolders(hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getListManagedFoldersScript()
-	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, ZshPath, script)
+	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
 }
 
 func printBuild(hour int) {
