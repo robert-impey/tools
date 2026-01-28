@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/robert-impey/tools/lmf/lib"
+	"github.com/robert-impey/tools/lmf/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -55,7 +55,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("failed to read folders: %w", err)
 		}
 
-		fm := &lib.FolderManager{
+		fm := &internal.FolderManager{
 			Locations: locations,
 			Folders:   folders,
 		}

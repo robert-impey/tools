@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="go test | lmf" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="tools" />
-    <working_directory value="$PROJECT_DIR$/lmf/lib" />
+    <working_directory value="$PROJECT_DIR$/lmf/internal" />
     <root_directory value="$PROJECT_DIR$" />
     <kind value="PACKAGE" />
-    <package value="github.com/robert-impey/tools/lmf/lib" />
+    <package value="github.com/robert-impey/tools/lmf/internal" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />
