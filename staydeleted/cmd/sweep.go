@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/robert-impey/tools/staydeleted/sdlib"
+	"github.com/robert-impey/tools/staydeleted/internal"
 
 	"github.com/spf13/cobra"
 )
@@ -58,7 +58,7 @@ func sweep(paths []string) {
 		}
 
 		if stat.IsDir() {
-			err := sdlib.SweepDirectory(path, ExpiryMonths, Verbose)
+			err := internal.SweepDirectory(path, ExpiryMonths, Verbose)
 			if err != nil {
 				log.Fatalln(err)
 			}

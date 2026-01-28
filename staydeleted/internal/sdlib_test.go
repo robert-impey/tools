@@ -1,4 +1,4 @@
-package sdlib
+package internal
 
 import (
 	"fmt"

@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/robert-impey/tools/staydeleted/sdlib"
+	"github.com/robert-impey/tools/staydeleted/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -60,7 +60,7 @@ func markFrom(markFromFileName string) error {
 		filesToMark = append(filesToMark, fileToMark)
 	}
 
-	sdlib.MarkFiles(filesToMark, sdlib.Delete)
+	internal.MarkFiles(filesToMark, internal.Delete)
 
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/robert-impey/tools/logs-deleter/lib"
+	"github.com/robert-impey/tools/logs-deleter/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -69,7 +69,7 @@ func sweepLogsDir(logsDir string) error {
 			return err
 		}
 
-		err = lib.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, Verbose)
+		err = internal.DeleteFrom(filepath.Join(logsDir, subStat.Name()), Days, DeleteEmpty, Verbose)
 		if err != nil {
 			return err
 		}

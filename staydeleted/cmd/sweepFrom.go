@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/robert-impey/tools/staydeleted/sdlib"
+	"github.com/robert-impey/tools/staydeleted/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -59,13 +59,13 @@ func sweepFrom(paths []string) {
 		if stat.IsDir() {
 			log.Printf("%v\n is a directory!", path)
 		} else {
-			var directoriesToSweepFrom, err = sdlib.ReadSweepFromFile(path)
+			var directoriesToSweepFrom, err = internal.ReadSweepFromFile(path)
 			if err != nil {
 				log.Printf("Unable to read file to sweep from '%v' - '%v'\n", path, err)
 				log.Fatalln(err)
 			}
 
-			errs := sdlib.SweepFromDirectories(directoriesToSweepFrom, ExpiryMonths, Verbose)
+			errs := internal.SweepFromDirectories(directoriesToSweepFrom, ExpiryMonths, Verbose)
 			if len(errs) > 0 {
 				for _, e := range errs {
 					log.Println(e)

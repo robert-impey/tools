@@ -1,4 +1,4 @@
-package lib
+package internal
 
 /*
 Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com

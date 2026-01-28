@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/robert-impey/tools/logs-deleter/lib"
+	"github.com/robert-impey/tools/logs-deleter/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -53,7 +53,7 @@ func sweepFrom() error {
 		return err1
 	}
 
-	err2 := lib.DeleteFrom(toolPath, Days, DeleteEmpty, Verbose)
+	err2 := internal.DeleteFrom(toolPath, Days, DeleteEmpty, Verbose)
 	if err2 != nil {
 		return err2
 	}

@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/robert-impey/tools/gensyn/lib"
+	"github.com/robert-impey/tools/gensyn/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -54,7 +54,7 @@ func rsync(args []string) {
 		log.Fatalln(err.Error())
 	}
 
-	err := lib.GenerateSynchScripts(files, autoGenDir, gssFile)
+	err := internal.GenerateSynchScripts(files, autoGenDir, gssFile)
 	if err != nil {
 		log.Fatalf("Unable to generate the scripts for %v - %v\n", gssFile, err)
 	}

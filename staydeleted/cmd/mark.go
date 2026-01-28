@@ -17,7 +17,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/robert-impey/tools/staydeleted/sdlib"
+	"github.com/robert-impey/tools/staydeleted/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -29,10 +29,10 @@ var markCmd = &cobra.Command{
 	Short: "Mark a file for deletion or keeping",
 	Long:  `Files marked for deletion or keeping will be taken care of by the sweep command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		action := sdlib.GetActionForBool(Keep)
+		action := internal.GetActionForBool(Keep)
 
 		for _, arg := range args {
-			err := sdlib.SetActionForFile(arg, action)
+			err := internal.SetActionForFile(arg, action)
 			if err != nil {
 				log.Printf("couldn't set action for file '%s'\n", arg)
 				return

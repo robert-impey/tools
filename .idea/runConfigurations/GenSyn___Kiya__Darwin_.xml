@@ -2,7 +2,7 @@
   <configuration default="false" name="GenSyn | Kiya (Darwin)" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/gensyn" />
-    <parameters value="rsync -a $USER_HOME$/autogen/synch lib/kiya.txt" />
+    <parameters value="rsync -a $USER_HOME$/autogen/synch internal/kiya.txt" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/gensyn" />
     <directory value="$PROJECT_DIR$" />

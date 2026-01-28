@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="go test | sd" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="tools" />
-    <working_directory value="$PROJECT_DIR$/staydeleted/sdlib" />
+    <working_directory value="$PROJECT_DIR$/staydeleted/internal" />
     <root_directory value="$PROJECT_DIR$" />
     <kind value="PACKAGE" />
-    <package value="github.com/robert-impey/tools/staydeleted/sdlib" />
+    <package value="github.com/robert-impey/tools/staydeleted/internal" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />
