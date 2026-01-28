@@ -1,6 +1,6 @@
-rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/Users/robert/Library/CloudStorage/Dropbox/local-scripts/_Common/synch/rsync-excluded.txt
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/Users/robert/Library/CloudStorage/OneDrive-Personal/local-scripts/_Common/synch/rsync-excluded.txt
 robert@kiya.robertimpey.com:~
-/Users/robert/Library/CloudStorage/Dropbox
+/Users/robert/Library/CloudStorage/OneDrive-Personal
 
 config
 executables
