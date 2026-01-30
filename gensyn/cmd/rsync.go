@@ -20,8 +20,8 @@ var rsyncCmd = &cobra.Command{
 	Short: "A program for generating scripts for synchronising directories using rsync",
 	Long: `A program for generating scripts for synchronising directories using rsync
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		rsync(args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return rsync(args)
 	},
 }
 
@@ -35,7 +35,7 @@ func init() {
 	rsyncCmd.Flags().StringVarP(&autoGenDir, "autogenDir", "a", "", "autogenDir")
 }
 
-func rsync(args []string) {
+func rsync(args []string) error {
 	if len(args) != 1 {
 		log.Fatalln(fmt.Errorf("expected 1 argument got %v", len(args)))
 	}
@@ -47,11 +47,8 @@ func rsync(args []string) {
 	}
 
 	if _, err := os.Stat(autoGenDir); errors.Is(err, os.ErrNotExist) {
-		log.Fatalln(err.Error())
+		return err
 	}
 
-	err := internal.GenerateSynchScripts(files, autoGenDir, gssFile)
-	if err != nil {
-		log.Fatalf("Unable to generate the scripts for %v - %v\n", gssFile, err)
-	}
+	return internal.GenerateSynchScripts(files, autoGenDir, gssFile)
 }
