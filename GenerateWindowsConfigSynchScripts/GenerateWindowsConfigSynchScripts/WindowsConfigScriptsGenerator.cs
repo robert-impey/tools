@@ -13,9 +13,7 @@ internal class WindowsConfigScriptsGenerator
     {
         ArgumentNullException.ThrowIfNull(logger);
 
-
         _logger = logger;
-
 
         _logger.LogInformation("Creating WindowsConfigScriptsGenerator");
     }
