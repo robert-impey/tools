@@ -275,6 +275,7 @@ func CreateFolderManager(locationsPath, foldersPath string) (*FolderManager, err
 		Folders:   folders,
 	}, nil
 }
+
 func readLinesFromPath(path string) ([]string, error) {
 	// Check existence first
 	if _, err := os.Stat(path); err != nil {
@@ -401,7 +402,6 @@ func createRobocopySyncScript(
 	sourcePath string,
 	destinationPath string,
 ) error {
-
 	// Ensure parent directory exists
 	parent := filepath.Dir(scriptPath)
 	if _, err := os.Stat(parent); os.IsNotExist(err) {
@@ -479,13 +479,13 @@ func writeSynchScriptFileParams(w *bufio.Writer) error {
 	}
 	return nil
 }
+
 func createAllFoldersRobocopySyncScript(
 	commonFolders []string,
 	scriptPath string,
 	sourcePath string,
 	destinationPath string,
 ) error {
-
 	// Ensure parent directory exists
 	parent := filepath.Dir(scriptPath)
 	if err := os.MkdirAll(parent, 0o755); err != nil {
