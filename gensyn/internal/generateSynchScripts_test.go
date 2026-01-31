@@ -8,6 +8,7 @@ import (
 	"errors"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -94,6 +95,11 @@ func TestGetCleanLocationName(t *testing.T) {
 			input:    "F::///  Data",
 			expected: "F_Data",
 		},
+		{
+			name:     "unix style paths",
+			input:    "/var/data",
+			expected: "_var_data",
+		},
 	}
 
 	for _, tt := range tests {
@@ -101,6 +107,40 @@ func TestGetCleanLocationName(t *testing.T) {
 			actual := getCleanLocationName(tt.input)
 			if actual != tt.expected {
 				t.Errorf("getCleanLocationName(%q) = %q; want %q", tt.input, actual, tt.expected)
+			}
+		})
+	}
+}
+
+func TestGetScriptPath(t *testing.T) {
+	tests := []struct {
+		name     string
+		autoGen  string
+		loc1     string
+		loc2     string
+		expected string
+	}{
+		{
+			name:     "basic windows paths",
+			autoGen:  `C:\AutoGen`,
+			loc1:     `C:\Data`,
+			loc2:     `D:\Backup`,
+			expected: filepath.Join(`C:\AutoGen`, "C_Data", "D_Backup"),
+		},
+		{
+			name:     "unix style paths",
+			autoGen:  "/tmp/autogen",
+			loc1:     "/var/data",
+			loc2:     "/mnt/backup",
+			expected: filepath.Join("/tmp/autogen", "_var_data", "_mnt_backup"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := getScriptPath(tt.autoGen, tt.loc1, tt.loc2)
+			if result != tt.expected {
+				t.Fatalf("expected %q, got %q", tt.expected, result)
 			}
 		})
 	}
