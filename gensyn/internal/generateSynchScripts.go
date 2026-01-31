@@ -7,6 +7,7 @@ Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -104,11 +105,32 @@ func writeScriptFile(path string, content string) error {
 	return os.WriteFile(path, []byte(content), 0o755)
 }
 
-func buildScriptHeader() string {
-	return fmt.Sprintf(
-		"#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n# Generated on %s\n\ndate\n\n",
-		getNowFmt(),
-	)
+type scriptHeaderOptions struct {
+	// If empty, no shebang is written.
+	Shebang string
+}
+
+func writeScriptHeader(w io.Writer, opts scriptHeaderOptions) error {
+	if opts.Shebang != "" {
+		if _, err := fmt.Fprintf(w, "#!%s\n", opts.Shebang); err != nil {
+			return err
+		}
+	}
+
+	if _, err := fmt.Fprintln(w, "# AUTOGEN'D - DO NOT EDIT!"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "# Generated on %s\n\n", getNowFmt()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintln(w, "date"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintln(w); err != nil { // blank line
+		return err
+	}
+
+	return nil
 }
 
 func buildScriptBody(files bool, info *ScriptsInfo, item string) string {
@@ -127,7 +149,10 @@ func buildScriptBody(files bool, info *ScriptsInfo, item string) string {
 
 func buildFullScript(files bool, info *ScriptsInfo, item string) string {
 	var buf strings.Builder
-	buf.WriteString(buildScriptHeader())
+
+	// Bash scripts need a shebang; other scripts can pass Shebang: "".
+	_ = writeScriptHeader(&buf, scriptHeaderOptions{Shebang: "/bin/bash"})
+
 	buf.WriteString(buildScriptBody(files, info, item))
 	buf.WriteString("date\n")
 	return buf.String()
@@ -376,7 +401,6 @@ func createRobocopySyncScript(
 
 	writer := bufio.NewWriter(f)
 
-	// Your helper functions (to be implemented)
 	if err := writeAutoGenHeader(writer); err != nil {
 		return err
 	}
@@ -406,11 +430,7 @@ func writeAutoGenHeader(w *bufio.Writer) error {
 		return err
 	}
 
-	// RFC 1123 timestamp (same as Java's DateTimeFormatter.RFC_1123_DATE_TIME)
-	now := time.Now().Local()
-	formatted := now.Format(time.RFC1123Z)
-
-	if _, err := fmt.Fprintf(w, "# Created: %s\n\n", formatted); err != nil {
+	if _, err := fmt.Fprintf(w, "# Created: %s\n\n", getNowFmt()); err != nil {
 		return err
 	}
 
