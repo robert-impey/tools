@@ -67,3 +67,41 @@ func TestGenerateFilesSynchScripts(t *testing.T) {
 		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
 }
+
+func TestGetCleanLocationName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "removes backslashes",
+			input:    "C:\\Data",
+			expected: "C_Data",
+		},
+		{
+			name:     "removes forward slashes and trims trailing",
+			input:    "D:/Archive/",
+			expected: "D_Archive",
+		},
+		{
+			name:     "removes spaces",
+			input:    "E:\\My Documents",
+			expected: "E_My_Documents",
+		},
+		{
+			name:     "collapses multiple special characters",
+			input:    "F::///  Data",
+			expected: "F_Data",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := getCleanLocationName(tt.input)
+			if actual != tt.expected {
+				t.Errorf("getCleanLocationName(%q) = %q; want %q", tt.input, actual, tt.expected)
+			}
+		})
+	}
+}

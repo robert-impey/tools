@@ -378,16 +378,18 @@ func getScriptPath(autoGenFolder, location1, location2 string) string {
 	return filepath.Join(autoGenFolder, clean1, clean2)
 }
 
+var locationCleanRegexp = regexp.MustCompile(`[:\\\/ ]+`)
+
 func getCleanLocationName(location string) string {
 	// Replace sequences of [: \ / space] with "_"
-	re := regexp.MustCompile(`[:\\\/ ]+`)
-	cleaned := re.ReplaceAllString(location, "_")
+	cleaned := locationCleanRegexp.ReplaceAllString(location, "_")
 
 	// Trim trailing underscores
 	cleaned = strings.TrimRight(cleaned, "_")
 
 	return cleaned
 }
+
 func pathExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
