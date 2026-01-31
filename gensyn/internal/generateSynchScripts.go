@@ -372,6 +372,7 @@ func (fm *FolderManager) GenerateRobocopyScripts(autoGenFolder string) error {
 
 	return nil
 }
+
 func getScriptPath(autoGenFolder, location1, location2 string) string {
 	clean1 := getCleanLocationName(location1)
 	clean2 := getCleanLocationName(location2)
