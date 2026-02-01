@@ -145,3 +145,56 @@ func TestGetScriptPath(t *testing.T) {
 		})
 	}
 }
+
+func TestWriteScriptsCharacterization(t *testing.T) {
+	info := &ScriptsInfo{
+		name:  "merneith",
+		synch: "rsync --flags",
+		src:   "user@host:~",
+		dst:   "/local/path",
+		items: []string{"config", "data"},
+	}
+
+	t.Run("Directory Mode Full Output", func(t *testing.T) {
+		outputDir := t.TempDir()
+		err := writeScripts(false, outputDir, info)
+		assert.Nil(t, err)
+
+		// 1. Verify Main Script Content
+		mainPath := filepath.Join(outputDir, "merneith.sh")
+		content, _ := os.ReadFile(mainPath)
+		script := string(content)
+
+		// Verifying the 'To' and 'From' lines for the first item 'config'
+		// This matches your dirsCmdLineTemplate logic
+		assert.Contains(t, script, "rsync --flags user@host:~/config/ /local/path/config")
+		assert.Contains(t, script, "rsync --flags /local/path/config/ user@host:~/config")
+
+		// 2. Verify Sub-script creation
+		// The code creates a folder named after the script for individual items
+		subPath := filepath.Join(outputDir, "merneith", "config.sh")
+		subContent, err := os.ReadFile(subPath)
+		assert.Nil(t, err, "Sub-script should exist for 'config'")
+		assert.Contains(t, string(subContent), "rsync --flags user@host:~/config/ /local/path/config")
+	})
+
+	t.Run("File Mode Full Output", func(t *testing.T) {
+		outputDir := t.TempDir()
+		fileInfo := &ScriptsInfo{
+			name:  "dots",
+			synch: "rsync --files-flags",
+			src:   "/src/path",
+			dst:   "/dst/path",
+			items: []string{".bashrc"},
+		}
+
+		err := writeScripts(true, outputDir, fileInfo)
+		assert.Nil(t, err)
+
+		content, _ := os.ReadFile(filepath.Join(outputDir, "dots.sh"))
+		script := string(content)
+
+		// In file mode, item is only appended to the source
+		assert.Contains(t, script, "rsync --files-flags /src/path/.bashrc /dst/path")
+	})
+}
