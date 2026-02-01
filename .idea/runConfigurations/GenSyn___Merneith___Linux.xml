@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GenSyn | Merneith" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="GenSyn | Merneith | Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/gensyn" />
-    <parameters value="rsync -a $USER_HOME$/autogen/synch lib/merneith.txt" />
+    <parameters value="rsync -a $USER_HOME$/autogen/synch internal/merneith.txt" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/gensyn" />
     <directory value="$PROJECT_DIR$" />
