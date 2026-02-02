@@ -293,7 +293,7 @@ func TestCreateFolderManager_SuccessfullyLoadsLocationsAndFolders(t *testing.T) 
 		"configs",
 	})
 
-	manager, err := CreateFolderManager(locationsFile, foldersFile)
+	manager, err := LoadFolderManager(locationsFile, foldersFile)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -326,7 +326,7 @@ func TestCreateFolderManager_IgnoresBlankAndCommentLines(t *testing.T) {
 		"folderB",
 	})
 
-	manager, err := CreateFolderManager(locationsFile, foldersFile)
+	manager, err := LoadFolderManager(locationsFile, foldersFile)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -349,7 +349,7 @@ func TestCreateFolderManager_ErrorsIfLocationsEmpty(t *testing.T) {
 
 	foldersFile := writeFile(t, tempDir, "folders.txt", []string{"folderA"})
 
-	_, err := CreateFolderManager(locationsFile, foldersFile)
+	_, err := LoadFolderManager(locationsFile, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
@@ -369,7 +369,7 @@ func TestCreateFolderManager_ErrorsIfFoldersEmpty(t *testing.T) {
 		"# comment",
 	})
 
-	_, err := CreateFolderManager(locationsFile, foldersFile)
+	_, err := LoadFolderManager(locationsFile, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
@@ -385,7 +385,7 @@ func TestCreateFolderManager_ErrorsIfFileDoesNotExist(t *testing.T) {
 	missing := filepath.Join(tempDir, "missing.txt")
 	foldersFile := writeFile(t, tempDir, "folders.txt", []string{"folder"})
 
-	_, err := CreateFolderManager(missing, foldersFile)
+	_, err := LoadFolderManager(missing, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}

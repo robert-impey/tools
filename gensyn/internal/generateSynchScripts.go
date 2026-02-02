@@ -253,7 +253,7 @@ type FolderManager struct {
 	Folders   []string
 }
 
-func CreateFolderManager(locationsPath, foldersPath string) (*FolderManager, error) {
+func LoadFolderManager(locationsPath, foldersPath string) (*FolderManager, error) {
 	locations, err := readLinesFromPath(locationsPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read locations: %w", err)
