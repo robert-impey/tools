@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -245,5 +246,26 @@ func TestGenerateRobocopyScripts_CreatesExpectedScripts(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(reverseScriptDir, "_all.ps1")); err != nil {
 		t.Errorf("expected reverse _all.ps1 to exist: %v", err)
+	}
+}
+
+func TestGenerateRobocopyScripts_ErrorsIfAutoGenFolderDoesNotExist(t *testing.T) {
+	tempDir := t.TempDir()
+
+	missing := filepath.Join(tempDir, "MissingAutoGen")
+
+	manager := &FolderManager{
+		Locations: []string{`C:\Data`},
+		Folders:   []string{"Folder"},
+	}
+
+	err := manager.GenerateRobocopyScripts(missing)
+	if err == nil {
+		t.Fatalf("expected an error, got nil")
+	}
+
+	if !strings.Contains(err.Error(), "auto-generated folder does not exist") {
+		t.Fatalf("expected error to contain %q, got %q",
+			"Auto-generated folder does not exist", err.Error())
 	}
 }
