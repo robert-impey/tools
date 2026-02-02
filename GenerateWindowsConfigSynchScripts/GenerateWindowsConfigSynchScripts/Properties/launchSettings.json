@@ -2,7 +2,7 @@
   "profiles": {
     "GenerateWindowsConfigSynchScripts": {
       "commandName": "Project",
-      "commandLineArgs": "--autogen C:\\Users\\rober\\autogen\\synch --files C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\Windows\\ssh-synch.txt --script ssh-config"
+      "commandLineArgs": "--autogen C:\\Users\\rober\\autogen\\synch --files C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\windows_26\\ssh-synch.txt --script ssh-config"
     }
   }
 }
