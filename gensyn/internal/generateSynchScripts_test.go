@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -409,6 +410,10 @@ func equal(a, b []string) bool {
 }
 
 func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("robocopy script generation is Windows-only")
+	}
+
 	tempDir := t.TempDir()
 
 	scriptPath := filepath.Join(tempDir, "script.ps1")
@@ -451,6 +456,10 @@ func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
 }
 
 func TestCreateAllFoldersRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("robocopy script generation is Windows-only")
+	}
+
 	tempDir := t.TempDir()
 
 	scriptPath := filepath.Join(tempDir, "all.ps1")
