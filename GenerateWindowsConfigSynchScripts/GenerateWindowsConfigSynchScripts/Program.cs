@@ -1,8 +1,8 @@
-﻿using FolderManager;
 using GenerateWindowsConfigSynchScripts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using Tools.Lib;
 
 var services = new ServiceCollection();
 services.AddLogging(configure =>

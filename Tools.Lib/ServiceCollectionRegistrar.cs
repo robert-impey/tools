@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace FolderManager;
+namespace Tools.Lib;
 
 public sealed class ServiceCollectionRegistrar(IServiceCollection services) : ITypeRegistrar
 {

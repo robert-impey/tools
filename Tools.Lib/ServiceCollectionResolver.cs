@@ -1,6 +1,6 @@
-﻿using Spectre.Console.Cli;
+using Spectre.Console.Cli;
 
-namespace FolderManager;
+namespace Tools.Lib;
 
 public sealed class ServiceCollectionResolver(IServiceProvider provider) : ITypeResolver, IDisposable
 {
