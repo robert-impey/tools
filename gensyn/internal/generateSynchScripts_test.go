@@ -198,3 +198,52 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		assert.Contains(t, script, "rsync --files-flags /src/path/.bashrc /dst/path")
 	})
 }
+
+func TestGenerateRobocopyScripts_CreatesExpectedScripts(t *testing.T) {
+	tempDir := t.TempDir()
+
+	loc1 := filepath.Join(tempDir, "Loc1")
+	loc2 := filepath.Join(tempDir, "Loc2")
+
+	// Create Shared subfolders
+	if err := os.MkdirAll(filepath.Join(loc1, "Shared"), 0o755); err != nil {
+		t.Fatalf("failed to create loc1/Shared: %v", err)
+	}
+	if err := os.MkdirAll(filepath.Join(loc2, "Shared"), 0o755); err != nil {
+		t.Fatalf("failed to create loc2/Shared: %v", err)
+	}
+
+	autoGen := filepath.Join(tempDir, "AutoGen")
+	if err := os.MkdirAll(autoGen, 0o755); err != nil {
+		t.Fatalf("failed to create AutoGen: %v", err)
+	}
+
+	manager := &FolderManager{
+		Locations: []string{loc1, loc2},
+		Folders:   []string{"Shared"},
+	}
+
+	if err := manager.GenerateRobocopyScripts(autoGen); err != nil {
+		t.Fatalf("GenerateRobocopyScripts failed: %v", err)
+	}
+
+	// Forward direction
+	scriptDir := getScriptPath(autoGen, loc1, loc2)
+
+	if _, err := os.Stat(filepath.Join(scriptDir, "Shared.ps1")); err != nil {
+		t.Errorf("expected Shared.ps1 to exist: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(scriptDir, "_all.ps1")); err != nil {
+		t.Errorf("expected _all.ps1 to exist: %v", err)
+	}
+
+	// Reverse direction
+	reverseScriptDir := getScriptPath(autoGen, loc2, loc1)
+
+	if _, err := os.Stat(filepath.Join(reverseScriptDir, "Shared.ps1")); err != nil {
+		t.Errorf("expected reverse Shared.ps1 to exist: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(reverseScriptDir, "_all.ps1")); err != nil {
+		t.Errorf("expected reverse _all.ps1 to exist: %v", err)
+	}
+}
