@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ResetPerms (macOs)": {
+    "ResetPerms | macOs": {
       "commandName": "Project",
       "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/OneDrive-Personal/local-scripts"
     },
