@@ -14,8 +14,10 @@ public class ScriptGeneratorTest
     [Fact]
     public async Task Generate_ShouldThrow_WhenAutogenIsNull()
     {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type
         await Should.ThrowAsync<ArgumentNullException>(() =>
             _sut.Generate("id", null, "script", "source", "destination", ["file1"]));
+#pragma warning restore CS8625
     }
 
     [Fact]

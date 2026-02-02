@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1"/>
+        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\FolderManager\FolderManager\FolderManager.csproj"/>
+      <ProjectReference Include="..\..\Tools.Lib\Tools.Lib.csproj" />
     </ItemGroup>
 
 </Project>
