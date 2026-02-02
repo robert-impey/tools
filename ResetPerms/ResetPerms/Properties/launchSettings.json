@@ -4,7 +4,7 @@
       "commandName": "Project",
       "commandLineArgs": "--scriptsDirectory /Users/robert/Library/CloudStorage/OneDrive-Personal/local-scripts"
     },
-    "ResetPerms (Linux)": {
+    "ResetPerms | Linux": {
       "commandName": "Project",
       "commandLineArgs": "--scriptsDirectory /home/robert/local-scripts"
     }
