@@ -196,7 +196,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		content, _ := os.ReadFile(filepath.Join(outputDir, "dots.sh"))
 		script := string(content)
 
-		// In file mode, item is only appended to the source
+		// In file mode, the item is only appended to the source
 		assert.Contains(t, script, "rsync --files-flags /src/path/.bashrc /dst/path")
 	})
 }
@@ -273,12 +273,12 @@ func TestGenerateRobocopyScripts_ErrorsIfAutoGenFolderDoesNotExist(t *testing.T)
 
 func writeFile(t *testing.T, dir, name string, lines []string) string {
 	t.Helper()
-	path := filepath.Join(dir, name)
+	scriptPath := filepath.Join(dir, name)
 	content := strings.Join(lines, "\n")
-	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-		t.Fatalf("failed to write file %s: %v", path, err)
+	if err := os.WriteFile(scriptPath, []byte(content), 0o644); err != nil {
+		t.Fatalf("failed to write file %s: %v", scriptPath, err)
 	}
-	return path
+	return scriptPath
 }
 
 func TestCreateFolderManager_SuccessfullyLoadsLocationsAndFolders(t *testing.T) {
