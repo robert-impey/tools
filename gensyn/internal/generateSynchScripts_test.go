@@ -407,3 +407,88 @@ func equal(a, b []string) bool {
 	}
 	return true
 }
+
+func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
+	tempDir := t.TempDir()
+
+	scriptPath := filepath.Join(tempDir, "script.ps1")
+	sourcePath := `C:\Source`
+	destinationPath := `D:\Destination`
+
+	err := createRobocopySyncScript("MyFolder", scriptPath, sourcePath, destinationPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Script file must exist
+	if _, err := os.Stat(scriptPath); err != nil {
+		t.Fatalf("expected script file to exist: %v", err)
+	}
+
+	// Read file contents
+	contentBytes, err := os.ReadFile(scriptPath)
+	if err != nil {
+		t.Fatalf("failed to read script file: %v", err)
+	}
+	content := string(contentBytes)
+
+	// Assertions equivalent to Java version
+	if !strings.Contains(content, `$folder = "MyFolder"`) {
+		t.Errorf("expected folder assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$src = "`+sourcePath+`"`) {
+		t.Errorf("expected src assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$dst = "`+destinationPath+`"`) {
+		t.Errorf("expected dst assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `Synch $folder $src $dst $logged`) {
+		t.Errorf("expected Synch invocation in script, got:\n%s", content)
+	}
+}
+
+func TestCreateAllFoldersRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
+	tempDir := t.TempDir()
+
+	scriptPath := filepath.Join(tempDir, "all.ps1")
+	sourcePath := `C:\Source`
+	destinationPath := `D:\Destination`
+	folders := []string{"Folder1", "Folder2"}
+
+	err := createAllFoldersRobocopySyncScript(folders, scriptPath, sourcePath, destinationPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Script file must exist
+	if _, err := os.Stat(scriptPath); err != nil {
+		t.Fatalf("expected script file to exist: %v", err)
+	}
+
+	// Read file contents
+	contentBytes, err := os.ReadFile(scriptPath)
+	if err != nil {
+		t.Fatalf("failed to read script file: %v", err)
+	}
+	content := string(contentBytes)
+
+	// Equivalent assertions to Java version
+	if !strings.Contains(content, `$folders = "Folder1", "Folder2"`) {
+		t.Errorf("expected folders assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$src = "`+sourcePath+`"`) {
+		t.Errorf("expected src assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$dst = "`+destinationPath+`"`) {
+		t.Errorf("expected dst assignment in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `foreach ($folder in $folders)`) {
+		t.Errorf("expected foreach loop in script, got:\n%s", content)
+	}
+}
