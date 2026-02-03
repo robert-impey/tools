@@ -1,0 +1,25 @@
+﻿<Solution>
+  <Project Name="GenerateWindowsConfigSynchScripts"
+           Path="GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts.csproj" />
+
+  <Project Name="GenerateWindowsConfigSynchScripts.Test"
+           Path="GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts.Test/GenerateWindowsConfigSynchScripts.Test.csproj" />
+
+  <Project Name="RemoveEmptyRobocopyLogs"
+           Path="RemoveEmptyRobocopyLogs/RemoveEmptyRobocopyLogs/RemoveEmptyRobocopyLogs.csproj" />
+
+  <Project Name="RemoveEmptyRobocopyLogs.Test"
+           Path="RemoveEmptyRobocopyLogs/RemoveEmptyRobocopyLogs.Test/RemoveEmptyRobocopyLogs.Test.csproj" />
+
+  <Project Name="ResetPerms"
+           Path="ResetPerms/ResetPerms/ResetPerms.csproj" />
+
+  <Project Name="ResetPerms.Test"
+           Path="ResetPerms/ResetPerms.Test/ResetPerms.Test.csproj" />
+
+  <Project Name="RunCliTests"
+           Path="RunCliTests/RunCliTests/RunCliTests.csproj" />
+
+  <Project Name="Tools.Lib"
+           Path="Tools.Lib/Tools.Lib.csproj" />
+</Solution>
