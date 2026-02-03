@@ -1,0 +1,10 @@
+﻿<Solution>
+  <Project Name="GenerateWindowsConfigSynchScripts"
+           Path="GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts.csproj" />
+
+  <Project Name="GenerateWindowsConfigSynchScripts.Test"
+           Path="GenerateWindowsConfigSynchScripts.Test/GenerateWindowsConfigSynchScripts.Test.csproj" />
+
+  <Project Name="Tools.Lib"
+           Path="../Tools.Lib/Tools.Lib.csproj" />
+</Solution>
