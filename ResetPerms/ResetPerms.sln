@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms", "ResetPerms\ResetPerms.csproj", "{BDBE6B29-3DD3-4BED-AE7C-E9F99BB019D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResetPerms.Test", "ResetPerms.Test\ResetPerms.Test.csproj", "{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderManager", "..\FolderManager\FolderManager\FolderManager.csproj", "{47D1C9DC-E36A-41D1-B920-336323B374AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.Lib", "..\Tools.Lib\Tools.Lib.csproj", "{E66A199E-A95E-B064-0B3B-151D9604A647}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +23,12 @@ Global
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39C8B049-2A94-4C6E-B7D0-3DAB595FEA1C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47D1C9DC-E36A-41D1-B920-336323B374AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E66A199E-A95E-B064-0B3B-151D9604A647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E66A199E-A95E-B064-0B3B-151D9604A647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E66A199E-A95E-B064-0B3B-151D9604A647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E66A199E-A95E-B064-0B3B-151D9604A647}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
