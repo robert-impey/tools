@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -8,6 +9,10 @@ import (
 )
 
 func DeleteFrom(subPath string, days int, deleteEmpty bool, verbose bool) error {
+	if days <= 0 {
+		return fmt.Errorf("days must be positive, got: %d", days)
+	}
+
 	cutoff := time.Now().AddDate(0, 0, -1*days)
 
 	if verbose {
