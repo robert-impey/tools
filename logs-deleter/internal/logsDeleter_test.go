@@ -104,3 +104,24 @@ func TestDeleteFrom_DoesNotDeleteRecentWhenFlagFalse(t *testing.T) {
 		t.Errorf("expected non-empty recent file to remain: %s", nonEmptyRecent)
 	}
 }
+
+func TestDeleteFrom_WithNegativeDays_FailsValidation(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+
+	// Negative days makes the cutoff time in the future with the current implementation,
+	// so any normal file (mod time <= now) is "before cutoff" and will be deleted.
+	days := -1
+	now := time.Now()
+	recent := now.Add(-1 * time.Minute)
+
+	recentFile := createFile(t, dir, "recent.log", 10, recent)
+
+	if err := DeleteFrom(dir, days, false, false); nil == err {
+		t.Fatalf("DeleteFrom should have failed")
+	}
+
+	if !exists(recentFile) {
+		t.Errorf("expected recent file to be still there: %s", recentFile)
+	}
+}
