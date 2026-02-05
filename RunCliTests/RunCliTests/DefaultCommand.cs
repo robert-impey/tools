@@ -206,7 +206,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private async static Task<(string output, int exitCode)> ExecuteCommandAsync(
+    private static async Task<(string output, int exitCode)> ExecuteCommandAsync(
         string command,
         string workingDirectory,
         string outputType,
