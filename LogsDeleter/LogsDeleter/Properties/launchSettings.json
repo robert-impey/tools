@@ -1,11 +1,11 @@
 {
   "profiles": {
-    "RemoveEmptyRobocopyLogs": {
+    "Logs Deleter": {
       "commandName": "Project"
     },
     "RemoveEmptyRobocopyLogs | Logs": {
       "commandName": "Project",
-      "commandLineArgs": "--logsDirectory \"C:\\Users\\rober\\logs\\synch\""
+      "commandLineArgs": "rerl --logsDirectory \"C:\\Users\\rober\\logs\\synch\""
     }
   }
 }

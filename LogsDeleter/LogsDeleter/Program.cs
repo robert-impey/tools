@@ -12,13 +12,18 @@ services.AddLogging(configure =>
 });
 var registrar = new ServiceCollectionRegistrar(services);
 
-var app = new CommandApp<DefaultCommand>(registrar);
+// Use non-generic CommandApp so we can register commands from referenced libraries
+var app = new CommandApp(registrar);
 
 app.Configure(config =>
 {
-    config.SetApplicationName("RemoveEmptyRobocopyLogs");
-    config.AddCommand<DefaultCommand>("default")
+    config.SetApplicationName("LogsDeleter");
+
+    // Register the RemoveEmptyRobocopyLogs subcommand(s)
+    config.AddCommand<DefaultCommand>("rerl")
         .WithDescription("Removes Robocopy log files that report zero copied files.");
+
+    // Additional subcommands can be registered here in future
 });
 
 await app.RunAsync(args);

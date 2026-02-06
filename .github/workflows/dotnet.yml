@@ -13,8 +13,8 @@ jobs:
       matrix:
         project:
           - GenerateWindowsConfigSynchScripts
+          - LogsDeleter
           - ResetPerms
-          - RemoveEmptyRobocopyLogs
           - RunCliTests
     defaults:
       run:
