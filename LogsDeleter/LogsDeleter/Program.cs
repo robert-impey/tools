@@ -1,3 +1,4 @@
+using LogsDeleter;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RemoveEmptyRobocopyLogs;
@@ -23,7 +24,13 @@ app.Configure(config =>
     config.AddCommand<DefaultCommand>("rerl")
         .WithDescription("Removes Robocopy log files that report zero copied files.");
 
-    // Additional subcommands can be registered here in future
+    // Equivalent to rootCmd.AddCommand(sweepAllCmd)
+    config.AddCommand<SweepAllCommand>("sweepAll")
+        .WithDescription("Sweep all the log directories");
+
+    // Equivalent to rootCmd.AddCommand(sweepFromCmd)
+    config.AddCommand<SweepFromCommand>("sweepFrom")
+        .WithDescription("Sweep away the old log files for just one tool");
 });
 
 await app.RunAsync(args);
