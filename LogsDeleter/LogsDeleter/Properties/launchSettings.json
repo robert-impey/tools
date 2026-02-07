@@ -3,7 +3,7 @@
     "Logs Deleter": {
       "commandName": "Project"
     },
-    "RemoveEmptyRobocopyLogs | Logs": {
+    "RemoveEmptyRobocopyLogs | Logs | Windows": {
       "commandName": "Project",
       "commandLineArgs": "rerl --logsDirectory \"C:\\Users\\rober\\logs\\synch\""
     },
@@ -14,6 +14,14 @@
     "Logs Deleter | sweepFrom | synch | Linux": {
       "commandName": "Project",
       "commandLineArgs": "sweepAll --logsDirectory /home/robert/logs -t synch"
+    },
+    "Logs Deleter | sweepAll | Windows": {
+      "commandName": "Project",
+      "commandLineArgs": "sweepAll --logsDirectory \"C:\\Users\\rober\\logs\""
+    },
+    "Logs Deleter | sweepFrom | synch | Windows": {
+      "commandName": "Project",
+      "commandLineArgs": "sweepAll --logsDirectory \"C:\\Users\\rober\\logs\" -t synch"
     }
   }
 }
