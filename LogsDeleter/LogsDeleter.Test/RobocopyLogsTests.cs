@@ -1,6 +1,7 @@
+using RemoveEmptyRobocopyLogs;
 using Shouldly;
 
-namespace RemoveEmptyRobocopyLogs.Test;
+namespace LogsDeleter.Test;
 
 public class RobocopyLogsTests
 {
