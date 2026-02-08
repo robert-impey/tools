@@ -11,6 +11,8 @@ services.AddLogging(configure =>
     configure.AddConsole();
     configure.SetMinimumLevel(LogLevel.Information);
 });
+services.AddSingleton<LogsDeleter.LogsDeleter>();
+
 var registrar = new ServiceCollectionRegistrar(services);
 
 // Use non-generic CommandApp so we can register commands from referenced libraries

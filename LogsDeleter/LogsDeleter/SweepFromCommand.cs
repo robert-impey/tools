@@ -3,6 +3,13 @@ using Spectre.Console.Cli;
 namespace LogsDeleter;
 public class SweepFromCommand : Command<SweepFromSettings>
 {
+    private readonly LogsDeleter _logsDeleter;
+
+    public SweepFromCommand(LogsDeleter logsDeleter)
+    {
+        _logsDeleter = logsDeleter;
+    }
+
     public override int Execute(CommandContext context, SweepFromSettings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(settings.Tool))
@@ -22,7 +29,7 @@ public class SweepFromCommand : Command<SweepFromSettings>
             throw new DirectoryNotFoundException($"Tool path not found: {toolPath}");
         }
 
-        LogsDeleter.DeleteFrom(toolPath, settings.Days, settings.DeleteEmpty, settings.Verbose);
+        _logsDeleter.DeleteFrom(toolPath, settings.Days, settings.DeleteEmpty, settings.Verbose);
 
         if (settings.Verbose) Console.WriteLine("Success");
         return 0;

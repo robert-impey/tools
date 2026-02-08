@@ -4,6 +4,13 @@ namespace LogsDeleter;
 
 public class SweepAllCommand : Command<LogSettings>
 {
+    private readonly LogsDeleter _logsDeleter;
+
+    public SweepAllCommand(LogsDeleter logsDeleter)
+    {
+        _logsDeleter = logsDeleter;
+    }
+
     public override int Execute(CommandContext context, LogSettings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(settings.LogsDirectory))
@@ -23,7 +30,7 @@ public class SweepAllCommand : Command<LogSettings>
 
         foreach (var subDir in subDirs)
         {
-            LogsDeleter.DeleteFrom(subDir, settings.Days, settings.DeleteEmpty, settings.Verbose);
+            _logsDeleter.DeleteFrom(subDir, settings.Days, settings.DeleteEmpty, settings.Verbose);
         }
 
         if (settings.Verbose) Console.WriteLine("Success");

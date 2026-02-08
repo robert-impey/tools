@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging.Abstractions;
+
 namespace LogsDeleter.Test;
 
 using System;
@@ -8,11 +10,13 @@ using Shouldly; // The magic sauce
 public class DeleteFromTests : IDisposable
 {
     private readonly string _tempDir;
+    private readonly LogsDeleter _logsDeleter;
 
     public DeleteFromTests()
     {
         _tempDir = Path.Combine(Path.GetTempPath(), "DeleteFromTests_" + Guid.NewGuid().ToString());
         Directory.CreateDirectory(_tempDir);
+        _logsDeleter = new LogsDeleter(NullLogger<LogsDeleter>.Instance);
     }
 
     public void Dispose()
@@ -38,7 +42,7 @@ public class DeleteFromTests : IDisposable
         var recentFile = CreateFile("recent.log", 10, DateTime.Now.AddHours(-1));
 
         // Act
-        LogsDeleter.DeleteFrom(_tempDir, days, false, false);
+        _logsDeleter.DeleteFrom(_tempDir, days, false, false);
 
         // Assert
         File.Exists(oldFile).ShouldBeFalse();
@@ -54,7 +58,7 @@ public class DeleteFromTests : IDisposable
         var nonEmptyRecent = CreateFile("data.txt", 5, DateTime.Now.AddMinutes(-30));
 
         // Act
-        LogsDeleter.DeleteFrom(_tempDir, days, true, false);
+        _logsDeleter.DeleteFrom(_tempDir, days, true, false);
 
         // Assert
         File.Exists(emptyRecent).ShouldBeFalse();
@@ -70,7 +74,7 @@ public class DeleteFromTests : IDisposable
         var nonEmptyRecent = CreateFile("data.txt", 5, DateTime.Now.AddMinutes(-10));
 
         // Act
-        LogsDeleter.DeleteFrom(_tempDir, days, false, false);
+        _logsDeleter.DeleteFrom(_tempDir, days, false, false);
 
         // Assert
         File.Exists(emptyRecent).ShouldBeTrue();
@@ -87,7 +91,7 @@ public class DeleteFromTests : IDisposable
         // Act & Assert
         // Shouldly's way of handling exceptions
         Should.Throw<ArgumentException>(() =>
-            LogsDeleter.DeleteFrom(_tempDir, days, false, false)
+            _logsDeleter.DeleteFrom(_tempDir, days, false, false)
         );
 
         File.Exists(recentFile).ShouldBeTrue();

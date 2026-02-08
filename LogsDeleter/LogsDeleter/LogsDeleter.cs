@@ -1,12 +1,23 @@
+using Microsoft.Extensions.Logging;
+
 namespace LogsDeleter;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-public static class LogsDeleter
+public class LogsDeleter
 {
-    public static void DeleteFrom(string subPath, int days, bool deleteEmpty, bool verbose)
+    private readonly ILogger<LogsDeleter> _logger;
+
+    public LogsDeleter(ILogger<LogsDeleter> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+    }
+
+    public void DeleteFrom(string subPath, int days, bool deleteEmpty, bool verbose)
     {
         if (days <= 0)
         {
@@ -18,7 +29,7 @@ public static class LogsDeleter
 
         if (verbose)
         {
-            Console.WriteLine($"Searching {subPath} for files older than {cutoff}");
+            _logger.LogInformation($"Searching {subPath} for files older than {cutoff}");
         }
 
         if (!Directory.Exists(subPath))
@@ -47,15 +58,12 @@ public static class LogsDeleter
 
         if (verbose || filesToDelete.Count > 0)
         {
-            Console.WriteLine($"Found {filesToDelete.Count} files to delete in {subPath}");
+            _logger.LogInformation($"Found {filesToDelete.Count} files to delete in {subPath}");
         }
 
         foreach (var file in filesToDelete)
         {
-            if (verbose)
-            {
-                Console.WriteLine($"Deleting {file.FullName}");
-            }
+            _logger.LogInformation($"Deleting {file.FullName}");
 
             try
             {
