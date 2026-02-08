@@ -15,13 +15,13 @@
       "commandName": "Project",
       "commandLineArgs": "sweepFrom --logsDirectory /Users/robert/logs --deleteEmpty --tool synch"
     },
-    "Logs Deleter | sweepAll | Linux": {
+    "LD | sweepAll | Linux": {
       "commandName": "Project",
       "commandLineArgs": "sweepAll --logsDirectory /home/robert/logs"
     },
-    "Logs Deleter | sweepFrom | synch | Linux": {
+    "LD | sweepFrom | synch | Linux": {
       "commandName": "Project",
-      "commandLineArgs": "sweepFrom --logsDirectory /home/robert/logs -t synch"
+      "commandLineArgs": "sweepFrom --logsDirectory /home/robert/logs --deleteEmpty --tool synch"
     },
     "LD | sweepAll | Windows": {
       "commandName": "Project",
