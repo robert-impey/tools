@@ -29,7 +29,7 @@
     },
     "Logs Deleter | sweepFrom | synch | Windows": {
       "commandName": "Project",
-      "commandLineArgs": "sweepFrom --logsDirectory \"C:\\Users\\rober\\logs\" -t synch"
+      "commandLineArgs": "sweepFrom --logsDirectory \"C:\\Users\\rober\\logs\" --deleteEmpty --tool synch"
     }
   }
 }
