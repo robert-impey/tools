@@ -7,13 +7,13 @@
       "commandName": "Project",
       "commandLineArgs": "rerl --logsDirectory \"C:\\Users\\rober\\logs\\synch\""
     },
-    "Logs Deleter | sweepAll | macOs": {
+    "LD | sweepAll | macOs": {
       "commandName": "Project",
       "commandLineArgs": "sweepAll --logsDirectory /Users/robert/logs"
     },
-    "Logs Deleter | sweepFrom | synch | macOs": {
+    "LD | sweepFrom | synch | macOs": {
       "commandName": "Project",
-      "commandLineArgs": "sweepFrom --logsDirectory /Users/robert/logs -t synch"
+      "commandLineArgs": "sweepFrom --logsDirectory /Users/robert/logs --deleteEmpty --tool synch"
     },
     "Logs Deleter | sweepAll | Linux": {
       "commandName": "Project",
