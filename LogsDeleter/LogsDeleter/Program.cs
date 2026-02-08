@@ -1,7 +1,7 @@
 using LogsDeleter;
+using LogsDeleter.RemoveEmptyRobocopyLogs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RemoveEmptyRobocopyLogs;
 using Spectre.Console.Cli;
 using Tools.Lib;
 

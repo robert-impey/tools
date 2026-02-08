@@ -2,7 +2,7 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RemoveEmptyRobocopyLogs;
+namespace LogsDeleter.RemoveEmptyRobocopyLogs;
 
 public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {

@@ -2,7 +2,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
-namespace RemoveEmptyRobocopyLogs;
+namespace LogsDeleter.RemoveEmptyRobocopyLogs;
 
 public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {

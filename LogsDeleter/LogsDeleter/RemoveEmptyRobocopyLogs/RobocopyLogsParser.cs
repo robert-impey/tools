@@ -1,10 +1,10 @@
 using System.Text.RegularExpressions;
 
-namespace RemoveEmptyRobocopyLogs;
+namespace LogsDeleter.RemoveEmptyRobocopyLogs;
 
 public static partial class RobocopyLogsParser
 {
-    private readonly static Regex filesLineRegex = FilesLineRegex();
+    private static readonly Regex filesLineRegex = FilesLineRegex();
 
     public static bool IsFilesCopiedLine(string line)
     {
@@ -23,7 +23,7 @@ public static partial class RobocopyLogsParser
         return false;
     }
 
-    public async static Task<bool> FileHasCopies(string fileName, CancellationToken cancellationToken)
+    public static async Task<bool> FileHasCopies(string fileName, CancellationToken cancellationToken)
     {
         var lines = await File.ReadAllLinesAsync(fileName, cancellationToken);
 

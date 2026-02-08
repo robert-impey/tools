@@ -1,4 +1,4 @@
-using RemoveEmptyRobocopyLogs;
+using LogsDeleter.RemoveEmptyRobocopyLogs;
 using Shouldly;
 
 namespace LogsDeleter.Test;
