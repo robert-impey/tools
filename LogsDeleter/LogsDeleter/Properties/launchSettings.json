@@ -23,11 +23,11 @@
       "commandName": "Project",
       "commandLineArgs": "sweepFrom --logsDirectory /home/robert/logs -t synch"
     },
-    "Logs Deleter | sweepAll | Windows": {
+    "LD | sweepAll | Windows": {
       "commandName": "Project",
       "commandLineArgs": "sweepAll --logsDirectory \"C:\\Users\\rober\\logs\""
     },
-    "Logs Deleter | sweepFrom | synch | Windows": {
+    "LD | sweepFrom | synch | Windows": {
       "commandName": "Project",
       "commandLineArgs": "sweepFrom --logsDirectory \"C:\\Users\\rober\\logs\" --deleteEmpty --tool synch"
     }
