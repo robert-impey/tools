@@ -28,16 +28,17 @@ var markCmd = &cobra.Command{
 	Use:   "mark",
 	Short: "Mark a file for deletion or keeping",
 	Long:  `Files marked for deletion or keeping will be taken care of by the sweep command.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		action := internal.GetActionForBool(Keep)
 
 		for _, arg := range args {
 			err := internal.SetActionForFile(arg, action)
 			if err != nil {
 				log.Printf("couldn't set action for file '%s'\n", arg)
-				return
+				return err
 			}
 		}
+		return nil
 	},
 }
 

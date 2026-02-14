@@ -35,8 +35,8 @@ var sweepCmd = &cobra.Command{
 	Long: `Walk through the directories given in the command line args
 looking for files that have been marked for deletion.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		sweep(args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return sweep(args)
 	},
 }
 
@@ -49,7 +49,7 @@ func init() {
 	sweepCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "Print verbosely.")
 }
 
-func sweep(paths []string) {
+func sweep(paths []string) error {
 	for _, path := range paths {
 		stat, err := os.Stat(path)
 		if err != nil {
@@ -60,10 +60,11 @@ func sweep(paths []string) {
 		if stat.IsDir() {
 			err := internal.SweepDirectory(path, ExpiryMonths, Verbose)
 			if err != nil {
-				log.Fatalln(err)
+				return err
 			}
 		} else {
 			log.Printf("%v\n is not a directory!", path)
 		}
 	}
+	return nil
 }

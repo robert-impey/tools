@@ -29,8 +29,8 @@ var sweepFromCmd = &cobra.Command{
 	Long: `The arguments to this command should be text files with
 	one directory per line.
 	Each directory will be swept.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		sweepFrom(args)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return sweepFrom(args)
 	},
 }
 
@@ -48,7 +48,7 @@ func init() {
 	// sweepFromCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func sweepFrom(paths []string) {
+func sweepFrom(paths []string) error {
 	for _, path := range paths {
 		stat, err := os.Stat(path)
 		if err != nil {
@@ -62,16 +62,14 @@ func sweepFrom(paths []string) {
 			var directoriesToSweepFrom, err = internal.ReadSweepFromFile(path)
 			if err != nil {
 				log.Printf("Unable to read file to sweep from '%v' - '%v'\n", path, err)
-				log.Fatalln(err)
+				return err
 			}
 
-			errs := internal.SweepFromDirectories(directoriesToSweepFrom, ExpiryMonths, Verbose)
-			if len(errs) > 0 {
-				for _, e := range errs {
-					log.Println(e)
-				}
-				log.Fatalln("one or more errors occurred while sweeping from directories")
+			err = internal.SweepFromDirectories(directoriesToSweepFrom, ExpiryMonths, Verbose)
+			if err != nil {
+				return err
 			}
 		}
 	}
+	return nil
 }

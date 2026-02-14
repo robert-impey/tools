@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -129,9 +130,9 @@ func TestSweepFromDirectories(t *testing.T) {
 	}
 
 	// Call SweepFromDirectories on both dirs. expiryMonths only affects removal of old SD metadata,
-	// not whether a file marked Delete is removed. We can use any reasonable value (e.g., 6).
-	if errs := SweepFromDirectories([]string{dir1, dir2}, 6, false); errs != nil {
-		t.Fatalf("SweepFromDirectories returned errors: %v", errs)
+	// not whether a file marked Delete is removed. we can use any reasonable value (e.g., 6).
+	if err := SweepFromDirectories([]string{dir1, dir2}, 6, false); err != nil {
+		t.Fatalf("SweepFromDirectories returned error: %v", err)
 	}
 
 	// Assert: delete_me.txt is gone
@@ -173,11 +174,11 @@ func TestSweepFromDirectories_ContinuesOnMissingDirectory(t *testing.T) {
 	}
 
 	// Call SweepFromDirectories with a missing directory in the middle
-	if errs := SweepFromDirectories([]string{dir1, dirMissing, dir3}, 6, false); errs != nil {
-		// We expect exactly one error corresponding to the missing directory.
-		if len(errs) != 1 {
-			t.Fatalf("expected exactly 1 error for the missing directory, got %d: %v", len(errs), errs)
-		}
+	if err := SweepFromDirectories([]string{dir1, dirMissing, dir3}, 6, false); err != nil {
+		// We expect an error corresponding to the missing directory.
+		log.Printf("Expected error from SweepFromDirectories: %v\n", err)
+	} else {
+		t.Fatal("Expected SweepFromDirectories to return an error for the missing directory, but it returned nil")
 	}
 
 	// dir1's delete should have happened

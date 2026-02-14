@@ -19,15 +19,16 @@ var markFromCmd = &cobra.Command{
 	Use:   "markFrom",
 	Short: "Mark all the files in a text file for deletion",
 	Long:  `If many files need to be marked for deletion, a text file can be provided.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		for _, arg := range args {
 			err := markFrom(arg)
 			if err != nil {
-				log.Println(err.Error())
-			} else {
-				log.Println("Success")
+				return err
 			}
+
+			log.Println("Success")
 		}
+		return nil
 	},
 }
 

@@ -199,7 +199,7 @@ func MarkFiles(filesToMark []string, action Action) {
 	}
 }
 
-func SweepFromDirectories(directoriesToSweepFrom []string, expiryMonths int, verbose bool) []error {
+func SweepFromDirectories(directoriesToSweepFrom []string, expiryMonths int, verbose bool) error {
 	var errs []error
 	for _, directoryToSweepFrom := range directoriesToSweepFrom {
 		if err := SweepDirectory(directoryToSweepFrom, expiryMonths, verbose); err != nil {
@@ -208,10 +208,7 @@ func SweepFromDirectories(directoriesToSweepFrom []string, expiryMonths int, ver
 		}
 	}
 
-	if len(errs) == 0 {
-		return nil
-	}
-	return errs
+	return errors.Join(errs...)
 }
 
 func SweepDirectory(directoryToSweep string, expiryMonths int, verbose bool) error {
