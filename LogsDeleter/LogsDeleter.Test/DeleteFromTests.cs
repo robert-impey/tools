@@ -1,22 +1,18 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using Shouldly;
 
 namespace LogsDeleter.Test;
-
-using System;
-using System.IO;
-using Xunit;
-using Shouldly; // The magic sauce
 
 public class DeleteFromTests : IDisposable
 {
     private readonly string _tempDir;
-    private readonly LogsDeleter _logsDeleter;
+    private readonly Sweeping.LogsDeleter _logsDeleter;
 
     public DeleteFromTests()
     {
         _tempDir = Path.Combine(Path.GetTempPath(), "DeleteFromTests_" + Guid.NewGuid().ToString());
         Directory.CreateDirectory(_tempDir);
-        _logsDeleter = new LogsDeleter(NullLogger<LogsDeleter>.Instance);
+        _logsDeleter = new Sweeping.LogsDeleter(NullLogger<Sweeping.LogsDeleter>.Instance);
     }
 
     public void Dispose()

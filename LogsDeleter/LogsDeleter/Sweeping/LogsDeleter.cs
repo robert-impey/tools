@@ -1,10 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace LogsDeleter;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
+namespace LogsDeleter.Sweeping;
 
 public class LogsDeleter
 {

@@ -1,8 +1,8 @@
 using Spectre.Console.Cli;
 
-namespace LogsDeleter;
+namespace LogsDeleter.Sweeping;
 
-public class SweepAllCommand : Command<LogSettings>
+public class SweepAllCommand : Command<CommandSettings>
 {
     private readonly LogsDeleter _logsDeleter;
 
@@ -11,7 +11,7 @@ public class SweepAllCommand : Command<LogSettings>
         _logsDeleter = logsDeleter;
     }
 
-    public override int Execute(CommandContext context, LogSettings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(settings.LogsDirectory))
         {

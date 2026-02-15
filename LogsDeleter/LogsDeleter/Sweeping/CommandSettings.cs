@@ -1,8 +1,9 @@
-namespace LogsDeleter;
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-public class LogSettings : CommandSettings
+namespace LogsDeleter.Sweeping;
+
+public class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
     [CommandOption("-l|--logsDirectory <PATH>")]
     [Description("The logs directory")]
@@ -20,11 +21,4 @@ public class LogSettings : CommandSettings
     [CommandOption("-v|--verbose")]
     [Description("Verbose output")]
     public bool Verbose { get; set; }
-}
-
-public class SweepFromSettings : LogSettings
-{
-    [CommandOption("-t|--tool <TOOL>")]
-    [Description("Tool to sweep")]
-    public string Tool { get; set; } = string.Empty;
 }

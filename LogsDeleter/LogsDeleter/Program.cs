@@ -1,5 +1,5 @@
-using LogsDeleter;
 using LogsDeleter.RemoveEmptyRobocopyLogs;
+using LogsDeleter.Sweeping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
@@ -11,7 +11,7 @@ services.AddLogging(configure =>
     configure.AddConsole();
     configure.SetMinimumLevel(LogLevel.Information);
 });
-services.AddSingleton<LogsDeleter.LogsDeleter>();
+services.AddSingleton<LogsDeleter.Sweeping.LogsDeleter>();
 
 var registrar = new ServiceCollectionRegistrar(services);
 

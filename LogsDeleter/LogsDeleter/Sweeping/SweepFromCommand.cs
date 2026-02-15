@@ -1,6 +1,7 @@
 using Spectre.Console.Cli;
 
-namespace LogsDeleter;
+namespace LogsDeleter.Sweeping;
+
 public class SweepFromCommand : Command<SweepFromSettings>
 {
     private readonly LogsDeleter _logsDeleter;
