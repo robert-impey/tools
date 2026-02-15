@@ -16,9 +16,9 @@ pub enum Commands {
         /// Directory to search
         directory: PathBuf,
 
-        /// Directory where logs should be written (Optional)
+        /// Directory where logs should be written (if omitted, prints to stdout/stderr)
         #[arg(long = "logs-dir")]
-        logs_dir: Option<PathBuf>, // Becomes --logs-dir <PATH>
+        logs_dir: Option<PathBuf>, // --logs-dir <PATH>
     },
 
     /// Search multiple directories listed in a text file
@@ -26,9 +26,9 @@ pub enum Commands {
         /// File containing directories to process
         directories_file: PathBuf,
 
-        /// Directory where logs should be written
+        /// Directory where logs should be written (if omitted, prints to stdout/stderr)
         #[arg(long = "logs-dir")]
-        logs_dir: PathBuf,
+        logs_dir: Option<PathBuf>, // --logs-dir <PATH>
     },
 }
 
@@ -40,8 +40,6 @@ fn main() -> anyhow::Result<()> {
             directory,
             logs_dir,
         } => {
-            // logs_dir is Option<PathBuf>
-            // .as_deref() converts Option<PathBuf> to Option<&Path>
             search_directory(&directory.to_string_lossy(), logs_dir.as_deref())?;
         }
 
@@ -49,11 +47,9 @@ fn main() -> anyhow::Result<()> {
             directories_file,
             logs_dir,
         } => {
-            // logs_dir is PathBuf
             let dirs = read_directories(&directories_file)?;
             for dir in dirs {
-                // We wrap it in Some() to match the Option<&Path> signature
-                search_directory(&dir, Some(&logs_dir))?;
+                search_directory(&dir, logs_dir.as_deref())?;
             }
         }
     }
