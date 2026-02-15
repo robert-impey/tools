@@ -13,8 +13,8 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "tools",
-	Short: "A program for generating scripts for synchronising directories using rsync",
-	Long: `A program for generating scripts for synchronising directories using rsync
+	Short: "A program for generating scripts for synchronising directories",
+	Long: `A program for generating scripts for synchronising directories
 `,
 }
 
