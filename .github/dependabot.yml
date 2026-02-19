@@ -9,15 +9,6 @@ updates:
     time: "12:00"
   target-branch: "dev"
 
-# --- Java / Spring Boot (Maven) ---
-- package-ecosystem: "maven"
-  directory: "/"
-  schedule:
-    interval: "weekly"
-    day: "friday"
-    time: "12:00"
-  target-branch: "dev"
-
 # --- Rust / Cargo ---
 - package-ecosystem: "cargo"
   directory: "/"
@@ -36,7 +27,7 @@ updates:
     time: "12:00"
   target-branch: "dev"
 
-# --- GitHub Actions (optional but recommended) ---
+# --- GitHub Actions ---
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
