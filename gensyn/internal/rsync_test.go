@@ -15,15 +15,15 @@ import (
 )
 
 func TestParseGSSFile(t *testing.T) {
-	scriptsInfo, err := ParseGSSFile("merneith.txt")
+	scriptsInfo, err := ParseGSSFile("cleopatra.txt")
 
 	assert.Nil(t, err)
 	assert.NotNil(t, scriptsInfo)
 
-	assert.Equal(t, scriptsInfo.name, "merneith")
+	assert.Equal(t, scriptsInfo.name, "cleopatra")
 	assert.Equal(t, scriptsInfo.synch,
 		"rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/home/robert/local-scripts/_Common/synch/rsync-excluded.txt")
-	assert.Equal(t, scriptsInfo.src, "robert@merneith.robertimpey.com:~")
+	assert.Equal(t, scriptsInfo.src, "robert@cleopatra.robertimpey.com:~")
 	assert.Equal(t, scriptsInfo.dst, "/home/robert")
 	assert.Equal(t, len(scriptsInfo.items), 4)
 }
@@ -38,15 +38,15 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(false, outputDir, "merneith.txt")
+	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt")
 	assert.Nil(t, err)
 
-	scriptsFile := path.Join(outputDir, "merneith.sh")
+	scriptsFile := path.Join(outputDir, "cleopatra.sh")
 	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
 
-	scriptsDir := path.Join(outputDir, "merneith")
+	scriptsDir := path.Join(outputDir, "cleopatra")
 	if _, err := os.Stat(scriptsDir); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts dir %s doesn't exist", scriptsDir)
 	}
@@ -71,7 +71,7 @@ func TestGenerateFilesSynchScripts(t *testing.T) {
 
 func TestWriteScriptsCharacterization(t *testing.T) {
 	info := &ScriptsInfo{
-		name:  "merneith",
+		name:  "cleopatra",
 		synch: "rsync --flags",
 		src:   "user@host:~",
 		dst:   "/local/path",
@@ -85,7 +85,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		assert.Nil(t, err)
 
 		// 1. Verify Main Script Content
-		mainPath := filepath.Join(outputDir, "merneith.sh")
+		mainPath := filepath.Join(outputDir, "cleopatra.sh")
 		content, _ := os.ReadFile(mainPath)
 		script := string(content)
 
@@ -96,7 +96,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 
 		// 2. Verify Sub-script creation
 		// The code creates a folder named after the script for individual items
-		subPath := filepath.Join(outputDir, "merneith", "config.sh")
+		subPath := filepath.Join(outputDir, "cleopatra", "config.sh")
 		subContent, err := os.ReadFile(subPath)
 		assert.Nil(t, err, "Sub-script should exist for 'config'")
 		assert.Contains(t, string(subContent), "rsync --flags user@host:~/config/ /local/path/config")
