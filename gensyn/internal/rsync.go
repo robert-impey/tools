@@ -1,0 +1,226 @@
+package internal
+
+/*
+Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
+*/
+
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"sort"
+	"strings"
+	"time"
+
+	mapset "github.com/deckarep/golang-set/v2"
+)
+
+const filesCmdLineTemplate = "%v %v/%v %v/"
+const dirsCmdLineTemplate = "%v %v/%v/ %v/%v"
+
+// ScriptsInfo holds parsed data from a .gss file.
+type ScriptsInfo struct {
+	name, dir, synch, src, dst string
+	items                      []string
+}
+
+// RsyncScriptGenerator holds the configuration for generating rsync shell scripts.
+type RsyncScriptGenerator struct {
+	Files      bool   // true = file mode, false = directory mode
+	AutoGenDir string // output directory for generated scripts
+}
+
+// GenerateSynchScripts is a convenience wrapper preserving the original API.
+func GenerateSynchScripts(files bool, autoGenDir string, gssFile string) error {
+	g := &RsyncScriptGenerator{Files: files, AutoGenDir: autoGenDir}
+	return g.GenerateSynchScripts(gssFile)
+}
+
+// GenerateSynchScripts parses a .gss file and writes rsync shell scripts.
+func (g *RsyncScriptGenerator) GenerateSynchScripts(gssFile string) error {
+	fmt.Printf("Generating synch scripts for %v\n", gssFile)
+
+	info, err := ParseGSSFile(gssFile)
+	if err != nil {
+		return fmt.Errorf("unable to parse %s: %w", gssFile, err)
+	}
+
+	if err := g.writeScripts(info); err != nil {
+		return fmt.Errorf("unable to write scripts for %s: %w", gssFile, err)
+	}
+	return nil
+}
+
+// ParseGSSFile reads a .gss config file and returns structured ScriptsInfo.
+func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
+	info := new(ScriptsInfo)
+
+	base := filepath.Base(gssFileName)
+	info.name = strings.TrimSuffix(base, path.Ext(base))
+
+	dir := filepath.Dir(gssFileName)
+	absDir, err := filepath.Abs(dir)
+	if err != nil {
+		return info, fmt.Errorf("unable to resolve absolute path for %s: %w", dir, err)
+	}
+	info.dir = absDir
+
+	gssFile, err := os.Open(gssFileName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to open %s: %w", gssFileName, err)
+	}
+	defer gssFile.Close()
+
+	input := bufio.NewScanner(gssFile)
+
+	input.Scan()
+	info.synch = input.Text()
+
+	input.Scan()
+	info.src = input.Text()
+	input.Scan()
+	info.dst = input.Text()
+
+	// Skip blank line
+	input.Scan()
+
+	dirs := mapset.NewSet[string]()
+	for input.Scan() {
+		d := strings.Trim(input.Text(), " /")
+		if len(d) > 0 {
+			dirs.Add(d)
+		}
+	}
+	dirsSlice := dirs.ToSlice()
+	sort.Strings(dirsSlice)
+	info.items = dirsSlice
+
+	return info, nil
+}
+
+// writeScripts orchestrates script generation for a parsed ScriptsInfo.
+func (g *RsyncScriptGenerator) writeScripts(info *ScriptsInfo) error {
+	g.printPlan(info)
+
+	mainPath := filepath.Join(g.AutoGenDir, info.name+".sh")
+	if err := writeExecutableScript(mainPath, g.buildAllItemsScript(info)); err != nil {
+		return fmt.Errorf("unable to write script %s: %w", mainPath, err)
+	}
+
+	if g.Files || len(info.items) <= 1 {
+		return nil
+	}
+
+	return g.writePerItemScripts(info)
+}
+
+// writePerItemScripts creates one shell script per item in a subdirectory.
+func (g *RsyncScriptGenerator) writePerItemScripts(info *ScriptsInfo) error {
+	itemsDir := filepath.Join(g.AutoGenDir, info.name)
+	if err := os.MkdirAll(itemsDir, os.ModePerm); err != nil {
+		return fmt.Errorf("unable to create directory %s: %w", itemsDir, err)
+	}
+
+	for _, item := range info.items {
+		p := filepath.Join(itemsDir, item+".sh")
+		if err := writeExecutableScript(p, g.buildSingleItemScript(info, item)); err != nil {
+			return fmt.Errorf("unable to write script %s: %w", p, err)
+		}
+	}
+	return nil
+}
+
+// printPlan logs what's about to be generated.
+func (g *RsyncScriptGenerator) printPlan(info *ScriptsInfo) {
+	fmt.Printf("Generating scripts in %v\n", g.AutoGenDir)
+	fmt.Printf("Synch root: %v\n", info.synch)
+	fmt.Printf("Source: %v\n", info.src)
+	fmt.Printf("Destination: %v\n", info.dst)
+
+	label := "Directories"
+	if g.Files {
+		label = "Files"
+	}
+	fmt.Printf("%s to synch:\n", label)
+	for _, item := range info.items {
+		fmt.Println(item)
+	}
+	fmt.Println()
+}
+
+// --- Script building ---
+
+func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
+	var b bytes.Buffer
+	writeBashHeader(&b)
+	for _, item := range info.items {
+		writeItemCommands(&b, g.Files, info, item)
+		b.WriteString("\n")
+	}
+	b.WriteString("\ndate\n")
+	return b.Bytes()
+}
+
+func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item string) []byte {
+	var b bytes.Buffer
+	writeBashHeader(&b)
+	writeItemCommands(&b, false, info, item)
+	b.WriteString("\n")
+	b.WriteString("\ndate\n")
+	return b.Bytes()
+}
+
+func writeBashHeader(b *bytes.Buffer) {
+	b.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
+	fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
+	b.WriteString("date\n\n")
+}
+
+func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string) {
+	to := getCmdLine(files, info.synch, item, info.src, info.dst)
+	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(to), to)
+
+	from := getCmdLine(files, info.synch, item, info.dst, info.src)
+	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(from), from)
+}
+
+// --- File helpers ---
+
+func writeExecutableScript(scriptPath string, content []byte) error {
+	if err := deleteIfExists(scriptPath); err != nil {
+		return err
+	}
+	return os.WriteFile(scriptPath, content, 0o755)
+}
+
+func deleteIfExists(filePath string) error {
+	_, err := os.Stat(filePath)
+	if err == nil {
+		fmt.Printf("%v exists - Deleting...\n", filePath)
+		return os.Remove(filePath)
+	}
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return err
+}
+
+// --- Formatting helpers ---
+
+func getCmdLine(files bool, synchRoot, item, src, dst string) string {
+	if files {
+		return fmt.Sprintf(filesCmdLineTemplate, synchRoot, src, item, dst)
+	}
+	return fmt.Sprintf(dirsCmdLineTemplate, synchRoot, src, item, dst, item)
+}
+
+func getEchoLine(cmd string) string {
+	return fmt.Sprintf("echo '%s'", cmd)
+}
+
+func getNowFmt() string {
+	return time.Now().UTC().Format(time.RFC1123)
+}

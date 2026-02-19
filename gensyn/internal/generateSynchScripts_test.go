@@ -159,7 +159,8 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 
 	t.Run("Directory Mode Full Output", func(t *testing.T) {
 		outputDir := t.TempDir()
-		err := writeScripts(false, outputDir, info)
+		g := &RsyncScriptGenerator{Files: false, AutoGenDir: outputDir}
+		err := g.writeScripts(info)
 		assert.Nil(t, err)
 
 		// 1. Verify Main Script Content
@@ -190,7 +191,8 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 			items: []string{".bashrc"},
 		}
 
-		err := writeScripts(true, outputDir, fileInfo)
+		g := &RsyncScriptGenerator{Files: true, AutoGenDir: outputDir}
+		err := g.writeScripts(fileInfo)
 		assert.Nil(t, err)
 
 		content, _ := os.ReadFile(filepath.Join(outputDir, "dots.sh"))
