@@ -98,6 +98,46 @@ func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 }
 
 func writeScripts(files bool, autoGenDir string, scriptsInfo *ScriptsInfo) error {
+	printScriptPlan(files, autoGenDir, scriptsInfo)
+
+	mainScriptPath := filepath.Join(autoGenDir, fmt.Sprintf("%s.sh", scriptsInfo.name))
+	mainScript := buildAllItemsScript(files, scriptsInfo)
+
+	if err := writeExecutableScript(mainScriptPath, mainScript); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", mainScriptPath, err)
+		return err
+	}
+
+	// File-mode only generates a single script.
+	if files {
+		return nil
+	}
+
+	// Directory-mode: if there are multiple items, also generate one script per item.
+	if len(scriptsInfo.items) <= 1 {
+		return nil
+	}
+
+	itemsDir := filepath.Join(autoGenDir, scriptsInfo.name)
+	if err := os.MkdirAll(itemsDir, os.ModePerm); err != nil {
+		fmt.Fprint(os.Stderr, err.Error())
+		return err
+	}
+
+	for _, item := range scriptsInfo.items {
+		itemScriptPath := filepath.Join(itemsDir, fmt.Sprintf("%s.sh", item))
+		itemScript := buildSingleItemScript(scriptsInfo, item)
+
+		if err := writeExecutableScript(itemScriptPath, itemScript); err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", itemScriptPath, err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func printScriptPlan(files bool, autoGenDir string, scriptsInfo *ScriptsInfo) {
 	fmt.Printf("Generating scripts in %v\n", autoGenDir)
 	fmt.Printf("Synch root: %v\n", scriptsInfo.synch)
 	fmt.Printf("Source: %v\n", scriptsInfo.src)
@@ -111,141 +151,82 @@ func writeScripts(files bool, autoGenDir string, scriptsInfo *ScriptsInfo) error
 	for _, dir := range scriptsInfo.items {
 		fmt.Println(dir)
 	}
-
 	fmt.Println()
+}
 
-	scriptName := fmt.Sprintf("%s.sh", scriptsInfo.name)
-	scriptFileName := filepath.Join(autoGenDir, scriptName)
+func buildAllItemsScript(files bool, scriptsInfo *ScriptsInfo) []byte {
+	var b bytes.Buffer
+	writeBashHeader(&b)
 
-	if _, err := os.Stat(scriptFileName); err == nil {
-		fmt.Printf("%v exists - Deleting...\n", scriptFileName)
-		err := os.Remove(scriptFileName)
-		if err != nil {
+	for _, item := range scriptsInfo.items {
+		writeItemCommands(&b, files, scriptsInfo, item)
+		b.WriteString("\n")
+	}
+
+	b.WriteString("\ndate\n")
+	return b.Bytes()
+}
+
+func buildSingleItemScript(scriptsInfo *ScriptsInfo, item string) []byte {
+	var b bytes.Buffer
+	writeBashHeader(&b)
+
+	// In the per-item scripts we always want directory mode semantics (matches old code: false passed in).
+	writeItemCommands(&b, false, scriptsInfo, item)
+
+	b.WriteString("\n")
+	b.WriteString("\ndate\n")
+	return b.Bytes()
+}
+
+func writeBashHeader(b *bytes.Buffer) {
+	b.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
+	b.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
+	b.WriteString("date\n\n")
+}
+
+func writeItemCommands(b *bytes.Buffer, files bool, scriptsInfo *ScriptsInfo, item string) {
+	to := getCmdLine(
+		files,
+		scriptsInfo.synch,
+		item,
+		scriptsInfo.src,
+		scriptsInfo.dst,
+	)
+	b.WriteString(getEchoLine(to) + "\n")
+	b.WriteString(to + "\n")
+
+	from := getCmdLine(
+		files,
+		scriptsInfo.synch,
+		item,
+		scriptsInfo.dst,
+		scriptsInfo.src,
+	)
+	b.WriteString(getEchoLine(from) + "\n")
+	b.WriteString(from + "\n")
+}
+
+func writeExecutableScript(scriptPath string, content []byte) error {
+	if err := deleteIfExists(scriptPath); err != nil {
+		return err
+	}
+	return os.WriteFile(scriptPath, content, 0o755)
+}
+
+func deleteIfExists(filePath string) error {
+	if _, err := os.Stat(filePath); err == nil {
+		fmt.Printf("%v exists - Deleting...\n", filePath)
+		if err := os.Remove(filePath); err != nil {
 			fmt.Fprint(os.Stderr, err.Error())
+			return err
 		}
-	}
-
-	var allScriptsBuffer bytes.Buffer
-	allScriptsBuffer.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
-
-	allScriptsBuffer.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
-	allScriptsBuffer.WriteString("date\n\n")
-
-	for _, dir := range scriptsInfo.items {
-		to := getCmdLine(
-			files,
-			scriptsInfo.synch,
-			dir,
-			scriptsInfo.src,
-			scriptsInfo.dst)
-		allScriptsBuffer.WriteString(getEchoLine(to) + "\n")
-		allScriptsBuffer.WriteString(to + "\n")
-
-		from := getCmdLine(
-			files,
-			scriptsInfo.synch,
-			dir,
-			scriptsInfo.dst,
-			scriptsInfo.src)
-		allScriptsBuffer.WriteString(getEchoLine(from) + "\n")
-		allScriptsBuffer.WriteString(from + "\n")
-
-		allScriptsBuffer.WriteString("\n")
-	}
-
-	allScriptsBuffer.WriteString("\ndate\n")
-
-	err := os.WriteFile(scriptFileName, allScriptsBuffer.Bytes(), 0x755)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
-	}
-
-	if files {
 		return nil
+	} else if errors.Is(err, os.ErrNotExist) {
+		return nil
+	} else {
+		return err
 	}
-
-	if len(scriptsInfo.items) > 1 {
-		fileDir := filepath.Join(autoGenDir, scriptsInfo.name)
-
-		if _, err := os.Stat(fileDir); errors.Is(err, os.ErrNotExist) {
-			err := os.MkdirAll(fileDir, os.ModePerm)
-			if err != nil {
-				fmt.Fprint(os.Stderr, err.Error())
-				return err
-			}
-		}
-
-		for _, dir := range scriptsInfo.items {
-			scriptName := fmt.Sprintf("%s.sh", dir)
-			scriptFileName := filepath.Join(fileDir, scriptName)
-
-			if _, err := os.Stat(scriptFileName); err == nil {
-				fmt.Printf("%v exists - Deleting...\n", scriptFileName)
-				err := os.Remove(scriptFileName)
-				if err != nil {
-					fmt.Fprint(os.Stderr, err.Error())
-				}
-			}
-
-			var scriptBuffer bytes.Buffer
-			scriptBuffer.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
-			scriptBuffer.WriteString(fmt.Sprintf("# Generated on %s\n\n", getNowFmt()))
-
-			scriptBuffer.WriteString("date\n\n")
-
-			to := getCmdLine(
-				false,
-				scriptsInfo.synch,
-				dir,
-				scriptsInfo.src,
-				scriptsInfo.dst)
-			scriptBuffer.WriteString(getEchoLine(to) + "\n")
-			scriptBuffer.WriteString(to + "\n")
-
-			from := getCmdLine(
-				false,
-				scriptsInfo.synch,
-				dir,
-				scriptsInfo.dst,
-				scriptsInfo.src)
-			scriptBuffer.WriteString(getEchoLine(from) + "\n")
-			scriptBuffer.WriteString(from + "\n")
-
-			scriptBuffer.WriteString("\n")
-
-			scriptBuffer.WriteString("\ndate\n")
-
-			err = os.WriteFile(scriptFileName, scriptBuffer.Bytes(), 0x755)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Unable to write script to %v - %v\n", scriptFileName, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func getCmdLine(files bool, synchRoot, item, src, dst string) string {
-	if files {
-		return fmt.Sprintf(
-			filesCmdLineTemplate,
-			synchRoot,
-			src, item,
-			dst)
-	}
-	return fmt.Sprintf(
-		dirsCmdLineTemplate,
-		synchRoot,
-		src, item,
-		dst, item)
-}
-
-func getEchoLine(cmd string) string {
-	return fmt.Sprintf("echo '%s'", cmd)
-}
-
-func getNowFmt() string {
-	return time.Now().UTC().Format(time.RFC1123)
 }
 
 type FolderManager struct {
@@ -542,4 +523,29 @@ func createAllFoldersRobocopySyncScript(
 	fmt.Fprintln(writer, "}")
 
 	return writer.Flush()
+}
+
+func getCmdLine(files bool, synchRoot, item, src, dst string) string {
+	if files {
+		return fmt.Sprintf(
+			filesCmdLineTemplate,
+			synchRoot,
+			src, item,
+			dst,
+		)
+	}
+	return fmt.Sprintf(
+		dirsCmdLineTemplate,
+		synchRoot,
+		src, item,
+		dst, item,
+	)
+}
+
+func getEchoLine(cmd string) string {
+	return fmt.Sprintf("echo '%s'", cmd)
+}
+
+func getNowFmt() string {
+	return time.Now().UTC().Format(time.RFC1123)
 }
