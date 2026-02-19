@@ -57,35 +57,51 @@ func (g *RsyncScriptGenerator) GenerateSynchScripts(gssFile string) error {
 // ParseGSSFile reads a .gss config file and returns structured ScriptsInfo.
 func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 	info := new(ScriptsInfo)
+	if err := populateInfoFromPath(gssFileName, info); err != nil {
+		return info, err
+	}
 
+	synch, src, dst, items, err := readGSSConfig(gssFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	info.synch = synch
+	info.src = src
+	info.dst = dst
+	info.items = items
+
+	return info, nil
+}
+
+func populateInfoFromPath(gssFileName string, info *ScriptsInfo) error {
 	base := filepath.Base(gssFileName)
 	info.name = strings.TrimSuffix(base, path.Ext(base))
 
 	dir := filepath.Dir(gssFileName)
 	absDir, err := filepath.Abs(dir)
 	if err != nil {
-		return info, fmt.Errorf("unable to resolve absolute path for %s: %w", dir, err)
+		return fmt.Errorf("unable to resolve absolute path for %s: %w", dir, err)
 	}
 	info.dir = absDir
+	return nil
+}
 
+func readGSSConfig(gssFileName string) (string, string, string, []string, error) {
 	gssFile, err := os.Open(gssFileName)
 	if err != nil {
-		return nil, fmt.Errorf("unable to open %s: %w", gssFileName, err)
+		return "", "", "", nil, fmt.Errorf("unable to open %s: %w", gssFileName, err)
 	}
 	defer gssFile.Close()
 
 	input := bufio.NewScanner(gssFile)
 
-	input.Scan()
-	info.synch = input.Text()
-
-	input.Scan()
-	info.src = input.Text()
-	input.Scan()
-	info.dst = input.Text()
+	synch, _ := scanLine(input)
+	src, _ := scanLine(input)
+	dst, _ := scanLine(input)
 
 	// Skip blank line
-	input.Scan()
+	scanLine(input)
 
 	dirs := mapset.NewSet[string]()
 	for input.Scan() {
@@ -94,11 +110,21 @@ func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 			dirs.Add(d)
 		}
 	}
+	if err := input.Err(); err != nil {
+		return "", "", "", nil, fmt.Errorf("unable to read %s: %w", gssFileName, err)
+	}
+
 	dirsSlice := dirs.ToSlice()
 	sort.Strings(dirsSlice)
-	info.items = dirsSlice
 
-	return info, nil
+	return synch, src, dst, dirsSlice, nil
+}
+
+func scanLine(scanner *bufio.Scanner) (string, bool) {
+	if !scanner.Scan() {
+		return "", false
+	}
+	return scanner.Text(), true
 }
 
 // writeScripts orchestrates script generation for a parsed ScriptsInfo.
