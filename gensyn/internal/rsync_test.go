@@ -5,6 +5,7 @@ Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
 */
 
 import (
+	"bytes"
 	"errors"
 	"os"
 	"path"
@@ -122,4 +123,38 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		// In file mode, the item is only appended to the source
 		assert.Contains(t, script, "rsync --files-flags /src/path/.bashrc /dst/path")
 	})
+}
+
+func TestReadGSSConfigFromReader(t *testing.T) {
+	gss := bytes.NewBufferString(`rsync --flags
+user@host:~
+/local/path
+
+config
+data
+config
+`)
+
+	synch, src, dst, items, err := readGSSConfig(gss, "buffer")
+	assert.Nil(t, err)
+
+	assert.Equal(t, "rsync --flags", synch)
+	assert.Equal(t, "user@host:~", src)
+	assert.Equal(t, "/local/path", dst)
+	assert.Equal(t, []string{"config", "data"}, items)
+}
+
+func TestReadGSSConfigFromReaderError(t *testing.T) {
+	gss := &errorReader{err: errors.New("boom")}
+
+	_, _, _, _, err := readGSSConfig(gss, "buffer")
+	assert.NotNil(t, err)
+}
+
+type errorReader struct {
+	err error
+}
+
+func (r *errorReader) Read(_ []byte) (int, error) {
+	return 0, r.err
 }

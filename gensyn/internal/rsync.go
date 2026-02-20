@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -61,7 +62,7 @@ func ParseGSSFile(gssFileName string) (*ScriptsInfo, error) {
 		return info, err
 	}
 
-	synch, src, dst, items, err := readGSSConfig(gssFileName)
+	synch, src, dst, items, err := readGSSConfigFromFile(gssFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -87,14 +88,18 @@ func populateInfoFromPath(gssFileName string, info *ScriptsInfo) error {
 	return nil
 }
 
-func readGSSConfig(gssFileName string) (string, string, string, []string, error) {
+func readGSSConfigFromFile(gssFileName string) (string, string, string, []string, error) {
 	gssFile, err := os.Open(gssFileName)
 	if err != nil {
 		return "", "", "", nil, fmt.Errorf("unable to open %s: %w", gssFileName, err)
 	}
 	defer gssFile.Close()
 
-	input := bufio.NewScanner(gssFile)
+	return readGSSConfig(gssFile, gssFileName)
+}
+
+func readGSSConfig(r io.Reader, label string) (string, string, string, []string, error) {
+	input := bufio.NewScanner(r)
 
 	synch, _ := scanLine(input)
 	src, _ := scanLine(input)
@@ -111,7 +116,7 @@ func readGSSConfig(gssFileName string) (string, string, string, []string, error)
 		}
 	}
 	if err := input.Err(); err != nil {
-		return "", "", "", nil, fmt.Errorf("unable to read %s: %w", gssFileName, err)
+		return "", "", "", nil, fmt.Errorf("unable to read %s: %w", label, err)
 	}
 
 	dirsSlice := dirs.ToSlice()
