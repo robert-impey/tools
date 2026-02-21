@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -122,6 +123,22 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 
 		// In file mode, the item is only appended to the source
 		assert.Contains(t, script, "rsync --files-flags /src/path/.bashrc /dst/path")
+	})
+}
+
+func TestWriteHeaderShebang(t *testing.T) {
+	t.Run("Bash", func(t *testing.T) {
+		var b bytes.Buffer
+		writeHeader(&b, false)
+		firstLine := strings.SplitN(b.String(), "\n", 2)[0]
+		assert.Equal(t, "#!/bin/bash", firstLine)
+	})
+
+	t.Run("PowerShell", func(t *testing.T) {
+		var b bytes.Buffer
+		writeHeader(&b, true)
+		firstLine := strings.SplitN(b.String(), "\n", 2)[0]
+		assert.Equal(t, "#!/usr/bin/env pwsh", firstLine)
 	})
 }
 

@@ -225,7 +225,7 @@ func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item str
 
 func writeHeader(b *bytes.Buffer, powershell bool) {
 	if powershell {
-		b.WriteString("# AUTOGEN'D - DO NOT EDIT!\n")
+		b.WriteString("#!/usr/bin/env pwsh\n# AUTOGEN'D - DO NOT EDIT!\n")
 		fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
 		b.WriteString("Get-Date\n\n")
 	} else {
