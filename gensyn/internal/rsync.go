@@ -32,11 +32,12 @@ type ScriptsInfo struct {
 type RsyncScriptGenerator struct {
 	Files      bool   // true = file mode, false = directory mode
 	AutoGenDir string // output directory for generated scripts
+	Powershell bool   // true = generate PowerShell scripts (.ps1) instead of bash
 }
 
 // GenerateSynchScripts is a convenience wrapper preserving the original API.
-func GenerateSynchScripts(files bool, autoGenDir string, gssFile string) error {
-	g := &RsyncScriptGenerator{Files: files, AutoGenDir: autoGenDir}
+func GenerateSynchScripts(files bool, autoGenDir string, gssFile string, powershell bool) error {
+	g := &RsyncScriptGenerator{Files: files, AutoGenDir: autoGenDir, Powershell: powershell}
 	return g.GenerateSynchScripts(gssFile)
 }
 
@@ -136,7 +137,12 @@ func scanLine(scanner *bufio.Scanner) (string, bool) {
 func (g *RsyncScriptGenerator) writeScripts(info *ScriptsInfo) error {
 	g.printPlan(info)
 
-	mainPath := filepath.Join(g.AutoGenDir, info.name+".sh")
+	ext := ".sh"
+	if g.Powershell {
+		ext = ".ps1"
+	}
+
+	mainPath := filepath.Join(g.AutoGenDir, info.name+ext)
 	if err := writeExecutableScript(mainPath, g.buildAllItemsScript(info)); err != nil {
 		return fmt.Errorf("unable to write script %s: %w", mainPath, err)
 	}
@@ -156,7 +162,12 @@ func (g *RsyncScriptGenerator) writePerItemScripts(info *ScriptsInfo) error {
 	}
 
 	for _, item := range info.items {
-		p := filepath.Join(itemsDir, item+".sh")
+		ext := ".sh"
+		if g.Powershell {
+			ext = ".ps1"
+		}
+
+		p := filepath.Join(itemsDir, item+ext)
 		if err := writeExecutableScript(p, g.buildSingleItemScript(info, item)); err != nil {
 			return fmt.Errorf("unable to write script %s: %w", p, err)
 		}
@@ -186,36 +197,50 @@ func (g *RsyncScriptGenerator) printPlan(info *ScriptsInfo) {
 
 func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 	var b bytes.Buffer
-	writeBashHeader(&b)
+	writeHeader(&b, g.Powershell)
 	for _, item := range info.items {
-		writeItemCommands(&b, g.Files, info, item)
+		writeItemCommands(&b, g.Files, info, item, g.Powershell)
 		b.WriteString("\n")
 	}
-	b.WriteString("\ndate\n")
+	if g.Powershell {
+		b.WriteString("\nGet-Date\n")
+	} else {
+		b.WriteString("\ndate\n")
+	}
 	return b.Bytes()
 }
 
 func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item string) []byte {
 	var b bytes.Buffer
-	writeBashHeader(&b)
-	writeItemCommands(&b, false, info, item)
+	writeHeader(&b, g.Powershell)
+	writeItemCommands(&b, false, info, item, g.Powershell)
 	b.WriteString("\n")
-	b.WriteString("\ndate\n")
+	if g.Powershell {
+		b.WriteString("\nGet-Date\n")
+	} else {
+		b.WriteString("\ndate\n")
+	}
 	return b.Bytes()
 }
 
-func writeBashHeader(b *bytes.Buffer) {
-	b.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
-	fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
-	b.WriteString("date\n\n")
+func writeHeader(b *bytes.Buffer, powershell bool) {
+	if powershell {
+		b.WriteString("# AUTOGEN'D - DO NOT EDIT!\n")
+		fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
+		b.WriteString("Get-Date\n\n")
+	} else {
+		b.WriteString("#!/bin/bash\n# AUTOGEN'D - DO NOT EDIT!\n")
+		fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
+		b.WriteString("date\n\n")
+	}
 }
 
-func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string) {
+func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string, powershell bool) {
 	to := getCmdLine(files, info.synch, item, info.src, info.dst)
-	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(to), to)
+	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(to, powershell), to)
 
 	from := getCmdLine(files, info.synch, item, info.dst, info.src)
-	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(from), from)
+	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(from, powershell), from)
 }
 
 // --- File helpers ---
@@ -248,7 +273,10 @@ func getCmdLine(files bool, synchRoot, item, src, dst string) string {
 	return fmt.Sprintf(dirsCmdLineTemplate, synchRoot, src, item, dst, item)
 }
 
-func getEchoLine(cmd string) string {
+func getEchoLine(cmd string, powershell bool) string {
+	if powershell {
+		return fmt.Sprintf("Write-Host '%s'", cmd)
+	}
 	return fmt.Sprintf("echo '%s'", cmd)
 }
 

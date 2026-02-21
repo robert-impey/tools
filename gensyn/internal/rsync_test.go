@@ -39,7 +39,7 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt")
+	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt", false)
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "cleopatra.sh")
@@ -61,7 +61,7 @@ func TestGenerateDirectorySynchScripts(t *testing.T) {
 func TestGenerateFilesSynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt")
+	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt", false)
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "ssh-config.sh")
