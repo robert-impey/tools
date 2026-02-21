@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace GenerateWindowsConfigSynchScripts;
+namespace GenerateSynchScripts;
 
 internal class WindowsConfigScriptsGenerator
 {

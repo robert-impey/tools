@@ -1,4 +1,4 @@
-using GenerateWindowsConfigSynchScripts;
+using GenerateSynchScripts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
@@ -19,7 +19,7 @@ var app = new CommandApp<DefaultCommand>(registrar);
 
 app.Configure(config =>
 {
-    config.SetApplicationName("GenerateWindowsConfigSynchScripts");
+    config.SetApplicationName("GenerateSynchScripts");
 });
 
 await app.RunAsync(args);

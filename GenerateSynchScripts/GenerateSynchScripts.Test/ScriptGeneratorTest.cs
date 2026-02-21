@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
-namespace GenerateWindowsConfigSynchScripts.Test;
+namespace GenerateSynchScripts.Test;
 
 public class ScriptGeneratorTest
 {

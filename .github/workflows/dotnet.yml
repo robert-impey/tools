@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         project:
-          - GenerateWindowsConfigSynchScripts
+          - GenerateSynchScripts
           - LogsDeleter
           - ResetPerms
           - RunCliTests

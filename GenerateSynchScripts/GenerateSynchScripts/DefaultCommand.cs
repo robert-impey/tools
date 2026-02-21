@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace GenerateWindowsConfigSynchScripts;
+namespace GenerateSynchScripts;
 
 internal class DefaultCommand : AsyncCommand<CommandSettings>
 {

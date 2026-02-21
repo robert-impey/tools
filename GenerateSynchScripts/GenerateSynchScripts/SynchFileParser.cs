@@ -1,4 +1,4 @@
-namespace GenerateWindowsConfigSynchScripts;
+namespace GenerateSynchScripts;
 
 public static class SynchFileParser
 {

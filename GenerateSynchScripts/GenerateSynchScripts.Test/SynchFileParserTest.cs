@@ -1,6 +1,6 @@
 using Shouldly;
 
-namespace GenerateWindowsConfigSynchScripts.Test;
+namespace GenerateSynchScripts.Test;
 
 public class SynchFileParserTest
 {

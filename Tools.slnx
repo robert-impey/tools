@@ -2,8 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/dotnet.yml" />
   </Folder>
-  <Project Path="GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts.Test/GenerateWindowsConfigSynchScripts.Test.csproj" />
-  <Project Path="GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts/GenerateWindowsConfigSynchScripts.csproj" />
+  <Project Path="GenerateSynchScripts/GenerateSynchScripts.Test/GenerateSynchScripts.Test.csproj" />
+  <Project Path="GenerateSynchScripts/GenerateSynchScripts/GenerateSynchScripts.csproj" />
   <Project Path="LogsDeleter/LogsDeleter.Test/LogsDeleter.Test.csproj" />
   <Project Path="LogsDeleter/LogsDeleter/LogsDeleter.csproj" />
   <Project Path="ResetPerms/ResetPerms.Test/ResetPerms.Test.csproj" />

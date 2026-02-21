@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace GenerateWindowsConfigSynchScripts;
+namespace GenerateSynchScripts;
 
 public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {
