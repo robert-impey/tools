@@ -12,40 +12,15 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	common "github.com/robert-impey/tools/internal"
 )
 
-// FolderManager holds the configuration for generating robocopy sync scripts.
-type FolderManager struct {
-	Locations []string
-	Folders   []string
-}
-
-// LoadFolderManager creates a FolderManager from locations and folders config files.
-func LoadFolderManager(locationsPath, foldersPath string) (*FolderManager, error) {
-	locations, err := readLinesFromPath(locationsPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read locations: %w", err)
-	}
-	if len(locations) == 0 {
-		return nil, fmt.Errorf("locations cannot be empty")
-	}
-
-	folders, err := readLinesFromPath(foldersPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read folders: %w", err)
-	}
-	if len(folders) == 0 {
-		return nil, fmt.Errorf("folders cannot be empty")
-	}
-
-	return &FolderManager{
-		Locations: locations,
-		Folders:   folders,
-	}, nil
-}
-
 // GenerateRobocopyScripts creates PowerShell robocopy sync scripts for all location pairs.
-func (fm *FolderManager) GenerateRobocopyScripts(autoGenFolder string) error {
+// The manager argument comes from the shared package; we keep the
+// implementation here because the script generation logic is specific to
+// the "gensyn" binary.
+func GenerateRobocopyScripts(manager *common.FolderManager, autoGenFolder string) error {
 	if autoGenFolder == "" {
 		return fmt.Errorf("auto-generated folder cannot be empty")
 	}
@@ -53,12 +28,12 @@ func (fm *FolderManager) GenerateRobocopyScripts(autoGenFolder string) error {
 		return fmt.Errorf("auto-generated folder does not exist: %s", autoGenFolder)
 	}
 
-	for _, loc1 := range fm.Locations {
-		for _, loc2 := range fm.Locations {
+	for _, loc1 := range manager.Locations {
+		for _, loc2 := range manager.Locations {
 			if loc1 == loc2 {
 				continue
 			}
-			if err := fm.generateScriptsForPair(autoGenFolder, loc1, loc2); err != nil {
+			if err := generateScriptsForPair(manager, autoGenFolder, loc1, loc2); err != nil {
 				return err
 			}
 		}
@@ -66,11 +41,11 @@ func (fm *FolderManager) GenerateRobocopyScripts(autoGenFolder string) error {
 	return nil
 }
 
-func (fm *FolderManager) generateScriptsForPair(autoGenFolder, src, dst string) error {
+func generateScriptsForPair(manager *common.FolderManager, autoGenFolder, src, dst string) error {
 	scriptDir := getScriptPath(autoGenFolder, src, dst)
 
 	var commonFolders []string
-	for _, folder := range fm.Folders {
+	for _, folder := range manager.Folders {
 		if pathExists(filepath.Join(src, folder)) && pathExists(filepath.Join(dst, folder)) {
 			commonFolders = append(commonFolders, folder)
 
@@ -236,31 +211,4 @@ func ensureParentDir(path string) error {
 		}
 	}
 	return nil
-}
-
-// readLinesFromPath reads non-blank, non-comment lines from a text file.
-func readLinesFromPath(path string) ([]string, error) {
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("file does not exist: %s", path)
-		}
-		return nil, err
-	}
-
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		lines = append(lines, line)
-	}
-	return lines, scanner.Err()
 }

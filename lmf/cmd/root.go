@@ -9,9 +9,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
+	common "github.com/robert-impey/tools/internal"
 	"github.com/robert-impey/tools/lmf/internal"
 	"github.com/spf13/cobra"
 )
@@ -44,20 +44,15 @@ var rootCmd = &cobra.Command{
 		fmt.Printf("Reading locations from: %s\n", locationsFile)
 		fmt.Printf("Reading folders from: %s\n", foldersFile)
 
-		// 2. Load Data (Simplified helper calls)
-		locations, err := readLines(locationsFile)
+		// 2. Load Data using the shared helper
+		manager, err := common.LoadFolderManager(locationsFile, foldersFile)
 		if err != nil {
-			return fmt.Errorf("failed to read locations: %w", err)
-		}
-
-		folders, err := readLines(foldersFile)
-		if err != nil {
-			return fmt.Errorf("failed to read folders: %w", err)
+			return err
 		}
 
 		fm := &internal.FolderManager{
-			Locations: locations,
-			Folders:   folders,
+			Locations: manager.Locations,
+			Folders:   manager.Folders,
 		}
 
 		// 3. Setup Output (PrintWriter equivalent)
@@ -106,21 +101,6 @@ func init() {
 	rootCmd.Flags().StringVarP(&managedFoldersFile, "managed-folders-file", "m", "", "The managed folders file")
 }
 
-// Helper to read file lines
-func readLines(path string) ([]string, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	lines := strings.Split(string(data), "\n")
-	var result []string
-	for _, l := range lines {
-		if t := strings.TrimSpace(l); t != "" {
-			result = append(result, t)
-		}
-	}
-	return result, nil
-}
 func writeAutoGenHeader(outFile io.Writer) {
 	// 1. Print the header line
 	fmt.Fprintln(outFile, "# AUTOGEN'D FILE - DO NOT EDIT")
