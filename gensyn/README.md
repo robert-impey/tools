@@ -19,7 +19,7 @@ Then running
 
 `PS C:\scripts> gensyn.exe .\OneDrive.txt`
 
-will create a script called `OneDrive.sh` that will synch the subfolders (config, data, etc.)
+will create a script called `OneDrive.ps1` that will synch the subfolders (config, data, etc.)
 between the two main folders (OneDrive and X:\\). The script will be put in `HOME\autogen\synch`.
 
 The first line is the invocation of rsync that you wish to use as the base for the commands in the scripts.

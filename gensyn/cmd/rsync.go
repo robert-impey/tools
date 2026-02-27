@@ -27,14 +27,12 @@ var rsyncCmd = &cobra.Command{
 
 var files bool
 var autoGenDir string
-var powershell bool
 
 func init() {
 	rootCmd.AddCommand(rsyncCmd)
 
 	rsyncCmd.Flags().BoolVarP(&files, "files", "f", false, "Generate the scripts for files rather than directories")
 	rsyncCmd.Flags().StringVarP(&autoGenDir, "autogenDir", "a", "", "autogenDir")
-	rsyncCmd.Flags().BoolVarP(&powershell, "powershell", "p", false, "Generate PowerShell scripts instead of bash")
 }
 
 func rsync(args []string) error {
@@ -52,5 +50,5 @@ func rsync(args []string) error {
 		return err
 	}
 
-	return internal.GenerateSynchScripts(files, autoGenDir, gssFile, powershell)
+	return internal.GenerateSynchScripts(files, autoGenDir, gssFile)
 }

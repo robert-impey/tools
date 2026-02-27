@@ -40,10 +40,10 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt", false)
+	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt")
 	assert.Nil(t, err)
 
-	scriptsFile := path.Join(outputDir, "cleopatra.sh")
+	scriptsFile := path.Join(outputDir, "cleopatra.ps1")
 	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
@@ -53,7 +53,7 @@ func TestGenerateDirectorySynchScripts(t *testing.T) {
 		t.Fatalf("scripts dir %s doesn't exist", scriptsDir)
 	}
 
-	configScript := path.Join(scriptsDir, "config.sh")
+	configScript := path.Join(scriptsDir, "config.ps1")
 	if _, err := os.Stat(configScript); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("config script file %s doesn't exist", configScript)
 	}
@@ -62,10 +62,10 @@ func TestGenerateDirectorySynchScripts(t *testing.T) {
 func TestGenerateFilesSynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt", false)
+	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt")
 	assert.Nil(t, err)
 
-	scriptsFile := path.Join(outputDir, "ssh-config.sh")
+	scriptsFile := path.Join(outputDir, "ssh-config.ps1")
 	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
@@ -87,7 +87,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		assert.Nil(t, err)
 
 		// 1. Verify Main Script Content
-		mainPath := filepath.Join(outputDir, "cleopatra.sh")
+		mainPath := filepath.Join(outputDir, "cleopatra.ps1")
 		content, _ := os.ReadFile(mainPath)
 		script := string(content)
 
@@ -98,7 +98,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 
 		// 2. Verify Sub-script creation
 		// The code creates a folder named after the script for individual items
-		subPath := filepath.Join(outputDir, "cleopatra", "config.sh")
+		subPath := filepath.Join(outputDir, "cleopatra", "config.ps1")
 		subContent, err := os.ReadFile(subPath)
 		assert.Nil(t, err, "Sub-script should exist for 'config'")
 		assert.Contains(t, string(subContent), "rsync --flags user@host:~/config/ /local/path/config")
@@ -118,7 +118,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		err := g.writeScripts(fileInfo)
 		assert.Nil(t, err)
 
-		content, _ := os.ReadFile(filepath.Join(outputDir, "dots.sh"))
+		content, _ := os.ReadFile(filepath.Join(outputDir, "dots.ps1"))
 		script := string(content)
 
 		// In file mode, the item is only appended to the source
@@ -127,19 +127,10 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 }
 
 func TestWriteHeaderShebang(t *testing.T) {
-	t.Run("Bash", func(t *testing.T) {
-		var b bytes.Buffer
-		writeHeader(&b, false)
-		firstLine := strings.SplitN(b.String(), "\n", 2)[0]
-		assert.Equal(t, "#!/bin/bash", firstLine)
-	})
-
-	t.Run("PowerShell", func(t *testing.T) {
-		var b bytes.Buffer
-		writeHeader(&b, true)
-		firstLine := strings.SplitN(b.String(), "\n", 2)[0]
-		assert.Equal(t, "#!/usr/bin/env pwsh", firstLine)
-	})
+	var b bytes.Buffer
+	writeHeader(&b)
+	firstLine := strings.SplitN(b.String(), "\n", 2)[0]
+	assert.Equal(t, "#!/usr/bin/env pwsh", firstLine)
 }
 
 func TestReadGSSConfigFromReader(t *testing.T) {
