@@ -123,7 +123,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
     }
 
 
-    private static async Task<bool> RunTestAsync(
+    private async static Task<bool> RunTestAsync(
         string testFile,
         string testDataDir,
         bool verbose,
@@ -206,7 +206,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private static async Task<(string output, int exitCode)> ExecuteCommandAsync(
+    private async static Task<(string output, int exitCode)> ExecuteCommandAsync(
         string command,
         string workingDirectory,
         string outputType,
