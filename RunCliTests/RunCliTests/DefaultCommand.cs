@@ -150,7 +150,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             PrintSeparator('.', 40);
         }
 
-        var (commandOutput, exitCode) = await ExecuteCommandAsync(command, programDir, testType, cancellationToken);
+        var (commandOutput, exitCode) = await ExecuteCommandUnderTestAsync(command, programDir, testType, cancellationToken);
 
         if (verbose)
         {
@@ -206,7 +206,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private async static Task<(string output, int exitCode)> ExecuteCommandAsync(
+    private async static Task<(string output, int exitCode)> ExecuteCommandUnderTestAsync(
         string command,
         string workingDirectory,
         string outputType,
