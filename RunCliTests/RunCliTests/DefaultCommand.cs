@@ -12,7 +12,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         CommandContext context,
         CommandSettings settings,
         CancellationToken cancellationToken
-    )
+        )
     {
         var dir = Path.GetFullPath(settings.Directory);
         var testDataDir = Path.GetFullPath(settings.TestDataDirectory);
@@ -66,7 +66,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
                     }
 
                     tests++;
-                    if (await RunTestAsync(testFile, testDataDir, settings.Verbose, testType, programDir,
+                    if (await RunTestAsync(
+                            testFile,
+                            testDataDir,
+                            settings.Verbose,
+                            testType,
+                            programDir,
                             cancellationToken))
                     {
                         successes++;
@@ -123,14 +128,14 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
     }
 
 
-    private static async Task<bool> RunTestAsync(
+    private async static Task<bool> RunTestAsync(
         string testFile,
         string testDataDir,
         bool verbose,
         string testType,
         string programDir,
         CancellationToken cancellationToken
-    )
+        )
     {
         if (verbose)
         {
@@ -140,7 +145,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         var fileName = Path.GetFileName(testFile);
         AnsiConsole.Write($"Test file: {fileName}{(verbose ? "\n" : " ")}");
 
-        var (command, expectedOutput) = ReadTestFile(testFile, testDataDir, verbose);
+        var (command, expectedOutput) = await ReadTestFile(testFile, testDataDir, verbose, cancellationToken);
 
         if (verbose)
         {
@@ -150,7 +155,11 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
             PrintSeparator('.', 40);
         }
 
-        var (commandOutput, exitCode) = await ExecuteCommandAsync(command, programDir, testType, cancellationToken);
+        var (commandOutput, exitCode) = await ExecuteCommandUnderTestAsync(
+            command,
+            programDir,
+            testType,
+            cancellationToken);
 
         if (verbose)
         {
@@ -174,9 +183,14 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return success;
     }
 
-    private static (string command, string testOutput) ReadTestFile(string testFile, string testDataDir, bool verbose)
+    private async static Task<(string command, string testOutput)> ReadTestFile(
+        string testFile,
+        string testDataDir,
+        bool verbose,
+        CancellationToken cancellationToken
+        )
     {
-        var lines = File.ReadAllLines(testFile);
+        var lines = await File.ReadAllLinesAsync(testFile, cancellationToken);
 
         if (lines.Length < 3)
         {
@@ -206,12 +220,12 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private static async Task<(string output, int exitCode)> ExecuteCommandAsync(
+    private async static Task<(string output, int exitCode)> ExecuteCommandUnderTestAsync(
         string command,
         string workingDirectory,
         string outputType,
         CancellationToken cancellationToken
-    )
+        )
     {
         var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
         var executable = parts[0];
