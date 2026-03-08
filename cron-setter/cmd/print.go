@@ -103,7 +103,7 @@ func getTidyFolderScript() string {
 
 func getStayDeletedScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "stay_deleted", "zsh-cron-runner.sh")
+	return filepath.Join(localScriptsDir, "_Common", "stay_deleted", "Sweep-ManagedFolders.ps1")
 }
 
 func getSynchScript() string {
@@ -122,7 +122,7 @@ func printStayDeletedRun(startHour int, endHour int) {
 	for i := startHour; i < endHour; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
 		fmt.Printf("%d %d * * * %s %s\n",
-			stayDeletedMinutes, i, ZshPath, script)
+			stayDeletedMinutes, i, PwshPath, script)
 	}
 	fmt.Println()
 }
