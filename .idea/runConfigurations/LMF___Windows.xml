@@ -2,7 +2,7 @@
   <configuration default="false" name="LMF | Windows" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/lmf" />
-    <parameters value=" --locations $USER_HOME$/Dropbox/local-scripts/_Common/Windows/locations.txt --folders $USER_HOME$/Dropbox/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
+    <parameters value=" --locations $USER_HOME$/Dropbox/local-scripts/_Common/windows_26/locations.txt --folders $USER_HOME$/Dropbox/local-scripts/_Common/folders.txt --managed-folders-file $USER_HOME$/autogen/managed-folders.txt" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/lmf" />
     <directory value="$PROJECT_DIR$" />
