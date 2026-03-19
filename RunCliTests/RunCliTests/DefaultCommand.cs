@@ -128,7 +128,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
     }
 
 
-    private async static Task<bool> RunTestAsync(
+    private static async Task<bool> RunTestAsync(
         string testFile,
         string testDataDir,
         bool verbose,
@@ -183,7 +183,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return success;
     }
 
-    private async static Task<(string command, string testOutput)> ReadTestFile(
+    private static async Task<(string command, string testOutput)> ReadTestFile(
         string testFile,
         string testDataDir,
         bool verbose,
@@ -220,7 +220,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
         return (command, testOutput);
     }
 
-    private async static Task<(string output, int exitCode)> ExecuteCommandUnderTestAsync(
+    private static async Task<(string output, int exitCode)> ExecuteCommandUnderTestAsync(
         string command,
         string workingDirectory,
         string outputType,
