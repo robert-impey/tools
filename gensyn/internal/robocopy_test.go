@@ -161,16 +161,6 @@ func TestGenerateRobocopyScripts_ErrorsIfAutoGenFolderDoesNotExist(t *testing.T)
 	}
 }
 
-func writeFile(t *testing.T, dir, name string, lines []string) string {
-	t.Helper()
-	scriptPath := filepath.Join(dir, name)
-	content := strings.Join(lines, "\n")
-	if err := os.WriteFile(scriptPath, []byte(content), 0o644); err != nil {
-		t.Fatalf("failed to write file %s: %v", scriptPath, err)
-	}
-	return scriptPath
-}
-
 func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
 	if runtime.GOOS != "windows" {
 		t.Skip("robocopy script generation is Windows-only")
