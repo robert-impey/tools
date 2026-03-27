@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -189,5 +190,48 @@ func TestSweepFromDirectories_ContinuesOnMissingDirectory(t *testing.T) {
 	// dir3 should have been processed even though dirMissing did not exist
 	if _, err := os.Stat(delFile3); !os.IsNotExist(err) {
 		t.Fatalf("expected %s to be deleted even with a missing directory present, got err=%v", delFile3, err)
+	}
+}
+
+func TestSweepFromDirectories_NFCDeletionKeepsNFD(t *testing.T) {
+	if runtime.GOOS == "darwin" {
+		t.Skip("Unicode normalization filename test is not reliable on macOS")
+	}
+
+	dir := t.TempDir()
+
+	// NFC: café.txt with precomposed U+00E9
+	nfcName := "café.txt"
+
+	// NFD: café.txt with 'e' + combining acute accent U+0301
+	nfdName := "café.txt"
+
+	nfcFile := filepath.Join(dir, nfcName)
+	nfdFile := filepath.Join(dir, nfdName)
+
+	if err := os.WriteFile(nfcFile, []byte("nfc"), 0644); err != nil {
+		t.Fatalf("write nfcFile: %v", err)
+	}
+	if err := os.WriteFile(nfdFile, []byte("nfd"), 0644); err != nil {
+		t.Fatalf("write nfdFile: %v", err)
+	}
+
+	if err := SetActionForFile(nfcFile, Delete); err != nil {
+		t.Fatalf("SetActionForFile(nfcFile, Delete): %v", err)
+	}
+	if err := SetActionForFile(nfdFile, Keep); err != nil {
+		t.Fatalf("SetActionForFile(nfdFile, Keep): %v", err)
+	}
+
+	if err := SweepFromDirectories([]string{dir}, 6, false); err != nil {
+		t.Fatalf("SweepFromDirectories returned error: %v", err)
+	}
+
+	if _, err := os.Stat(nfcFile); !os.IsNotExist(err) {
+		t.Fatalf("expected NFC file %q to be deleted, got err=%v", nfcFile, err)
+	}
+
+	if _, err := os.Stat(nfdFile); err != nil {
+		t.Fatalf("expected NFD file %q to remain, stat err=%v", nfdFile, err)
 	}
 }
