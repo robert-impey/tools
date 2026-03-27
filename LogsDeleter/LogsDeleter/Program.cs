@@ -23,7 +23,7 @@ app.Configure(config =>
     config.SetApplicationName("LogsDeleter");
 
     // Register the RemoveEmptyRobocopyLogs subcommand(s)
-    config.AddCommand<DefaultCommand>("rerl")
+    config.AddCommand<RerlCommand>("rerl")
         .WithDescription("Removes Robocopy log files that report zero copied files.");
 
     // Equivalent to rootCmd.AddCommand(sweepAllCmd)

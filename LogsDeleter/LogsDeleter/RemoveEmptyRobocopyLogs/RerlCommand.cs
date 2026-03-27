@@ -4,11 +4,11 @@ using Spectre.Console.Cli;
 
 namespace LogsDeleter.RemoveEmptyRobocopyLogs;
 
-public sealed class DefaultCommand : AsyncCommand<CommandSettings>
+public sealed class RerlCommand : AsyncCommand<CommandSettings>
 {
-    private readonly ILogger<DefaultCommand> _logger;
+    private readonly ILogger<RerlCommand> _logger;
 
-    public DefaultCommand(ILogger<DefaultCommand> logger)
+    public RerlCommand(ILogger<RerlCommand> logger)
     {
         ArgumentNullException.ThrowIfNull(logger);
 
