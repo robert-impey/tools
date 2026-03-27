@@ -49,9 +49,10 @@ func getStringForAction(action Action) string {
 }
 
 func getActionForString(actStr string) (Action, error) {
-	if actStr == "delete" {
+	switch actStr {
+	case "delete":
 		return Delete, nil
-	} else if actStr == "keep" {
+	case "keep":
 		return Keep, nil
 	}
 
