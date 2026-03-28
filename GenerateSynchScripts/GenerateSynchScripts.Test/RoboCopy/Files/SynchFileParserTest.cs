@@ -1,6 +1,7 @@
+using GenerateSynchScripts.RoboCopy.Files;
 using Shouldly;
 
-namespace GenerateSynchScripts.Test;
+namespace GenerateSynchScripts.Test.RoboCopy.Files;
 
 public class SynchFileParserTest
 {
@@ -8,7 +9,7 @@ public class SynchFileParserTest
     public async Task ParseFile_ShouldReturnCorrectSourceAndDestinationPaths()
     {
         // Arrange
-        var filePath = "Files/Fruit.txt";
+        var filePath = "TestData/RoboCopy/Files/Fruit.txt";
 
         // Act
         var synchFile = await SynchFileParser.ParseFile(filePath);
@@ -30,9 +31,9 @@ public class SynchFileParserTest
     }
 
     [Theory]
-    [InlineData("Files/NoFiles.txt")]
-    [InlineData("Files/NoBlankLine.txt")]
-    [InlineData("Files/Empty.txt")]
+    [InlineData("TestData/RoboCopy/Files/NoFiles.txt")]
+    [InlineData("TestData/RoboCopy/Files/NoBlankLine.txt")]
+    [InlineData("TestData/Empty.txt")]
     public async Task ParseFile_ShouldThrowIfNoFiles(string filePath)
     {
         await Should.ThrowAsync<InvalidOperationException>(async () =>

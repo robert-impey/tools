@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace GenerateSynchScripts;
+namespace GenerateSynchScripts.RoboCopy.Files;
 
 public sealed class CommandSettings : Spectre.Console.Cli.CommandSettings
 {

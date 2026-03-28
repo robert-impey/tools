@@ -1,14 +1,14 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace GenerateSynchScripts;
+namespace GenerateSynchScripts.RoboCopy.Files;
 
-internal class WindowsConfigScriptsGenerator
+internal class ScriptGenerator
 {
-    private readonly ILogger<WindowsConfigScriptsGenerator> _logger;
+    private readonly ILogger<ScriptGenerator> _logger;
 
-    public WindowsConfigScriptsGenerator(
-        ILogger<WindowsConfigScriptsGenerator> logger
+    public ScriptGenerator(
+        ILogger<ScriptGenerator> logger
         )
     {
         ArgumentNullException.ThrowIfNull(logger);

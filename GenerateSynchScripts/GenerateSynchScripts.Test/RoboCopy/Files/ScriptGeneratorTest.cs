@@ -1,14 +1,15 @@
+using GenerateSynchScripts.RoboCopy.Files;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
-namespace GenerateSynchScripts.Test;
+namespace GenerateSynchScripts.Test.RoboCopy.Files;
 
 public class ScriptGeneratorTest
 {
-    private readonly WindowsConfigScriptsGenerator _sut;
+    private readonly ScriptGenerator _sut;
 
     public ScriptGeneratorTest()
     {
-        _sut = new WindowsConfigScriptsGenerator(NullLogger<WindowsConfigScriptsGenerator>.Instance);
+        _sut = new ScriptGenerator(NullLogger<ScriptGenerator>.Instance);
     }
 
     [Fact]

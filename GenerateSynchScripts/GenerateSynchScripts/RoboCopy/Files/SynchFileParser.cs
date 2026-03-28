@@ -1,4 +1,4 @@
-namespace GenerateSynchScripts;
+namespace GenerateSynchScripts.RoboCopy.Files;
 
 public static class SynchFileParser
 {

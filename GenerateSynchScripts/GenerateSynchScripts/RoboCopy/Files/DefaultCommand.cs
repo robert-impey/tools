@@ -1,12 +1,12 @@
 using Spectre.Console.Cli;
 
-namespace GenerateSynchScripts;
+namespace GenerateSynchScripts.RoboCopy.Files;
 
 internal class DefaultCommand : AsyncCommand<CommandSettings>
 {
-    private readonly WindowsConfigScriptsGenerator _generator;
+    private readonly ScriptGenerator _generator;
 
-    public DefaultCommand(WindowsConfigScriptsGenerator generator)
+    public DefaultCommand(ScriptGenerator generator)
     {
         ArgumentNullException.ThrowIfNull(generator);
 

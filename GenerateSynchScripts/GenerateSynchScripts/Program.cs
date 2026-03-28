@@ -1,4 +1,4 @@
-using GenerateSynchScripts;
+using GenerateSynchScripts.RoboCopy.Files;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
@@ -11,7 +11,7 @@ services.AddLogging(configure =>
     configure.SetMinimumLevel(LogLevel.Information);
 });
 
-services.AddSingleton<WindowsConfigScriptsGenerator>();
+services.AddSingleton<ScriptGenerator>();
 
 var registrar = new ServiceCollectionRegistrar(services);
 
