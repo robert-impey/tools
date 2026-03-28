@@ -15,22 +15,18 @@ services.AddSingleton<LogsDeleter.Sweeping.LogsDeleter>();
 
 var registrar = new ServiceCollectionRegistrar(services);
 
-// Use non-generic CommandApp so we can register commands from referenced libraries
 var app = new CommandApp(registrar);
 
 app.Configure(config =>
 {
     config.SetApplicationName("LogsDeleter");
 
-    // Register the RemoveEmptyRobocopyLogs subcommand(s)
     config.AddCommand<RerlCommand>("rerl")
         .WithDescription("Removes Robocopy log files that report zero copied files.");
 
-    // Equivalent to rootCmd.AddCommand(sweepAllCmd)
     config.AddCommand<SweepAllCommand>("sweepAll")
         .WithDescription("Sweep all the log directories");
 
-    // Equivalent to rootCmd.AddCommand(sweepFromCmd)
     config.AddCommand<SweepFromCommand>("sweepFrom")
         .WithDescription("Sweep away the old log files for just one tool");
 });
