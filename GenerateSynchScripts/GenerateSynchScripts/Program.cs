@@ -15,11 +15,14 @@ services.AddSingleton<ScriptGenerator>();
 
 var registrar = new ServiceCollectionRegistrar(services);
 
-var app = new CommandApp<DefaultCommand>(registrar);
+var app = new CommandApp(registrar);
 
 app.Configure(config =>
 {
     config.SetApplicationName("GenerateSynchScripts");
+
+    config.AddCommand<RcifCommand>("rcif")
+        .WithDescription("Robocopy scripts for individual files");
 });
 
 await app.RunAsync(args);

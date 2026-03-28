@@ -2,11 +2,11 @@ using Spectre.Console.Cli;
 
 namespace GenerateSynchScripts.RoboCopy.Files;
 
-internal class DefaultCommand : AsyncCommand<CommandSettings>
+internal class RcifCommand : AsyncCommand<CommandSettings>
 {
     private readonly ScriptGenerator _generator;
 
-    public DefaultCommand(ScriptGenerator generator)
+    public RcifCommand(ScriptGenerator generator)
     {
         ArgumentNullException.ThrowIfNull(generator);
 
