@@ -83,7 +83,7 @@ func getLocalScripts() string {
 
 func getBuildScript() string {
 	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "build", "zsh-cron-runner.sh")
+	return filepath.Join(localScriptsDir, "_Common", "build", "Build.ps1")
 }
 
 func getListManagedFoldersScript() string {
@@ -172,5 +172,5 @@ func printBuild(hour int) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, ZshPath, script)
+	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
 }
