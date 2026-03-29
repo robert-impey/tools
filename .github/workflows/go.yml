@@ -16,6 +16,7 @@ jobs:
           - gensyn
           - lmf
           - staydeleted
+          - tdyfldr
     defaults:
       run:
         working-directory: ./${{ matrix.project }}
