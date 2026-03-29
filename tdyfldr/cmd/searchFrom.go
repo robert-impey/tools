@@ -12,18 +12,13 @@ var searchFromCmd = &cobra.Command{
 	Short: "Search multiple directories listed in a text file",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var logsDirPtr *string
-		if searchFromLogsDir != "" {
-			logsDirPtr = &searchFromLogsDir
-		}
-
 		dirs, err := internal.ReadDirectories(args[0])
 		if err != nil {
 			return err
 		}
 
 		for _, dir := range dirs {
-			if err := internal.SearchDirectory(dir, logsDirPtr); err != nil {
+			if err := internal.SearchDirectory(dir, logsDirPtr(searchFromLogsDir)); err != nil {
 				return err
 			}
 		}
@@ -33,6 +28,6 @@ var searchFromCmd = &cobra.Command{
 }
 
 func init() {
-	searchFromCmd.Flags().StringVar(&searchFromLogsDir, "logs-dir", "", "Directory where logs should be written")
+	addLogsDirFlag(searchFromCmd, &searchFromLogsDir)
 	rootCmd.AddCommand(searchFromCmd)
 }
