@@ -1,4 +1,4 @@
-package tidy_folder
+package internal
 
 import (
 	"os"
@@ -22,11 +22,11 @@ func TestBuildDirsAndFiles(t *testing.T) {
 	dir1 := filepath.Join(tempDir, "dir1")
 	dir2 := filepath.Join(tempDir, "dir2")
 
-	err = os.Mkdir(dir1, 0755)
+	err = os.Mkdir(dir1, 0o755)
 	if err != nil {
 		t.Fatalf("Failed to create dir1: %v", err)
 	}
-	err = os.Mkdir(dir2, 0755)
+	err = os.Mkdir(dir2, 0o755)
 	if err != nil {
 		t.Fatalf("Failed to create dir2: %v", err)
 	}
@@ -84,15 +84,13 @@ func TestBuildDirsAndFiles(t *testing.T) {
 	}
 }
 
-// Helper function to create a file with content
 func createFile(t *testing.T, path, content string) {
-	err := os.WriteFile(path, []byte(content), 0644)
+	err := os.WriteFile(path, []byte(content), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create file %s: %v", path, err)
 	}
 }
 
-// Helper function to check if a slice of DirEntry contains a file with a given name
 func containsFile(files []DirEntry, name string) bool {
 	for _, file := range files {
 		if file.Name == name {
@@ -100,4 +98,47 @@ func containsFile(files []DirEntry, name string) bool {
 		}
 	}
 	return false
+}
+
+func TestFindMatchingStems(t *testing.T) {
+	files := map[string][]DirEntry{
+		"/tmp/test": {
+			{Path: "/tmp/test/a.txt", Name: "a.txt"},
+			{Path: "/tmp/test/a1.txt", Name: "a1.txt"},
+			{Path: "/tmp/test/b.txt", Name: "b.txt"},
+			{Path: "/tmp/test/a.md", Name: "a.md"},
+		},
+	}
+
+	matches := FindMatchingStems(files)
+
+	if len(matches) != 1 {
+		t.Fatalf("expected 1 match, got %d", len(matches))
+	}
+
+	if matches[0][0].Name != "a.txt" || matches[0][1].Name != "a1.txt" {
+		t.Fatalf("unexpected match: %s -> %s", matches[0][0].Name, matches[0][1].Name)
+	}
+}
+
+func TestReadDirectories(t *testing.T) {
+	tempDir := t.TempDir()
+	input := filepath.Join(tempDir, "dirs.txt")
+
+	content := "  /alpha  \n\n# comment\nbeta\ncafé\n"
+	if err := os.WriteFile(input, []byte(content), 0o644); err != nil {
+		t.Fatalf("write input: %v", err)
+	}
+
+	dirs, err := ReadDirectories(input)
+	if err != nil {
+		t.Fatalf("ReadDirectories failed: %v", err)
+	}
+
+	if len(dirs) != 3 {
+		t.Fatalf("expected 3 dirs, got %d", len(dirs))
+	}
+	if dirs[0] != "/alpha" || dirs[1] != "beta" || dirs[2] != "café" {
+		t.Fatalf("unexpected dirs: %#v", dirs)
+	}
 }
