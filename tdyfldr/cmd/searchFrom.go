@@ -18,7 +18,7 @@ var searchFromCmd = &cobra.Command{
 		}
 
 		for _, dir := range dirs {
-			if err := internal.SearchDirectory(dir, logsDirPtr(searchFromLogsDir)); err != nil {
+			if err := internal.SearchDirectory(dir, searchFromLogsDir); err != nil {
 				return err
 			}
 		}

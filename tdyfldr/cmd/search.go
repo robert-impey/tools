@@ -12,7 +12,7 @@ var searchCmd = &cobra.Command{
 	Short: "Search a single directory",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return internal.SearchDirectory(args[0], logsDirPtr(searchLogsDir))
+		return internal.SearchDirectory(args[0], searchLogsDir)
 	},
 }
 

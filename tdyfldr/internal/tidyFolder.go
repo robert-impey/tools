@@ -114,20 +114,20 @@ func ReadDirectories(path string) ([]string, error) {
 	return dirs, nil
 }
 
-func SearchDirectory(dir string, logsDir *string) error {
+func SearchDirectory(dir string, logsDir string) error {
 	var logSink io.Writer = os.Stdout
 	var errSink io.Writer = os.Stderr
 
-	if logsDir != nil {
-		if err := os.MkdirAll(*logsDir, 0o755); err != nil {
+	if logsDir != "" {
+		if err := os.MkdirAll(logsDir, 0o755); err != nil {
 			return err
 		}
 
 		safe := sanitizeForFileName(dir)
 		timestamp := getLogTime()
 
-		logPath := filepath.Join(*logsDir, fmt.Sprintf("%s-search-%s.log", timestamp, safe))
-		errPath := filepath.Join(*logsDir, fmt.Sprintf("%s-search-%s.err", timestamp, safe))
+		logPath := filepath.Join(logsDir, fmt.Sprintf("%s-search-%s.log", timestamp, safe))
+		errPath := filepath.Join(logsDir, fmt.Sprintf("%s-search-%s.err", timestamp, safe))
 
 		logFile, err := os.Create(logPath)
 		if err != nil {
@@ -159,7 +159,7 @@ func SearchDirectory(dir string, logsDir *string) error {
 		return nil
 	}
 
-	if logsDir != nil {
+	if logsDir != "" {
 		fmt.Printf("OK: processed %s\n", dir)
 	}
 
