@@ -15,6 +15,7 @@ jobs:
           - cron-setter
           - gensyn
           - lmf
+          - logs-deleter
           - staydeleted
           - tdyfldr
     defaults:
