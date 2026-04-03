@@ -86,6 +86,14 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		return err
 	}
 
+	// Log inputs to stdout (replicates ILogger information from the C# implementation)
+	fmt.Println("Generating scripts...")
+	fmt.Printf("Autogen: %s\n", autoGenDir)
+	fmt.Printf("Script: %s\n", scriptName)
+	fmt.Printf("Source: %s\n", sf.Source)
+	fmt.Printf("Destination: %s\n", sf.Destination)
+	fmt.Printf("Files: %s\n", strings.Join(sf.Files, ", "))
+
 	outputScriptPath := filepath.Join(autoGenDir, fmt.Sprintf("%s.ps1", scriptName))
 	if _, err := os.Stat(outputScriptPath); err == nil {
 		if err := os.Remove(outputScriptPath); err != nil {
