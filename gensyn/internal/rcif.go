@@ -10,36 +10,33 @@ import (
 	"time"
 )
 
-// GenerateRcifScript generates a PowerShell script for a single synch file
-// The synch file format:
-// Line 1: source path
-// Line 2: destination path
-// Line 3: blank
-// Line 4+: files (one per line)
-func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
-	if synchFilePath == "" {
-		return fmt.Errorf("synch file path is required")
-	}
-	if autoGenDir == "" {
-		return fmt.Errorf("autogen folder is required")
-	}
-	if scriptName == "" {
-		return fmt.Errorf("script name is required")
-	}
+type SynchFile struct {
+	Id          string
+	Source      string
+	Destination string
+	Files       []string
+}
 
-	if _, err := os.Stat(autoGenDir); os.IsNotExist(err) {
-		return fmt.Errorf("auto-generated folder does not exist: %s", autoGenDir)
+// ParseSynchFile reads the synch file and returns its structured contents.
+// It handles an optional UTF-8 BOM at the start of the file.
+func ParseSynchFile(synchFilePath string) (*SynchFile, error) {
+	if strings.TrimSpace(synchFilePath) == "" {
+		return nil, fmt.Errorf("file path is required")
 	}
 
 	b, err := os.ReadFile(synchFilePath)
 	if err != nil {
-		return fmt.Errorf("failed to read synch file: %w", err)
+		return nil, fmt.Errorf("failed to read synch file: %w", err)
 	}
 
-	// split into lines and normalise CRLF
+	// Remove UTF-8 BOM if present
+	if len(b) >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF {
+		b = b[3:]
+	}
+
 	rawLines := strings.Split(strings.ReplaceAll(string(b), "\r\n", "\n"), "\n")
 	if len(rawLines) < 4 {
-		return fmt.Errorf("the file must contain at least four lines: source, destination, blank, and at least one file")
+		return nil, fmt.Errorf("the file must contain at least four lines: source, destination, blank, and at least one file")
 	}
 
 	id := strings.TrimSuffix(filepath.Base(synchFilePath), filepath.Ext(synchFilePath))
@@ -56,13 +53,37 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 	}
 
 	if source == "" {
-		return fmt.Errorf("the source path cannot be empty")
+		return nil, fmt.Errorf("the source path cannot be empty")
 	}
 	if destination == "" {
-		return fmt.Errorf("the destination path cannot be empty")
+		return nil, fmt.Errorf("the destination path cannot be empty")
 	}
 	if len(files) == 0 {
-		return fmt.Errorf("at least one file must be specified")
+		return nil, fmt.Errorf("at least one file must be specified")
+	}
+
+	return &SynchFile{Id: id, Source: source, Destination: destination, Files: files}, nil
+}
+
+// GenerateRcifScript generates a PowerShell script for a single synch file
+func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
+	if synchFilePath == "" {
+		return fmt.Errorf("synch file path is required")
+	}
+	if autoGenDir == "" {
+		return fmt.Errorf("autogen folder is required")
+	}
+	if scriptName == "" {
+		return fmt.Errorf("script name is required")
+	}
+
+	if _, err := os.Stat(autoGenDir); os.IsNotExist(err) {
+		return fmt.Errorf("auto-generated folder does not exist: %s", autoGenDir)
+	}
+
+	sf, err := ParseSynchFile(synchFilePath)
+	if err != nil {
+		return err
 	}
 
 	outputScriptPath := filepath.Join(autoGenDir, fmt.Sprintf("%s.ps1", scriptName))
@@ -110,11 +131,11 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		return err
 	}
 
-	sourceClean := cleanFolderPathForLogName(source)
-	destinationClean := cleanFolderPathForLogName(destination)
+	sourceClean := cleanFolderPathForLogName(sf.Source)
+	destinationClean := cleanFolderPathForLogName(sf.Destination)
 
 	first := true
-	for _, file := range files {
+	for _, file := range sf.Files {
 		if first {
 			first = false
 		} else {
@@ -128,11 +149,11 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		}
 
 		fmt.Fprintln(w, "SynchSingleFile2Ways `")
-		fmt.Fprintf(w, "    -id \"%s\" `\n", id)
+		fmt.Fprintf(w, "    -id \"%s\" `\n", sf.Id)
 		fmt.Fprintf(w, "    -file \"%s\" `\n", file)
-		fmt.Fprintf(w, "    -sourceFolder \"%s\" `\n", source)
+		fmt.Fprintf(w, "    -sourceFolder \"%s\" `\n", sf.Source)
 		fmt.Fprintf(w, "    -sourceLogName \"%s\" `\n", sourceClean)
-		fmt.Fprintf(w, "    -destinationFolder \"%s\" `\n", destination)
+		fmt.Fprintf(w, "    -destinationFolder \"%s\" `\n", sf.Destination)
 		fmt.Fprintf(w, "    -destinationLogName \"%s\" `\n", destinationClean)
 		fmt.Fprintln(w, "    -logged $logged")
 	}
