@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	common "github.com/robert-impey/tools/internal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -128,7 +129,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 
 func TestWriteHeaderShebang(t *testing.T) {
 	var b bytes.Buffer
-	writeHeader(&b)
+	_ = common.WriteShebang(&b)
 	firstLine := strings.SplitN(b.String(), "\n", 2)[0]
 	assert.Equal(t, "#!/usr/bin/env pwsh", firstLine)
 }

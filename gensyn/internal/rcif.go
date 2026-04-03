@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
+
+	common "github.com/robert-impey/tools/internal"
 )
 
 type SynchFile struct {
@@ -109,10 +110,7 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 
 	w := bufio.NewWriter(f)
 
-	if _, err := fmt.Fprintln(w, "# AUTOGEN'D - DO NOT EDIT!"); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "# Written %s\n\n", time.Now().Format(time.RFC1123Z)); err != nil {
+	if err := common.WriteHeader(w, "# AUTOGEN'D - DO NOT EDIT!"); err != nil {
 		return err
 	}
 

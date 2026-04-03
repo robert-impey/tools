@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 
 	common "github.com/robert-impey/tools/internal"
 )
@@ -150,20 +149,10 @@ func createAllFoldersRobocopySyncScript(folders []string, scriptPath, src, dst s
 // --- PowerShell header helpers ---
 
 func writePSHeader(w *bufio.Writer) error {
-	if err := writeAutoGenHeader(w); err != nil {
+	if err := common.WriteHeader(w, "# AUTOGEN'D FILE - DO NOT EDIT"); err != nil {
 		return err
 	}
 	return writeSynchScriptFileParams(w)
-}
-
-func writeAutoGenHeader(w *bufio.Writer) error {
-	if _, err := fmt.Fprintln(w, "# AUTOGEN'D FILE - DO NOT EDIT"); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "# Created: %s\n\n", time.Now().Local().Format(time.RFC1123Z)); err != nil {
-		return err
-	}
-	return nil
 }
 
 func writeSynchScriptFileParams(w *bufio.Writer) error {

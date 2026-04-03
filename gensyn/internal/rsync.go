@@ -17,6 +17,7 @@ import (
 	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
+	common "github.com/robert-impey/tools/internal"
 )
 
 const filesCmdLineTemplate = "%v %v/%v %v/"
@@ -188,7 +189,7 @@ func (g *RsyncScriptGenerator) printPlan(info *ScriptsInfo) {
 
 func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 	var b bytes.Buffer
-	writeHeader(&b)
+	writeRsyncHeader(&b)
 	for _, item := range info.items {
 		writeItemCommands(&b, g.Files, info, item)
 		b.WriteString("\n")
@@ -199,16 +200,16 @@ func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 
 func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item string) []byte {
 	var b bytes.Buffer
-	writeHeader(&b)
+	writeRsyncHeader(&b)
 	writeItemCommands(&b, false, info, item)
 	b.WriteString("\n")
 	b.WriteString("\nGet-Date\n")
 	return b.Bytes()
 }
 
-func writeHeader(b *bytes.Buffer) {
-	b.WriteString("#!/usr/bin/env pwsh\n# AUTOGEN'D - DO NOT EDIT!\n")
-	fmt.Fprintf(b, "# Generated on %s\n\n", getNowFmt())
+func writeRsyncHeader(b *bytes.Buffer) {
+	_ = common.WriteShebang(b)
+	_ = common.WriteHeader(b, "# AUTOGEN'D - DO NOT EDIT!")
 	b.WriteString("Get-Date\n\n")
 }
 
