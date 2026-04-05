@@ -1,18 +1,18 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
+
+	"github.com/spf13/pflag"
 )
 
 func main() {
 	var scriptsDir string
-	flag.StringVar(&scriptsDir, "s", "", "Path to the scripts directory")
-	flag.StringVar(&scriptsDir, "scriptsDirectory", "", "Path to the scripts directory")
-	flag.Parse()
+	pflag.StringVarP(&scriptsDir, "scriptsDirectory", "s", "", "Path to the scripts directory")
+	pflag.Parse()
 
 	if runtime.GOOS == "windows" {
 		fmt.Fprintln(os.Stderr, "This program should only be run on Linux or macOs")
@@ -21,7 +21,7 @@ func main() {
 
 	if scriptsDir == "" {
 		fmt.Fprintln(os.Stderr, "The --scriptsDirectory path must be provided.")
-		flag.Usage()
+		pflag.Usage()
 		os.Exit(2)
 	}
 

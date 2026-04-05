@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RP | Local Scripts | Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="tools" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="--scriptsDirectory $USER_HOME$/local-scripts" />
+    <kind value="PACKAGE" />
+    <package value="github.com/robert-impey/tools/permreset" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/permreset/main.go" />
+    <method v="2" />
+  </configuration>
+</component>
