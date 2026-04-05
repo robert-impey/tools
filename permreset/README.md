@@ -5,11 +5,11 @@ Small CLI to find executable scripts (files whose first line starts with `#!`) a
 Usage:
 
 ```sh
-go run ./permreset -s /path/to/scripts
+go run . -s ~/local-scripts
 ```
 
 Tests:
 
 ```sh
-go test ./permreset
+go test ./...
 ```
