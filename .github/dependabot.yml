@@ -9,15 +9,6 @@ updates:
     time: "12:00"
   target-branch: "dev"
 
-# --- Rust / Cargo ---
-- package-ecosystem: "cargo"
-  directory: "/tidy_folder/"
-  schedule:
-    interval: "weekly"
-    day: "friday"
-    time: "12:00"
-  target-branch: "dev"
-
 # --- Go modules ---
 - package-ecosystem: "gomod"
   directory: "/"
