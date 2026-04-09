@@ -15,7 +15,7 @@ public sealed class RerlCommand : AsyncCommand<CommandSettings>
         _logger = logger;
     }
 
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         CommandSettings settings,
         CancellationToken cancellationToken

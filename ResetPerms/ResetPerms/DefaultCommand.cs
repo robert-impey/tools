@@ -14,7 +14,7 @@ public class DefaultCommand : AsyncCommand<CommandSettings>
         _logger = logger;
     }
 
-    public override Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    protected override Task<int> ExecuteAsync(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(settings.ScriptsDirectory);
 

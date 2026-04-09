@@ -8,7 +8,7 @@ public sealed class DefaultCommand : AsyncCommand<CommandSettings>
 {
     private const string TestsDirName = "tests";
 
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         CommandSettings settings,
         CancellationToken cancellationToken

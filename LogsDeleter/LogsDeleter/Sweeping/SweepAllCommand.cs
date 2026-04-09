@@ -11,7 +11,7 @@ public class SweepAllCommand : Command<CommandSettings>
         _logsDeleter = logsDeleter;
     }
 
-    public override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, CommandSettings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(settings.LogsDirectory))
         {

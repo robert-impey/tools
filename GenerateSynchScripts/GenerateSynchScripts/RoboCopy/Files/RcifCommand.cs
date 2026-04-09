@@ -13,7 +13,7 @@ internal class RcifCommand : AsyncCommand<CommandSettings>
         _generator = generator;
     }
 
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         CommandSettings settings,
         CancellationToken cancellationToken
