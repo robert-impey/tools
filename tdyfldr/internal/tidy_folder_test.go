@@ -96,15 +96,6 @@ func createFile(t *testing.T, path, content string) {
 	}
 }
 
-func containsFile(files []DirEntry, name string) bool {
-	for _, file := range files {
-		if file.Name == name {
-			return true
-		}
-	}
-	return false
-}
-
 func TestFindMatchingStems(t *testing.T) {
 	// Create a list of entries simulating the output of BuildDirsAndFiles
 	dirsAndFiles := []DirEntry{
