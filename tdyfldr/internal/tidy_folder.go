@@ -21,8 +21,8 @@ type DirEntry struct {
 	Size    int64
 }
 
-func BuildDirsAndFiles(name string) (map[string][]DirEntry, error) {
-	dirsAndFiles := make(map[string][]DirEntry)
+func BuildDirsAndFiles(name string) ([]DirEntry, error) {
+	var entries []DirEntry
 
 	err := filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -36,12 +36,12 @@ func BuildDirsAndFiles(name string) (map[string][]DirEntry, error) {
 
 		info, err := d.Info()
 		if err != nil {
-			return err
+			// Log the error but continue traversal if possible.
+			fmt.Fprintf(os.Stderr, "Warning: Could not get info for %s: %v\n", path, err)
+			return nil
 		}
 
-		parentDir := filepath.Dir(path)
-
-		dirsAndFiles[parentDir] = append(dirsAndFiles[parentDir], DirEntry{
+		entries = append(entries, DirEntry{
 			Path:    path,
 			Name:    d.Name(),
 			IsDir:   d.IsDir(),
@@ -52,39 +52,39 @@ func BuildDirsAndFiles(name string) (map[string][]DirEntry, error) {
 		return nil
 	})
 
-	// If filepath.WalkDir returns an error here, it means the initial call failed or encountered a critical error not handled in the callback.
 	if err != nil {
+		// If filepath.WalkDir returns an error here, it means the initial call failed or encountered a critical error not handled in the callback.
 		return nil, fmt.Errorf("error walking directory %s: %w", name, err)
 	}
 
-	return dirsAndFiles, nil
+	return entries, nil
 }
 
-func FindMatchingStems(dirsAndFiles map[string][]DirEntry) [][2]DirEntry {
+func FindMatchingStems(dirsAndFiles []DirEntry) [][2]DirEntry {
 	var matchingStems [][2]DirEntry
 
-	for _, files := range dirsAndFiles {
-		for _, file := range files {
-			fileStem, fileExt, ok := splitStemExt(file.Path)
+	for i := 0; i < len(dirsAndFiles); i++ {
+		file := dirsAndFiles[i]
+		fileStem, fileExt, ok := splitStemExt(file.Path)
+		if !ok {
+			continue
+		}
+
+		for j := 0; j < len(dirsAndFiles); j++ {
+			otherFile := dirsAndFiles[j]
+			otherStem, otherExt, ok := splitStemExt(otherFile.Path)
 			if !ok {
 				continue
 			}
 
-			for _, otherFile := range files {
-				otherStem, otherExt, ok := splitStemExt(otherFile.Path)
-				if !ok {
-					continue
-				}
+			// Ensure we are comparing two different files (i != j) and they have the same extension
+			if i == j || fileExt != otherExt {
+				continue
+			}
 
-				if fileExt != otherExt {
-					continue
-				}
-				if otherStem == fileStem {
-					continue
-				}
-				if strings.HasPrefix(otherStem, fileStem) {
-					matchingStems = append(matchingStems, [2]DirEntry{file, otherFile})
-				}
+			// Check for prefix relationship: Does 'otherStem' start with 'fileStem'?
+			if strings.HasPrefix(otherStem, fileStem) && otherStem != fileStem {
+				matchingStems = append(matchingStems, [2]DirEntry{file, otherFile})
 			}
 		}
 	}
