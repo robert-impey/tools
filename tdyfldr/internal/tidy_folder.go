@@ -26,7 +26,9 @@ func BuildDirsAndFiles(name string) (map[string][]DirEntry, error) {
 
 	err := filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return err
+			// Log the error but continue traversal if possible, as this might be a transient I/O issue (like deadlock).
+			fmt.Fprintf(os.Stderr, "Warning: Skipping path %s due to error during walkdir: %v\n", path, err)
+			return nil // Return nil to signal WalkDir to continue with other paths
 		}
 		if d.IsDir() {
 			return nil
@@ -50,8 +52,9 @@ func BuildDirsAndFiles(name string) (map[string][]DirEntry, error) {
 		return nil
 	})
 
+	// If filepath.WalkDir returns an error here, it means the initial call failed or encountered a critical error not handled in the callback.
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error walking directory %s: %w", name, err)
 	}
 
 	return dirsAndFiles, nil
