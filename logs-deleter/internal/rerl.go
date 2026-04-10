@@ -10,7 +10,7 @@ var filesLineRegex = regexp.MustCompile(`\s*Files\s*:\s+\d+\s+(\d+)\s+`)
 
 func IsFilesCopiedLine(line string) bool {
 	match := filesLineRegex.FindStringSubmatch(line)
-	if match == nil || len(match) < 2 {
+	if len(match) < 2 {
 		return false
 	}
 
