@@ -77,8 +77,8 @@ func FindMatchingStems(dirsAndFiles []DirEntry) [][2]DirEntry {
 				continue
 			}
 
-			// Ensure we are comparing two different files (i != j) and they have the same extension
-			if i == j || fileExt != otherExt {
+			// Ensure we are comparing two different files (i != j), they are in the same directory and they have the same extension
+			if i == j || filepath.Dir(file.Path) != filepath.Dir(otherFile.Path) || fileExt != otherExt {
 				continue
 			}
 

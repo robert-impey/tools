@@ -101,16 +101,19 @@ func createFile(t *testing.T, path, content string) {
 func TestFindMatchingStems(t *testing.T) {
 	// Create a list of entries simulating the output of BuildDirsAndFiles
 	dirsAndFiles := []DirEntry{
-		{Path: "/tmp/test/a.txt", Name: "a.txt"},
-		{Path: "/tmp/test/a1.txt", Name: "a1.txt"},
-		{Path: "/tmp/test/b.txt", Name: "b.txt"},
-		{Path: "/tmp/test/a.md", Name: "a.md"},
+		{Path: "/tmp/test0/a.txt", Name: "a.txt"},
+		{Path: "/tmp/test0/a1.txt", Name: "a1.txt"},
+		{Path: "/tmp/test0/b.txt", Name: "b.txt"},
+		{Path: "/tmp/test0/c.txt", Name: "c.txt"},
+		{Path: "/tmp/test0/a.md", Name: "a.md"},
+		{Path: "/tmp/test1/c1.txt", Name: "c1.txt"},
 	}
 
 	matches := FindMatchingStems(dirsAndFiles)
 
-	if len(matches) < 1 {
-		t.Fatalf("expected at least one match, got %d", len(matches))
+	var expectedMatchesCount = 1
+	if len(matches) != expectedMatchesCount {
+		t.Fatalf("expected matches count to be %d, got %d", expectedMatchesCount, len(matches))
 	}
 
 	// Check for the specific expected pair (order might vary due to iteration)
