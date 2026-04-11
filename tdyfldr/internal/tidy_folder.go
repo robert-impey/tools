@@ -179,6 +179,11 @@ func printMatchingStems(out io.Writer, name string, matchingStems [][2]DirEntry)
 		return nil
 	}
 
+	// If no writer provided, default to stdout to avoid nil dereference panics.
+	if out == nil {
+		out = os.Stdout
+	}
+
 	if _, err := fmt.Fprintf(out, "\n--- Results for: %s ---\n", name); err != nil {
 		return err
 	}
