@@ -118,16 +118,20 @@ func ReadDirectories(path string) ([]string, error) {
 }
 
 func SearchDirectory(dir string, logsDir string) error {
-	// 1. Perform core logic first (traversal and matching) to minimize dependency on log setup.
 	dirsAndFiles, err := BuildDirsAndFiles(dir)
 	if err != nil {
 		return fmt.Errorf("failed to build directory structure for %s: %w", dir, err)
 	}
 
 	matchingStems := FindMatchingStems(dirsAndFiles)
-	var funcErr error = printMatchingStems(nil, dir, matchingStems) // Use nil sink initially
+	if len(matchingStems) == 0 {
+		return nil
+	}
 
-	// 2. Handle logging setup and reporting only if the core logic succeeded or failed gracefully.
+	var out io.Writer = os.Stdout
+	var logFile *os.File
+	var errFile *os.File
+
 	if logsDir != "" {
 		safe := sanitizeForFileName(dir)
 		timestamp := getLogTime()
@@ -135,37 +139,36 @@ func SearchDirectory(dir string, logsDir string) error {
 		logPath := filepath.Join(logsDir, fmt.Sprintf("%s-search-%s.log", timestamp, safe))
 		errPath := filepath.Join(logsDir, fmt.Sprintf("%s-search-%s.err", timestamp, safe))
 
-		// Attempt to create log files; if this fails, we report the error but don't fail the whole function.
-		logFile, err := os.Create(logPath)
+		logFile, err = os.Create(logPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: Could not create log file %s: %v\n", logPath, err)
 		} else {
 			defer logFile.Close()
-			// Re-run printing logic to use the actual file writer if successful
-			funcErr = printMatchingStems(logFile, dir, matchingStems)
+			out = logFile
 		}
 
-		errFile, err := os.Create(errPath)
+		errFile, err = os.Create(errPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: Could not create error log file %s: %v\n", errPath, err)
 		} else {
 			defer errFile.Close()
-			// If we failed to write to the primary log (logFile was nil), use the error file for diagnostics.
-			if funcErr != nil && logFile == nil {
-				_, _ = fmt.Fprintf(errFile, "ERROR processing %s: %v\n", dir, funcErr)
-			}
 		}
+	}
 
-		// If we successfully wrote to a log file, print success message.
+	funcErr := printMatchingStems(out, dir, matchingStems)
+
+	if logsDir != "" {
 		if logFile != nil && funcErr == nil {
 			fmt.Printf("OK: processed %s\n", dir)
-		} else if funcErr != nil {
-			// If an error occurred during printing/logging, return it (unless we already logged it to errFile).
-			return fmt.Errorf("processing failed for %s: %w", dir, funcErr)
 		}
 
+		if funcErr != nil {
+			if errFile != nil {
+				_, _ = fmt.Fprintf(errFile, "ERROR processing %s: %v\n", dir, funcErr)
+			}
+			return fmt.Errorf("processing failed for %s: %w", dir, funcErr)
+		}
 	} else {
-		// No logsDir provided, just run the core logic and return its error status.
 		if funcErr != nil {
 			return fmt.Errorf("error processing %s: %w", dir, funcErr)
 		}
@@ -177,11 +180,6 @@ func SearchDirectory(dir string, logsDir string) error {
 func printMatchingStems(out io.Writer, name string, matchingStems [][2]DirEntry) error {
 	if len(matchingStems) == 0 {
 		return nil
-	}
-
-	// If no writer provided, default to stdout to avoid nil dereference panics.
-	if out == nil {
-		out = os.Stdout
 	}
 
 	if _, err := fmt.Fprintf(out, "\n--- Results for: %s ---\n", name); err != nil {
