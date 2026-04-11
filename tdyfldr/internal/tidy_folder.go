@@ -63,14 +63,14 @@ func BuildDirsAndFiles(name string) ([]DirEntry, error) {
 func FindMatchingStems(dirsAndFiles []DirEntry) [][2]DirEntry {
 	var matchingStems [][2]DirEntry
 
-	for i := 0; i < len(dirsAndFiles); i++ {
+	for i := range dirsAndFiles {
 		file := dirsAndFiles[i]
 		fileStem, fileExt, ok := splitStemExt(file.Path)
 		if !ok {
 			continue
 		}
 
-		for j := 0; j < len(dirsAndFiles); j++ {
+		for j := range dirsAndFiles {
 			otherFile := dirsAndFiles[j]
 			otherStem, otherExt, ok := splitStemExt(otherFile.Path)
 			if !ok {
