@@ -58,10 +58,9 @@ func printAllTasks() {
 
 	printBuild(19)
 	printResetPerms(20)
-	printTidyFolder(21)
 	fmt.Println()
 
-	printStayDeletedRun(22, 24)
+	printStayDeletedRun(21, 24)
 }
 
 func printHeaderComment() {
@@ -94,11 +93,6 @@ func getListManagedFoldersScript() string {
 func getResetPermsScript() string {
 	localScriptsDir := getLocalScripts()
 	return filepath.Join(localScriptsDir, "_Common", "reset_perms", "reset-perms-linux.sh")
-}
-
-func getTidyFolderScript() string {
-	localScriptsDir := getLocalScripts()
-	return filepath.Join(localScriptsDir, "_Common", "tidy_folder", "Search-ManagedFolders.ps1")
 }
 
 func getStayDeletedScript() string {
@@ -141,14 +135,6 @@ func printResetPerms(hour int) {
 	script := getResetPermsScript()
 	fmt.Printf("%d %d * * * %s %s\n",
 		minutes, hour, ZshPath, script)
-}
-
-func printTidyFolder(hour int) {
-	minutes := rand.Int31n(60)
-
-	script := getTidyFolderScript()
-	fmt.Printf("%d %d * * * %s %s\n",
-		minutes, hour, PwshPath, script)
 }
 
 func printSynch(earliestHour int32, hoursRange int32) {
