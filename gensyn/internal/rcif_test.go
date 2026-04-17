@@ -11,14 +11,14 @@ import (
 
 func TestParseSynchFile_ShouldReturnCorrectSourceAndDestinationPaths(t *testing.T) {
 	// Path to the existing test data in the repository
-	rel := filepath.Join("..", "..", "GenerateSynchScripts", "GenerateSynchScripts.Test", "TestData", "RoboCopy", "Files", "Fruit.txt")
+	rel := filepath.Join("test_data", "robocopy", "files", "fruit.txt")
 	path := filepath.Clean(rel)
 
 	sf, err := ParseSynchFile(path)
 	assert.Nil(t, err)
 	assert.NotNil(t, sf)
 
-	assert.Equal(t, "Fruit", sf.Id)
+	assert.Equal(t, "fruit", sf.Id)
 	assert.Equal(t, `C:\`, sf.Source)
 	assert.Equal(t, `D:\`, sf.Destination)
 	assert.Equal(t, 3, len(sf.Files))
@@ -29,9 +29,9 @@ func TestParseSynchFile_ShouldReturnCorrectSourceAndDestinationPaths(t *testing.
 
 func TestParseSynchFile_ShouldErrorForBadFiles(t *testing.T) {
 	cases := []string{
-		filepath.Join("..", "..", "GenerateSynchScripts", "GenerateSynchScripts.Test", "TestData", "RoboCopy", "Files", "NoFiles.txt"),
-		filepath.Join("..", "..", "GenerateSynchScripts", "GenerateSynchScripts.Test", "TestData", "RoboCopy", "Files", "NoBlankLine.txt"),
-		filepath.Join("..", "..", "GenerateSynchScripts", "GenerateSynchScripts.Test", "TestData", "Empty.txt"),
+		filepath.Join("test_data", "robocopy", "files", "no_files.txt"),
+		filepath.Join("test_data", "robocopy", "files", "no_blank_line.txt"),
+		filepath.Join("test_data", "empty.txt"),
 	}
 
 	for _, c := range cases {

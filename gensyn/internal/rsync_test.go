@@ -18,7 +18,7 @@ import (
 )
 
 func TestParseGSSFile(t *testing.T) {
-	scriptsInfo, err := ParseGSSFile("cleopatra.txt")
+	scriptsInfo, err := ParseGSSFile(filepath.Join("test_data", "rsync", "cleopatra.txt"))
 
 	assert.Nil(t, err)
 	assert.NotNil(t, scriptsInfo)
@@ -41,7 +41,7 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(false, outputDir, "cleopatra.txt")
+	err := GenerateSynchScripts(false, outputDir, filepath.Join("test_data", "rsync", "cleopatra.txt"))
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "cleopatra.ps1")
