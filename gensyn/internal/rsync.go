@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
 	common "github.com/robert-impey/tools/internal"
@@ -253,8 +252,4 @@ func getCmdLine(files bool, synchRoot, item, src, dst string) string {
 
 func getEchoLine(cmd string) string {
 	return fmt.Sprintf("Write-Host '%s'", cmd)
-}
-
-func getNowFmt() string {
-	return time.Now().UTC().Format(time.RFC1123)
 }
