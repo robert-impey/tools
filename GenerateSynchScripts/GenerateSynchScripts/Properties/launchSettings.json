@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "GenerateSynchScripts | RCIF | SSH": {
-      "commandName": "Project",
-      "commandLineArgs": "rcif --autogen C:\\Users\\rober\\autogen\\synch --files C:\\Users\\rober\\OneDrive\\local-scripts\\_Common\\windows_26\\ssh-synch.txt --script ssh-config"
-    }
-  }
-}
