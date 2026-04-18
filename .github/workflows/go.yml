@@ -17,6 +17,7 @@ jobs:
           - lmf
           - logs-deleter
           - permreset
+          - rct
           - staydeleted
           - tdyfldr
     defaults:
