@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/spf13/pflag"
 )
 
 // CommandSettings represents the CLI arguments
@@ -21,12 +23,13 @@ type CommandSettings struct {
 const testsDirName = "tests"
 
 func main() {
-	// Simple argument handling for demonstration
-	settings := CommandSettings{
-		Directory:         ".",
-		TestDataDirectory: "./data",
-		Verbose:           true,
-	}
+	var settings CommandSettings
+
+	pflag.StringVarP(&settings.Directory, "directory", "d", ".", "Root directory to search")
+	pflag.StringVarP(&settings.TestDataDirectory, "test-data-directory", "t", "./data", "Directory containing test data")
+	pflag.BoolVarP(&settings.Verbose, "verbose", "v", false, "Enable verbose output")
+
+	pflag.Parse()
 
 	ctx := context.Background() // Use for cancellation if needed
 	exitCode := execute(ctx, settings)
