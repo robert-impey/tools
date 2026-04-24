@@ -210,6 +210,9 @@ func writeRsyncHeader(b *bytes.Buffer) {
 	_ = common.WriteShebang(b)
 	_ = common.WriteHeader(b, "# AUTOGEN'D - DO NOT EDIT!")
 	b.WriteString("Get-Date\n\n")
+
+	b.WriteString("Import-Module \"$($env:LOCAL_SCRIPTS)/_Common/ManagedFolders.psm1\"\n\n")
+	b.WriteString("Import-SshVariables\n\n")
 }
 
 func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string) {
