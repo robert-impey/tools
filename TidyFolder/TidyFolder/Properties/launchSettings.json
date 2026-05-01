@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "TidyFolder": {
+      "commandName": "Project"
+    },
+    "search %LOCAL_SCRIPTS%": {
+      "commandName": "Project",
+      "commandLineArgs": "search C:\\Users\\rober\\OneDrive\\local-scripts"
+    }
+  }
+}
