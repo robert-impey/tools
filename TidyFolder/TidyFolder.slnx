@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Tools.Lib/Tools.Lib.csproj" />
+  <Project Path="TidyFolder.Test/TidyFolder.Test.csproj" />
+  <Project Path="TidyFolder/TidyFolder.csproj" />
+</Solution>
