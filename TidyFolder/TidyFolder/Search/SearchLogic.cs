@@ -64,14 +64,14 @@ public static class SearchLogic
                     continue;
 
                 if (!Path.GetDirectoryName(file.Path)
-                         .Equals(Path.GetDirectoryName(other.Path),
-                                 StringComparison.OrdinalIgnoreCase))
+                        .Equals(Path.GetDirectoryName(other.Path),
+                            StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
                 if (otherStem.StartsWith(stem, StringComparison.Ordinal)
-                                && otherStem != stem)
+                    && otherStem != stem)
                 {
                     result.Add((file, other));
                 }
@@ -144,7 +144,8 @@ public static class SearchLogic
         }
     }
 
-    private static void PrintMatchingStems(TextWriter output, string name, List<(DirEntry File, DirEntry Other)> matches)
+    private static void PrintMatchingStems(TextWriter output, string name,
+        List<(DirEntry File, DirEntry Other)> matches)
     {
         if (matches.Count == 0)
             return;
@@ -187,5 +188,4 @@ public static class SearchLogic
         stem = Path.GetFileNameWithoutExtension(file);
         return !string.IsNullOrEmpty(stem);
     }
-
 }

@@ -43,14 +43,14 @@ public class SearchLogicTest
     public void FindMatchingStems_FindsExpectedPair()
     {
         var entries = new List<DirEntry>
-    {
-        new() { Path = "/tmp/test0/a.txt", Name = "a.txt" },
-        new() { Path = "/tmp/test0/a1.txt", Name = "a1.txt" },
-        new() { Path = "/tmp/test0/b.txt", Name = "b.txt" },
-        new() { Path = "/tmp/test0/c.txt", Name = "c.txt" },
-        new() { Path = "/tmp/test0/a.md", Name = "a.md" },
-        new() { Path = "/tmp/test1/c1.txt", Name = "c1.txt" },
-    };
+        {
+            new() { Path = "/tmp/test0/a.txt", Name = "a.txt" },
+            new() { Path = "/tmp/test0/a1.txt", Name = "a1.txt" },
+            new() { Path = "/tmp/test0/b.txt", Name = "b.txt" },
+            new() { Path = "/tmp/test0/c.txt", Name = "c.txt" },
+            new() { Path = "/tmp/test0/a.md", Name = "a.md" },
+            new() { Path = "/tmp/test1/c1.txt", Name = "c1.txt" },
+        };
 
         var matches = SearchLogic.FindMatchingStems(entries);
 
