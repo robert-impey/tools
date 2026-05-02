@@ -1,3 +1,4 @@
+using Shouldly;
 using TidyFolder.Search;
 
 namespace TidyFolder.Test;
@@ -22,13 +23,13 @@ public class SearchLogicTest
 
             var entries = SearchLogic.BuildDirsAndFiles(tempDir.FullName);
 
-            Assert.Equal(4, entries.Count);
+            entries.Count.ShouldBe(4);
 
             var names = entries.Select(e => e.Name).ToHashSet();
-            Assert.Contains("file1.txt", names);
-            Assert.Contains("file2.txt", names);
-            Assert.Contains("file3.txt", names);
-            Assert.Contains("file4.txt", names);
+            names.ShouldContain("file1.txt");
+            names.ShouldContain("file2.txt");
+            names.ShouldContain("file3.txt");
+            names.ShouldContain("file4.txt");
         }
         finally
         {
@@ -54,13 +55,14 @@ public class SearchLogicTest
 
         var matches = SearchLogic.FindMatchingStems(entries);
 
-        Assert.Single(matches);
+        matches.ShouldHaveSingleItem();
 
         var (first, second) = matches[0];
 
-        Assert.Equal(".txt", Path.GetExtension(first.Name));
-        Assert.True(Path.GetFileNameWithoutExtension(second.Name)
-            .StartsWith(Path.GetFileNameWithoutExtension(first.Name)));
+        Path.GetExtension(first.Name).ShouldBe(".txt");
+        Path.GetFileNameWithoutExtension(second.Name)
+            .StartsWith(Path.GetFileNameWithoutExtension(first.Name))
+            .ShouldBeTrue();
     }
 
     [Fact]
@@ -78,7 +80,7 @@ public class SearchLogicTest
             var ex = Record.Exception(() =>
                 SearchLogic.SearchDirectory(tempDir.FullName, ""));
 
-            Assert.Null(ex);
+            ex.ShouldBeNull();
         }
         finally
         {
@@ -109,7 +111,7 @@ public class SearchLogicTest
             }
 
             var output = sw.ToString();
-            Assert.Contains("--- Results for:", output);
+            output.ShouldContain("--- Results for:");
         }
         finally
         {
@@ -143,11 +145,11 @@ public class SearchLogicTest
             }
 
             var stdout = sw.ToString();
-            Assert.DoesNotContain("--- Results for:", stdout);
+            stdout.ShouldNotContain("--- Results for:");
 
             var log = Directory.EnumerateFiles(logsDir, "*.log").Single();
             var content = File.ReadAllText(log);
-            Assert.Contains("--- Results for:", content);
+            content.ShouldContain("--- Results for:");
         }
         finally
         {
