@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using Tools.Lib;
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
 var services = new ServiceCollection();
 services.AddLogging(configure =>
 {

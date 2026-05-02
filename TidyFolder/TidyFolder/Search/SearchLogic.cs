@@ -66,10 +66,12 @@ public static class SearchLogic
                 if (!Path.GetDirectoryName(file.Path)
                          .Equals(Path.GetDirectoryName(other.Path),
                                  StringComparison.OrdinalIgnoreCase))
+                {
                     continue;
+                }
 
                 if (otherStem.StartsWith(stem, StringComparison.Ordinal)
-                    && otherStem != stem)
+                                && otherStem != stem)
                 {
                     result.Add((file, other));
                 }
@@ -105,7 +107,7 @@ public static class SearchLogic
 
                 try
                 {
-                    logFile = new StreamWriter(logPath);
+                    logFile = new StreamWriter(logPath, false, System.Text.Encoding.UTF8);
                     output = logFile;
                 }
                 catch (Exception ex)
@@ -142,15 +144,13 @@ public static class SearchLogic
         }
     }
 
-
-    private static void PrintMatchingStems(
-        TextWriter output,
-        string name,
-        List<(DirEntry File, DirEntry Other)> matches)
+    private static void PrintMatchingStems(TextWriter output, string name, List<(DirEntry File, DirEntry Other)> matches)
     {
         if (matches.Count == 0)
             return;
 
+        // This ensures the writer uses UTF-8 if it's a file stream
+        // and hasn't been configured otherwise.
         output.WriteLine();
         output.WriteLine($"--- Results for: {name} ---");
 
@@ -161,6 +161,8 @@ public static class SearchLogic
             output.WriteLine($"\t{file.Name}");
             output.WriteLine($"\t{other.Name}");
         }
+
+        output.Flush();
     }
 
     private static string GetLogTime() =>
