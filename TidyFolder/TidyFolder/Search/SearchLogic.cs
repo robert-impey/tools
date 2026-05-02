@@ -60,17 +60,23 @@ public static class SearchLogic
                 if (!SplitStemExt(other.Path, out var otherStem, out var otherExt))
                     continue;
 
-                if (!StringComparer.OrdinalIgnoreCase.Equals(ext, otherExt))
+                // Normalize possible nulls returned by Path APIs before comparing.
+                var aExt = ext ?? string.Empty;
+                var bExt = otherExt ?? string.Empty;
+                if (!StringComparer.OrdinalIgnoreCase.Equals(aExt, bExt))
                     continue;
 
-                if (!Path.GetDirectoryName(file.Path)
-                        .Equals(Path.GetDirectoryName(other.Path),
-                            StringComparison.OrdinalIgnoreCase))
+                var dir1 = Path.GetDirectoryName(file.Path) ?? string.Empty;
+                var dir2 = Path.GetDirectoryName(other.Path) ?? string.Empty;
+                if (!dir1.Equals(dir2, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                if (otherStem.StartsWith(stem, StringComparison.Ordinal)
+                // Ensure stems are non-null before calling StartsWith to avoid CS8602.
+                if (!string.IsNullOrEmpty(otherStem)
+                    && !string.IsNullOrEmpty(stem)
+                    && otherStem.StartsWith(stem, StringComparison.Ordinal)
                     && otherStem != stem)
                 {
                     result.Add((file, other));
@@ -157,7 +163,7 @@ public static class SearchLogic
 
         foreach (var (file, other) in matches)
         {
-            var parent = Path.GetDirectoryName(file.Path);
+            var parent = Path.GetDirectoryName(file.Path) ?? string.Empty;
             output.WriteLine(parent);
             output.WriteLine($"\t{file.Name}");
             output.WriteLine($"\t{other.Name}");
