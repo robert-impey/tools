@@ -19,7 +19,6 @@ jobs:
           - permreset
           - rct
           - staydeleted
-          - tdyfldr
     defaults:
       run:
         working-directory: ./${{ matrix.project }}
