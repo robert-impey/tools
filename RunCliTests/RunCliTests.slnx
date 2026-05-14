@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="../Tools.Lib/Tools.Lib.csproj" />
-  <Project Path="RunCliTests/RunCliTests.csproj" />
-</Solution>
