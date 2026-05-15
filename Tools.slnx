@@ -2,8 +2,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/dotnet.yml" />
   </Folder>
-  <Project Path="ResetPerms/ResetPerms.Test/ResetPerms.Test.csproj" />
-  <Project Path="ResetPerms/ResetPerms/ResetPerms.csproj" />
   <Project Path="TidyFolder/TidyFolder.Test/TidyFolder.Test.csproj" />
   <Project Path="TidyFolder/TidyFolder/TidyFolder.csproj" />
   <Project Path="Tools.Lib/Tools.Lib.csproj" />
