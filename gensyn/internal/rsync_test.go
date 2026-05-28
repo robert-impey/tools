@@ -63,7 +63,7 @@ func TestGenerateDirectorySynchScripts(t *testing.T) {
 func TestGenerateFilesSynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(true, outputDir, "ssh-config.txt")
+	err := GenerateSynchScripts(true, outputDir, filepath.Join("test_data", "rsync", "ssh-config.txt"))
 	assert.Nil(t, err)
 
 	scriptsFile := path.Join(outputDir, "ssh-config.ps1")
