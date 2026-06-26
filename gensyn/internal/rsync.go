@@ -15,7 +15,6 @@ import (
 	"sort"
 	"strings"
 
-	mapset "github.com/deckarep/golang-set/v2"
 	common "github.com/robert-impey/tools/internal"
 )
 
@@ -108,18 +107,25 @@ func readGSSConfig(r io.Reader, label string) (string, string, string, []string,
 	// Skip blank line
 	scanLine(input)
 
-	dirs := mapset.NewSet[string]()
+	dirs := make(map[string]struct{})
+
 	for input.Scan() {
 		d := strings.Trim(input.Text(), " /")
 		if len(d) > 0 {
-			dirs.Add(d)
+			dirs[d] = struct{}{}
 		}
 	}
+
 	if err := input.Err(); err != nil {
 		return "", "", "", nil, fmt.Errorf("unable to read %s: %w", label, err)
 	}
 
-	dirsSlice := dirs.ToSlice()
+	// convert to slice
+	dirsSlice := make([]string, 0, len(dirs))
+	for d := range dirs {
+		dirsSlice = append(dirsSlice, d)
+	}
+
 	sort.Strings(dirsSlice)
 
 	return synch, src, dst, dirsSlice, nil
