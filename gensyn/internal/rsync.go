@@ -208,7 +208,7 @@ func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item str
 	writeRsyncHeader(&b)
 	writeItemCommands(&b, false, info, item)
 	b.WriteString("\n")
-	b.WriteString("\nGet-Date\n")
+	b.WriteString("Get-Date\n")
 	return b.Bytes()
 }
 
