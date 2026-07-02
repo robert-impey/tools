@@ -199,7 +199,7 @@ func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 		writeItemCommands(&b, g.Files, info, item)
 		b.WriteString("\n")
 	}
-	b.WriteString("\nGet-Date\n")
+	b.WriteString("Get-Date\n")
 	return b.Bytes()
 }
 
