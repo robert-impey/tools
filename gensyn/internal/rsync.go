@@ -217,9 +217,48 @@ func writeRsyncHeader(b *bytes.Buffer) {
 	_ = common.WriteHeader(b, "# AUTOGEN'D - DO NOT EDIT!")
 	b.WriteString("Get-Date\n\n")
 
-	b.WriteString("Import-Module \"$($env:LOCAL_SCRIPTS)/_Common/ManagedFolders.psm1\"\n\n")
-	b.WriteString("Import-SshVariables\n\n")
+	b.WriteString(sshVariablesBlock)
+	b.WriteString("\n")
 }
+
+const sshVariablesBlock = `try {
+    $hostname = [System.Net.Dns]::GetHostByName((hostname)).HostName
+}
+catch {
+    $hostname = [System.Environment]::MachineName
+}
+
+if ($hostname -match "^[^.]+") {
+    $hostname = $Matches[0]
+}
+
+@(
+    "$env:HOME/.keychain/$($hostname)-sh"
+    "$env:HOME/.ssh/environment-$($hostname)"
+) | ForEach-Object {
+    $keychainFile = $_
+
+    if (Test-Path $keychainFile) {
+        Write-Output "Loading $keychainFile"
+        foreach ($line in Get-Content $keychainFile) {
+            if ($line -match "SSH_AUTH_SOCK=([^;]+);.*") {
+                $env:SSH_AUTH_SOCK = $Matches[1]
+
+                Write-Output "SSH_AUTH_SOCK: $env:SSH_AUTH_SOCK"
+            }
+
+            if ($line -match "SSH_AGENT_PID=(\d+);.*") {
+                $env:SSH_AGENT_PID = $Matches[1]
+
+                Write-Output "SSH_AGENT_PID: $env:SSH_AGENT_PID"
+            }
+        }
+    }
+    else {
+        Write-Output "$keychainFile does not exist!"
+    }
+}
+`
 
 func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string) {
 	to := getCmdLine(files, info.synch, item, info.src, info.dst)
