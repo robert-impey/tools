@@ -59,7 +59,12 @@ func TestGenerateRcifScript_ShouldCreateScriptFile_WithExpectedContent(t *testin
 	assert.Nil(t, err)
 	s := string(b)
 	assert.Contains(t, s, "# AUTOGEN'D - DO NOT EDIT!")
-	assert.Contains(t, s, "SynchSingleFile2Ways")
+	assert.NotContains(t, s, "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"")
+	assert.NotContains(t, s, "SynchSingleFile2Ways")
+	assert.Contains(t, s, "$sourceFolder = \"C:\\\"")
+	assert.Contains(t, s, "$destinationFolder = \"D:\\\"")
+	assert.Contains(t, s, "$logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
+	assert.Contains(t, s, "Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `")
 	assert.Contains(t, s, "file1.txt")
 	assert.Contains(t, s, "file2.txt")
 }
@@ -86,5 +91,7 @@ func TestGenerateRcifScript_ShouldOverwriteExistingScriptFile(t *testing.T) {
 	assert.Nil(t, err)
 	s := string(b)
 	assert.NotContains(t, s, "Old content")
-	assert.Contains(t, s, "SynchSingleFile2Ways")
+	assert.NotContains(t, s, "SynchSingleFile2Ways")
+	assert.Contains(t, s, "$sourceFolder = \"C:\\\"")
+	assert.Contains(t, s, "$destinationFolder = \"D:\\\"")
 }

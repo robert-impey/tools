@@ -130,44 +130,96 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		return err
 	}
 
-	if _, err := fmt.Fprintln(w, `Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1"`); err != nil {
+	sourceClean := cleanFolderPathForLogName(sf.Source)
+	destinationClean := cleanFolderPathForLogName(sf.Destination)
+	if _, err := fmt.Fprintf(w, "$id = \"%s\"\n", sf.Id); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "$sourceFolder = \"%s\"\n", sf.Source); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "$sourceLogName = \"%s\"\n", sourceClean); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "$destinationFolder = \"%s\"\n", sf.Destination); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "$destinationLogName = \"%s\"\n", destinationClean); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintln(w); err != nil {
 		return err
 	}
 
-	sourceClean := cleanFolderPathForLogName(sf.Source)
-	destinationClean := cleanFolderPathForLogName(sf.Destination)
-
-	first := true
 	for _, file := range sf.Files {
-		if first {
-			first = false
-		} else {
-			if _, err := fmt.Fprintln(w); err != nil {
-				return err
-			}
-		}
-
 		if file == "" || strings.HasPrefix(file, "#") {
 			continue
 		}
 
-		fmt.Fprintln(w, "SynchSingleFile2Ways `")
-		fmt.Fprintf(w, "    -id \"%s\" `\n", sf.Id)
-		fmt.Fprintf(w, "    -file \"%s\" `\n", file)
-		fmt.Fprintf(w, "    -sourceFolder \"%s\" `\n", sf.Source)
-		fmt.Fprintf(w, "    -sourceLogName \"%s\" `\n", sourceClean)
-		fmt.Fprintf(w, "    -destinationFolder \"%s\" `\n", sf.Destination)
-		fmt.Fprintf(w, "    -destinationLogName \"%s\" `\n", destinationClean)
-		fmt.Fprintln(w, "    -logged $logged")
+		if _, err := fmt.Fprintln(w); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintf(w, "$file = \"%s\"\n", file); err != nil {
+			return err
+		}
+		if err := writeRcifSynchBlock(w); err != nil {
+			return err
+		}
 	}
 
 	if err := w.Flush(); err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func writeRcifSynchBlock(w *bufio.Writer) error {
+	lines := []string{
+		"if ($logged)",
+		"{",
+		"    $logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"",
+		"    $logFileBase = \"$($logTimeStr).$($id).$($file).$($sourceLogName)-to-$($destinationLogName)\"",
+		"",
+		"    $homeDir = $null",
+		"    if ($env:USERPROFILE -and (Test-Path $env:USERPROFILE)) {",
+		"        $homeDir = $env:USERPROFILE",
+		"    } elseif ($env:HOME -and (Test-Path $env:HOME)) {",
+		"        $homeDir = $env:HOME",
+		"    }",
+		"    $logsDir = Join-Path $homeDir \"logs\"",
+		"    if (-not (Test-Path $logsDir)) {",
+		"        New-Item -ItemType Directory -Path $logsDir -Force | Out-Null",
+		"    }",
+		"    $synchLogsDir = Join-Path $logsDir \"synch\"",
+		"    if (-not (Test-Path $synchLogsDir)) {",
+		"        New-Item -ItemType Directory -Path $synchLogsDir -Force | Out-Null",
+		"    }",
+		"    $logPathBase = Join-Path $synchLogsDir \"$($logFileBase).robocopy-synch\"",
+		"    $logFile = \"$($logPathBase).log\"",
+		"    $errFile = \"$($logPathBase).err\"",
+		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		"        -RedirectStandardOutput $logFile `",
+		"        -RedirectStandardError $errFile `",
+		"        -NoNewWindow `",
+		"        -Wait",
+		"} else",
+		"{",
+		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		"        -NoNewWindow `",
+		"        -Wait",
+		"",
+		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($destinationFolder)\"\" \"\"$($sourceFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		"        -NoNewWindow `",
+		"        -Wait",
+		"}",
+	}
+
+	for _, line := range lines {
+		if _, err := fmt.Fprintln(w, line); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
