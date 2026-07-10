@@ -88,15 +88,12 @@ func createRobocopySyncScript(folder, scriptPath, src, dst string) error {
 		return err
 	}
 
-	fmt.Fprintln(w, `Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1"`)
-	fmt.Fprintln(w)
-
 	fmt.Fprintf(w, "$folder = \"%s\"\n\n", folder)
 	fmt.Fprintf(w, "$src = \"%s\"\n", filepath.Clean(src))
 	fmt.Fprintf(w, "$dst = \"%s\"\n", filepath.Clean(dst))
 	fmt.Fprintln(w)
 
-	fmt.Fprintln(w, "Synch $folder $src $dst $logged")
+	writeSynchBody(w)
 
 	return w.Flush()
 }
@@ -120,9 +117,6 @@ func createAllFoldersRobocopySyncScript(folders []string, scriptPath, src, dst s
 		return err
 	}
 
-	fmt.Fprintln(w, `Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1"`)
-	fmt.Fprintln(w)
-
 	fmt.Fprint(w, "$folders = ")
 	for i, folder := range folders {
 		if i > 0 {
@@ -140,10 +134,47 @@ func createAllFoldersRobocopySyncScript(folders []string, scriptPath, src, dst s
 	fmt.Fprintln(w)
 
 	fmt.Fprintln(w, "foreach ($folder in $folders) {")
-	fmt.Fprintln(w, "    Synch $folder $src $dst $logged")
+	writeSynchBody(w)
 	fmt.Fprintln(w, "}")
 
 	return w.Flush()
+}
+
+func writeSynchBody(w *bufio.Writer) {
+	fmt.Fprintln(w, "$srcLogStr = $src -replace '[:\\\\/ ]+', '_'")
+	fmt.Fprintln(w, "$dstLogStr = $dst -replace '[:\\\\/ ]+', '_'")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "$srcPath = \"$($src)\\$($folder)\"")
+	fmt.Fprintln(w, "$dstPath = \"$($dst)\\$($folder)\"")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "if ((Test-Path $srcPath) -and (Test-Path $dstPath))")
+	fmt.Fprintln(w, "{")
+	fmt.Fprintln(w, "    Write-Output \"$($srcPath) and $($dstPath) exist - synching...\"")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "    if ($logged)")
+	fmt.Fprintln(w, "    {")
+	fmt.Fprintln(w, "        $logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
+	fmt.Fprintln(w, "        $logFileBase = \"$($logTimeStr)-$($srcLogStr)-$($dstLogStr)-$($folder).robocopy-synch\"")
+	fmt.Fprintln(w, "        $logPathBase = \"$($env:USERPROFILE)\\logs\\synch\\$($logFileBase)\"")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "        $logFile = \"$($logPathBase).log\"")
+	fmt.Fprintln(w, "        $errFile = \"$($logPathBase).err\"")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "        Start-Process ROBOCOPY -ArgumentList \"\"\"$($srcPath)\"\" \"\"$($dstPath)\"\" /E /XO /R:0\" `")
+	fmt.Fprintln(w, "            -RedirectStandardOutput $logFile `")
+	fmt.Fprintln(w, "            -RedirectStandardError $errFile `")
+	fmt.Fprintln(w, "            -NoNewWindow `")
+	fmt.Fprintln(w, "            -Wait")
+	fmt.Fprintln(w, "    } else")
+	fmt.Fprintln(w, "    {")
+	fmt.Fprintln(w, "        Start-Process ROBOCOPY -ArgumentList \"\"\"$($srcPath)\"\" \"\"$($dstPath)\"\" /E /XO /R:0\" `")
+	fmt.Fprintln(w, "            -NoNewWindow `")
+	fmt.Fprintln(w, "            -Wait")
+	fmt.Fprintln(w, "    }")
+	fmt.Fprintln(w, "} else")
+	fmt.Fprintln(w, "{")
+	fmt.Fprintln(w, "    Write-Output \"Check if $($srcPath) and $($dstPath) exist\"")
+	fmt.Fprintln(w, "}")
 }
 
 // --- PowerShell header helpers ---

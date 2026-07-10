@@ -199,8 +199,32 @@ func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
 		t.Errorf("expected dst assignment in script, got:\n%s", content)
 	}
 
-	if !strings.Contains(content, `Synch $folder $src $dst $logged`) {
-		t.Errorf("expected Synch invocation in script, got:\n%s", content)
+	if strings.Contains(content, `Import-Module "$($env:LOCAL_SCRIPTS)\_Common\synch\Synch.psm1"`) {
+		t.Errorf("did not expect Synch module import in script, got:\n%s", content)
+	}
+
+	if strings.Contains(content, `function CleanFileName($fileName)`) {
+		t.Errorf("did not expect CleanFileName helper in script, got:\n%s", content)
+	}
+
+	if strings.Contains(content, `function Get-LogsTimeStr {`) {
+		t.Errorf("did not expect Get-LogsTimeStr helper in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$srcLogStr = $src -replace '[:\\/ ]+', '_'`) {
+		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$dstLogStr = $dst -replace '[:\\/ ]+', '_'`) {
+		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$logTimeStr = Get-Date -Format "yyyy-MM-ddTHH_mm_ss"`) {
+		t.Errorf("expected inline Get-LogsTimeStr expression in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `Start-Process ROBOCOPY`) {
+		t.Errorf("expected robocopy invocation in script, got:\n%s", content)
 	}
 }
 
@@ -245,5 +269,29 @@ func TestCreateAllFoldersRobocopySyncScript_GeneratesCorrectContent(t *testing.T
 
 	if !strings.Contains(content, `foreach ($folder in $folders)`) {
 		t.Errorf("expected foreach loop in script, got:\n%s", content)
+	}
+
+	if strings.Contains(content, `function CleanFileName($fileName)`) {
+		t.Errorf("did not expect CleanFileName helper in script, got:\n%s", content)
+	}
+
+	if strings.Contains(content, `function Get-LogsTimeStr {`) {
+		t.Errorf("did not expect Get-LogsTimeStr helper in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$srcLogStr = $src -replace '[:\\/ ]+', '_'`) {
+		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$dstLogStr = $dst -replace '[:\\/ ]+', '_'`) {
+		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	}
+
+	if !strings.Contains(content, `$logTimeStr = Get-Date -Format "yyyy-MM-ddTHH_mm_ss"`) {
+		t.Errorf("expected inline Get-LogsTimeStr expression in script, got:\n%s", content)
+	}
+
+	if strings.Contains(content, `Synch $folder $src $dst $logged`) {
+		t.Errorf("did not expect Synch invocation in script, got:\n%s", content)
 	}
 }
