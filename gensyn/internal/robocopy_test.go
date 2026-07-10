@@ -211,12 +211,12 @@ func TestCreateRobocopySyncScript_GeneratesCorrectContent(t *testing.T) {
 		t.Errorf("did not expect Get-LogsTimeStr helper in script, got:\n%s", content)
 	}
 
-	if !strings.Contains(content, `$srcLogStr = $src -replace '[:\\/ ]+', '_'`) {
-		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	if !strings.Contains(content, `$srcLogStr = "C_Source"`) {
+		t.Errorf("expected literal source log name in script, got:\n%s", content)
 	}
 
-	if !strings.Contains(content, `$dstLogStr = $dst -replace '[:\\/ ]+', '_'`) {
-		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	if !strings.Contains(content, `$dstLogStr = "D_Destination"`) {
+		t.Errorf("expected literal destination log name in script, got:\n%s", content)
 	}
 
 	if !strings.Contains(content, `$logTimeStr = Get-Date -Format "yyyy-MM-ddTHH_mm_ss"`) {
@@ -279,12 +279,12 @@ func TestCreateAllFoldersRobocopySyncScript_GeneratesCorrectContent(t *testing.T
 		t.Errorf("did not expect Get-LogsTimeStr helper in script, got:\n%s", content)
 	}
 
-	if !strings.Contains(content, `$srcLogStr = $src -replace '[:\\/ ]+', '_'`) {
-		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	if !strings.Contains(content, `$srcLogStr = "C_Source"`) {
+		t.Errorf("expected literal source log name in script, got:\n%s", content)
 	}
 
-	if !strings.Contains(content, `$dstLogStr = $dst -replace '[:\\/ ]+', '_'`) {
-		t.Errorf("expected inline CleanFileName expression in script, got:\n%s", content)
+	if !strings.Contains(content, `$dstLogStr = "D_Destination"`) {
+		t.Errorf("expected literal destination log name in script, got:\n%s", content)
 	}
 
 	if !strings.Contains(content, `$logTimeStr = Get-Date -Format "yyyy-MM-ddTHH_mm_ss"`) {

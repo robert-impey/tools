@@ -93,7 +93,7 @@ func createRobocopySyncScript(folder, scriptPath, src, dst string) error {
 	fmt.Fprintf(w, "$dst = \"%s\"\n", filepath.Clean(dst))
 	fmt.Fprintln(w)
 
-	writeSynchBody(w)
+	writeSynchBody(w, cleanFolderPathForLogName(src), cleanFolderPathForLogName(dst))
 
 	return w.Flush()
 }
@@ -134,15 +134,15 @@ func createAllFoldersRobocopySyncScript(folders []string, scriptPath, src, dst s
 	fmt.Fprintln(w)
 
 	fmt.Fprintln(w, "foreach ($folder in $folders) {")
-	writeSynchBody(w)
+	writeSynchBody(w, cleanFolderPathForLogName(src), cleanFolderPathForLogName(dst))
 	fmt.Fprintln(w, "}")
 
 	return w.Flush()
 }
 
-func writeSynchBody(w *bufio.Writer) {
-	fmt.Fprintln(w, "$srcLogStr = $src -replace '[:\\\\/ ]+', '_'")
-	fmt.Fprintln(w, "$dstLogStr = $dst -replace '[:\\\\/ ]+', '_'")
+func writeSynchBody(w *bufio.Writer, srcLogName, dstLogName string) {
+	fmt.Fprintf(w, "$srcLogStr = \"%s\"\n", srcLogName)
+	fmt.Fprintf(w, "$dstLogStr = \"%s\"\n", dstLogName)
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "$srcPath = \"$($src)\\$($folder)\"")
 	fmt.Fprintln(w, "$dstPath = \"$($dst)\\$($folder)\"")
