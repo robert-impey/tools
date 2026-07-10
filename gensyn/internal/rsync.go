@@ -194,7 +194,7 @@ func (g *RsyncScriptGenerator) printPlan(info *ScriptsInfo) {
 
 func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 	var b bytes.Buffer
-	writeRsyncHeader(&b)
+	writeRsyncHeader(&b, info)
 	for _, item := range info.items {
 		writeItemCommands(&b, g.Files, info, item)
 		b.WriteString("\n")
@@ -205,17 +205,28 @@ func (g *RsyncScriptGenerator) buildAllItemsScript(info *ScriptsInfo) []byte {
 
 func (g *RsyncScriptGenerator) buildSingleItemScript(info *ScriptsInfo, item string) []byte {
 	var b bytes.Buffer
-	writeRsyncHeader(&b)
+	writeRsyncHeader(&b, info)
 	writeItemCommands(&b, false, info, item)
 	b.WriteString("\n")
 	b.WriteString("Get-Date\n")
 	return b.Bytes()
 }
 
-func writeRsyncHeader(b *bytes.Buffer) {
+func writeRsyncHeader(b *bytes.Buffer, info *ScriptsInfo) {
 	_ = common.WriteShebang(b)
 	_ = common.WriteHeader(b, "# AUTOGEN'D - DO NOT EDIT!")
+
+	b.WriteString("param(\n")
+	b.WriteString("    [Parameter (Mandatory = $False)]\n")
+	b.WriteString("    [switch]$logged = $False\n")
+	b.WriteString(")\n\n")
+
 	b.WriteString("Get-Date\n\n")
+
+	fmt.Fprintf(b, "$id = \"%s\"\n", info.name)
+	fmt.Fprintf(b, "$srcLogName = \"%s\"\n", cleanFolderPathForLogName(info.src))
+	fmt.Fprintf(b, "$dstLogName = \"%s\"\n", cleanFolderPathForLogName(info.dst))
+	b.WriteString("\n")
 
 	b.WriteString(sshVariablesBlock)
 	b.WriteString("\n")
@@ -261,11 +272,44 @@ if ($hostname -match "^[^.]+") {
 `
 
 func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item string) {
+	fmt.Fprintf(b, "$item = \"%s\"\n\n", item)
+
 	to := getCmdLine(files, info.synch, item, info.src, info.dst)
-	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(to), to)
+	writeDirectionalCommand(b, to, "src", "dst")
 
 	from := getCmdLine(files, info.synch, item, info.dst, info.src)
-	fmt.Fprintf(b, "%s\n%s\n", getEchoLine(from), from)
+	writeDirectionalCommand(b, from, "dst", "src")
+}
+
+func writeDirectionalCommand(b *bytes.Buffer, cmd, fromLogVar, toLogVar string) {
+	fmt.Fprintf(b, "%s\n", getEchoLine(cmd))
+	fmt.Fprintln(b, "if ($logged)")
+	fmt.Fprintln(b, "{")
+	fmt.Fprintln(b, "    $logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
+	fmt.Fprintf(b, "    $logFileBase = \"$($logTimeStr).$($id).$($item).$($%sLogName)-to-$($%sLogName)\"\n", fromLogVar, toLogVar)
+	fmt.Fprintln(b)
+	fmt.Fprintln(b, "    $homeDir = $null")
+	fmt.Fprintln(b, "    if ($env:USERPROFILE -and (Test-Path $env:USERPROFILE)) {")
+	fmt.Fprintln(b, "        $homeDir = $env:USERPROFILE")
+	fmt.Fprintln(b, "    } elseif ($env:HOME -and (Test-Path $env:HOME)) {")
+	fmt.Fprintln(b, "        $homeDir = $env:HOME")
+	fmt.Fprintln(b, "    }")
+	fmt.Fprintln(b, "    $logsDir = Join-Path $homeDir \"logs\"")
+	fmt.Fprintln(b, "    if (-not (Test-Path $logsDir)) {")
+	fmt.Fprintln(b, "        New-Item -ItemType Directory -Path $logsDir -Force | Out-Null")
+	fmt.Fprintln(b, "    }")
+	fmt.Fprintln(b, "    $synchLogsDir = Join-Path $logsDir \"synch\"")
+	fmt.Fprintln(b, "    if (-not (Test-Path $synchLogsDir)) {")
+	fmt.Fprintln(b, "        New-Item -ItemType Directory -Path $synchLogsDir -Force | Out-Null")
+	fmt.Fprintln(b, "    }")
+	fmt.Fprintln(b, "    $logPathBase = Join-Path $synchLogsDir \"$($logFileBase).rsync-synch\"")
+	fmt.Fprintln(b, "    $logFile = \"$($logPathBase).log\"")
+	fmt.Fprintln(b, "    $errFile = \"$($logPathBase).err\"")
+	fmt.Fprintf(b, "    %s 1> $logFile 2> $errFile\n", cmd)
+	fmt.Fprintln(b, "} else")
+	fmt.Fprintln(b, "{")
+	fmt.Fprintf(b, "    %s\n", cmd)
+	fmt.Fprintln(b, "}")
 }
 
 // --- File helpers ---

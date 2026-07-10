@@ -230,10 +230,9 @@ func cleanFolderPathForLogName(path string) string {
 	// replace backslashes with underscores
 	p = strings.ReplaceAll(p, "\\", "_")
 
-	// remove invalid filename characters
-	// conservative set: <>:"/\|?* and control chars
-	invalid := regexp.MustCompile(`[<>:\"/\\|?*\x00-\x1F]`)
+	// remove invalid filename characters and tildes
+	invalid := regexp.MustCompile(`[<>:\"/\\|?*~\x00-\x1F]`)
 	p = invalid.ReplaceAllString(p, "")
 
-	return p
+	return strings.TrimLeft(p, "_")
 }
