@@ -3,6 +3,8 @@
 import (
 	"fmt"
 	"io"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -21,4 +23,20 @@ func WriteShebang(w io.Writer) error {
 		return err
 	}
 	return nil
+}
+
+func CleanFolderPathForLogName(path string) string {
+	p := strings.TrimSpace(path)
+	// normalize slashes
+	p = strings.ReplaceAll(p, "/", "\\")
+	// replace backslashes with underscores
+	p = strings.ReplaceAll(p, "\\", "_")
+	// replace @ (remote host indicator in rsync paths) with __
+	p = strings.ReplaceAll(p, "@", "__")
+
+	// remove invalid filename characters and tildes
+	invalid := regexp.MustCompile(`[<>:\"/\\|?*~\x00-\x1F]`)
+	p = invalid.ReplaceAllString(p, "")
+
+	return strings.TrimLeft(p, "_")
 }

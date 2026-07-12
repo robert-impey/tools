@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/robert-impey/tools/internal"
 	common "github.com/robert-impey/tools/internal"
 )
 
@@ -224,8 +225,8 @@ func writeRsyncHeader(b *bytes.Buffer, info *ScriptsInfo) {
 	b.WriteString("Get-Date\n\n")
 
 	fmt.Fprintf(b, "$id = \"%s\"\n", info.name)
-	fmt.Fprintf(b, "$srcLogName = \"%s\"\n", cleanFolderPathForLogName(info.src))
-	fmt.Fprintf(b, "$dstLogName = \"%s\"\n", cleanFolderPathForLogName(info.dst))
+	fmt.Fprintf(b, "$srcLogName = \"%s\"\n", internal.CleanFolderPathForLogName(info.src))
+	fmt.Fprintf(b, "$dstLogName = \"%s\"\n", internal.CleanFolderPathForLogName(info.dst))
 	b.WriteString("\n")
 
 	b.WriteString(sshVariablesBlock)

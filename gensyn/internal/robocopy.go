@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/robert-impey/tools/internal"
 	common "github.com/robert-impey/tools/internal"
 )
 
@@ -93,7 +94,7 @@ func createRobocopySyncScript(folder, scriptPath, src, dst string) error {
 	fmt.Fprintf(w, "$dst = \"%s\"\n", filepath.Clean(dst))
 	fmt.Fprintln(w)
 
-	writeSynchBody(w, cleanFolderPathForLogName(src), cleanFolderPathForLogName(dst))
+	writeSynchBody(w, internal.CleanFolderPathForLogName(src), internal.CleanFolderPathForLogName(dst))
 
 	return w.Flush()
 }
@@ -134,7 +135,7 @@ func createAllFoldersRobocopySyncScript(folders []string, scriptPath, src, dst s
 	fmt.Fprintln(w)
 
 	fmt.Fprintln(w, "foreach ($folder in $folders) {")
-	writeSynchBody(w, cleanFolderPathForLogName(src), cleanFolderPathForLogName(dst))
+	writeSynchBody(w, internal.CleanFolderPathForLogName(src), internal.CleanFolderPathForLogName(dst))
 	fmt.Fprintln(w, "}")
 
 	return w.Flush()

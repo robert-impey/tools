@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
+	"github.com/robert-impey/tools/internal"
 	common "github.com/robert-impey/tools/internal"
 )
 
@@ -130,8 +130,8 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		return err
 	}
 
-	sourceClean := cleanFolderPathForLogName(sf.Source)
-	destinationClean := cleanFolderPathForLogName(sf.Destination)
+	sourceClean := internal.CleanFolderPathForLogName(sf.Source)
+	destinationClean := internal.CleanFolderPathForLogName(sf.Destination)
 	if _, err := fmt.Fprintf(w, "$id = \"%s\"\n", sf.Id); err != nil {
 		return err
 	}
@@ -221,20 +221,4 @@ func writeRcifSynchBlock(w *bufio.Writer) error {
 		}
 	}
 	return nil
-}
-
-func cleanFolderPathForLogName(path string) string {
-	p := strings.TrimSpace(path)
-	// normalize slashes
-	p = strings.ReplaceAll(p, "/", "\\")
-	// replace backslashes with underscores
-	p = strings.ReplaceAll(p, "\\", "_")
-	// replace @ (remote host indicator in rsync paths) with __
-	p = strings.ReplaceAll(p, "@", "__")
-
-	// remove invalid filename characters and tildes
-	invalid := regexp.MustCompile(`[<>:\"/\\|?*~\x00-\x1F]`)
-	p = invalid.ReplaceAllString(p, "")
-
-	return strings.TrimLeft(p, "_")
 }
