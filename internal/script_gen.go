@@ -33,7 +33,11 @@ func CleanFolderPathForLogName(path string) string {
 	p = strings.ReplaceAll(p, "@", "__")
 	// preserve a Windows drive prefix while treating a path separator colon as __
 	if len(p) >= 3 && p[1] == ':' && ((p[0] >= 'A' && p[0] <= 'Z') || (p[0] >= 'a' && p[0] <= 'z')) {
-		p = string(p[0]) + "_" + p[3:]
+		if len(p) > 3 {
+			p = string(p[0]) + "_" + p[3:]
+		} else {
+			p = string(p[0])
+		}
 	}
 	p = strings.ReplaceAll(p, ":\\", "__")
 	p = strings.ReplaceAll(p, ":/", "__")
@@ -44,5 +48,5 @@ func CleanFolderPathForLogName(path string) string {
 	invalid := regexp.MustCompile(`[<>:"|?*~\x00-\x1F]`)
 	p = invalid.ReplaceAllString(p, "")
 
-	return strings.TrimLeft(p, "_")
+	return strings.Trim(p, "_")
 }
