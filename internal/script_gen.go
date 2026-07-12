@@ -31,14 +31,17 @@ func CleanFolderPathForLogName(path string) string {
 	p = strings.ReplaceAll(p, "/", "\\")
 	// replace @ (remote host indicator in rsync paths) with __
 	p = strings.ReplaceAll(p, "@", "__")
-	// treat a drive-letter separator specially, but keep remote-host separators as __
-	p = regexp.MustCompile(`^([A-Za-z]):([\\/])`).ReplaceAllString(p, "$1_")
-	p = strings.ReplaceAll(p, ":/", "__")
+	// preserve a Windows drive prefix while treating a path separator colon as __
+	if len(p) >= 3 && p[1] == ':' && ((p[0] >= 'A' && p[0] <= 'Z') || (p[0] >= 'a' && p[0] <= 'z')) {
+		p = string(p[0]) + "_" + p[3:]
+	}
 	p = strings.ReplaceAll(p, ":\\", "__")
+	p = strings.ReplaceAll(p, ":/", "__")
+	p = strings.ReplaceAll(p, ":", "")
 	// replace backslashes with underscores
 	p = strings.ReplaceAll(p, "\\", "_")
 	// remove other invalid filename characters and tildes
-	invalid := regexp.MustCompile(`[<>:\"/\\|?*~\x00-\x1F]`)
+	invalid := regexp.MustCompile(`[<>:"|?*~\x00-\x1F]`)
 	p = invalid.ReplaceAllString(p, "")
 
 	return strings.TrimLeft(p, "_")
