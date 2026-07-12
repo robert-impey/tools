@@ -1,12 +1,10 @@
-package internal_test
+package internal
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/robert-impey/tools/internal"
 )
 
 // writeFile is a small helper to create a temporary text file containing
@@ -46,7 +44,7 @@ func TestLoadFolderManager_SuccessfullyLoadsLocationsAndFolders(t *testing.T) {
 		"configs",
 	})
 
-	manager, err := internal.LoadFolderManager(locationsFile, foldersFile)
+	manager, err := LoadFolderManager(locationsFile, foldersFile)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -79,7 +77,7 @@ func TestLoadFolderManager_IgnoresBlankAndCommentLines(t *testing.T) {
 		"folderB",
 	})
 
-	manager, err := internal.LoadFolderManager(locationsFile, foldersFile)
+	manager, err := LoadFolderManager(locationsFile, foldersFile)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -102,7 +100,7 @@ func TestLoadFolderManager_ErrorsIfLocationsEmpty(t *testing.T) {
 
 	foldersFile := writeFile(t, tempDir, "folders.txt", []string{"folderA"})
 
-	_, err := internal.LoadFolderManager(locationsFile, foldersFile)
+	_, err := LoadFolderManager(locationsFile, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
@@ -122,7 +120,7 @@ func TestLoadFolderManager_ErrorsIfFoldersEmpty(t *testing.T) {
 		"# comment",
 	})
 
-	_, err := internal.LoadFolderManager(locationsFile, foldersFile)
+	_, err := LoadFolderManager(locationsFile, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
@@ -138,7 +136,7 @@ func TestLoadFolderManager_ErrorsIfFileDoesNotExist(t *testing.T) {
 	missing := filepath.Join(tempDir, "missing.txt")
 	foldersFile := writeFile(t, tempDir, "folders.txt", []string{"folder"})
 
-	_, err := internal.LoadFolderManager(missing, foldersFile)
+	_, err := LoadFolderManager(missing, foldersFile)
 	if err == nil {
 		t.Fatalf("expected error, got nil")
 	}
