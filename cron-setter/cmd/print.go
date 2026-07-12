@@ -41,23 +41,23 @@ func printAllTasks() {
 
 	printStayDeletedRun(0, 2)
 	printSynch(2, 4)
+	printResetPerms(7)
 	fmt.Println()
 
-	printStayDeletedRun(7, 9)
+	printStayDeletedRun(8, 10)
 
-	printBuild(9)
-	printResetPerms(10)
+	printBuild(10)
 	printLogsDeleter(11)
 	printListManagedFolders(12)
 	fmt.Println()
 
 	printSynch(13, 4)
+	printResetPerms(17)
 	fmt.Println()
 
-	printStayDeletedRun(17, 19)
+	printStayDeletedRun(18, 20)
 
-	printBuild(19)
-	printResetPerms(20)
+	printBuild(20)
 	fmt.Println()
 
 	printStayDeletedRun(21, 24)
