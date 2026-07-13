@@ -18,15 +18,15 @@ import (
 )
 
 func TestParseGSSFile(t *testing.T) {
-	scriptsInfo, err := ParseGSSFile(filepath.Join("test_data", "rsync", "cleopatra.txt"))
+	scriptsInfo, err := ParseGSSFile(filepath.Join("test_data", "rsync", "qalhata.txt"))
 
 	assert.Nil(t, err)
 	assert.NotNil(t, scriptsInfo)
 
-	assert.Equal(t, scriptsInfo.name, "cleopatra")
+	assert.Equal(t, scriptsInfo.name, "qalhata")
 	assert.Equal(t, scriptsInfo.synch,
 		"rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/home/robert/local-scripts/_Common/synch/rsync-excluded.txt")
-	assert.Equal(t, scriptsInfo.src, "robert@cleopatra.robertimpey.com:~")
+	assert.Equal(t, scriptsInfo.src, "robert@qalhata.robertimpey.com:~")
 	assert.Equal(t, scriptsInfo.dst, "/home/robert")
 	assert.Equal(t, len(scriptsInfo.items), 4)
 }
@@ -41,15 +41,15 @@ func TestParseGSSFileBadFile(t *testing.T) {
 func TestGenerateDirectorySynchScripts(t *testing.T) {
 	outputDir := t.TempDir()
 
-	err := GenerateSynchScripts(false, outputDir, filepath.Join("test_data", "rsync", "cleopatra.txt"))
+	err := GenerateSynchScripts(false, outputDir, filepath.Join("test_data", "rsync", "qalhata.txt"))
 	assert.Nil(t, err)
 
-	scriptsFile := path.Join(outputDir, "cleopatra.ps1")
+	scriptsFile := path.Join(outputDir, "qalhata.ps1")
 	if _, err := os.Stat(scriptsFile); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts file %s doesn't exist", scriptsFile)
 	}
 
-	scriptsDir := path.Join(outputDir, "cleopatra")
+	scriptsDir := path.Join(outputDir, "qalhata")
 	if _, err := os.Stat(scriptsDir); errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("scripts dir %s doesn't exist", scriptsDir)
 	}

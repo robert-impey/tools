@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GenSyn | Kiya | Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="GenSyn | Qalhata | Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$/gensyn" />
-    <parameters value="rsync -a $USER_HOME$/autogen/synch internal/test_data/rsync/kiya.txt" />
+    <parameters value="rsync -a $USER_HOME$/autogen/synch internal/test_data/rsync/qalhata.txt" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/gensyn" />
     <directory value="$PROJECT_DIR$" />
