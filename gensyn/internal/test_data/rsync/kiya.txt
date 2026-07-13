@@ -3,5 +3,6 @@ robert@kiya.robertimpey.com:~
 /Users/robert/Library/CloudStorage/OneDrive-Personal
 
 config
+data
 executables
 local-scripts
