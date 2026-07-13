@@ -283,7 +283,6 @@ func writeItemCommands(b *bytes.Buffer, files bool, info *ScriptsInfo, item stri
 }
 
 func writeDirectionalCommand(b *bytes.Buffer, cmd, fromLogVar, toLogVar string) {
-	fmt.Fprintf(b, "%s\n", getEchoLine(cmd))
 	fmt.Fprintln(b, "if ($logged)")
 	fmt.Fprintln(b, "{")
 	fmt.Fprintln(b, "    $logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
@@ -306,9 +305,11 @@ func writeDirectionalCommand(b *bytes.Buffer, cmd, fromLogVar, toLogVar string) 
 	fmt.Fprintln(b, "    $logPathBase = Join-Path $synchLogsDir \"$($logFileBase).rsync-synch\"")
 	fmt.Fprintln(b, "    $logFile = \"$($logPathBase).log\"")
 	fmt.Fprintln(b, "    $errFile = \"$($logPathBase).err\"")
-	fmt.Fprintf(b, "    %s 1> $logFile 2> $errFile\n", cmd)
+	fmt.Fprintf(b, "\"%s\" | Set-Content -LiteralPath $logFile\n", cmd)
+	fmt.Fprintf(b, "    %s 1>> $logFile 2> $errFile\n", cmd)
 	fmt.Fprintln(b, "} else")
 	fmt.Fprintln(b, "{")
+	fmt.Fprintf(b, "%s\n", getEchoLine(cmd))
 	fmt.Fprintf(b, "    %s\n", cmd)
 	fmt.Fprintln(b, "}")
 }

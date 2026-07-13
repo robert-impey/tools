@@ -106,8 +106,8 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		// Each direction is wrapped in an if($logged)/else block with its own log file.
 		assert.Contains(t, script, `$logFileBase = "$($logTimeStr).$($id).$($item).$($srcLogName)-to-$($dstLogName)"`)
 		assert.Contains(t, script, `$logFileBase = "$($logTimeStr).$($id).$($item).$($dstLogName)-to-$($srcLogName)"`)
-		assert.Contains(t, script, "rsync --flags user@host:~/config/ /local/path/config 1> $logFile 2> $errFile")
-		assert.Contains(t, script, "rsync --flags /local/path/config/ user@host:~/config 1> $logFile 2> $errFile")
+		assert.Contains(t, script, "rsync --flags user@host:~/config/ /local/path/config 1>> $logFile 2> $errFile")
+		assert.Contains(t, script, "rsync --flags /local/path/config/ user@host:~/config 1>> $logFile 2> $errFile")
 
 		// 2. Verify Sub-script creation
 		// The code creates a folder named after the script for individual items
@@ -117,7 +117,7 @@ func TestWriteScriptsCharacterization(t *testing.T) {
 		subScript := string(subContent)
 		assert.Contains(t, subScript, "rsync --flags user@host:~/config/ /local/path/config")
 		assert.Contains(t, subScript, "[switch]$logged = $False")
-		assert.Contains(t, subScript, "rsync --flags user@host:~/config/ /local/path/config 1> $logFile 2> $errFile")
+		assert.Contains(t, subScript, "rsync --flags user@host:~/config/ /local/path/config 1>> $logFile 2> $errFile")
 	})
 
 	t.Run("File Mode Full Output", func(t *testing.T) {
