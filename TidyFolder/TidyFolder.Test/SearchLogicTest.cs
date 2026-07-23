@@ -1,3 +1,4 @@
+using System.Text;
 using Shouldly;
 using TidyFolder.Search;
 
@@ -155,5 +156,64 @@ public class SearchLogicTest
         {
             root.Delete(true);
         }
+    }
+
+    [Fact]
+    public void SearchDirectory_WritesExceptionToErrorLog_WhenConsoleOutThrows()
+    {
+        var root = Directory.CreateTempSubdirectory();
+        try
+        {
+            var logsDir = Path.Combine(root.FullName, "logs");
+            Directory.CreateDirectory(logsDir);
+
+            CreateFile(Path.Combine(root.FullName, "a.txt"), "x");
+            CreateFile(Path.Combine(root.FullName, "a1.txt"), "y");
+
+            var oldOut = Console.Out;
+            Console.SetOut(new ThrowingTextWriter());
+
+            try
+            {
+                var ex = Record.Exception(() =>
+                    SearchLogic.SearchDirectory(root.FullName, logsDir));
+
+                ex.ShouldNotBeNull();
+                ex.ShouldBeOfType<NotSupportedException>();
+            }
+            finally
+            {
+                Console.SetOut(oldOut);
+            }
+
+            var errLog = Directory.EnumerateFiles(logsDir, "*.err").Single();
+            var content = File.ReadAllText(errLog);
+            content.ShouldContain("ERROR processing");
+            content.ShouldContain(root.FullName);
+        }
+        finally
+        {
+            root.Delete(true);
+        }
+    }
+
+    private sealed class ThrowingTextWriter : TextWriter
+    {
+        public override Encoding Encoding => Encoding.UTF8;
+
+        public override void Write(char value) =>
+            throw new NotSupportedException("Test writer");
+
+        public override void Write(string? value) =>
+            throw new NotSupportedException("Test writer");
+
+        public override void WriteLine(string? value) =>
+            throw new NotSupportedException("Test writer");
+
+        public override void WriteLine() =>
+            throw new NotSupportedException("Test writer");
+
+        public override void Flush() =>
+            throw new NotSupportedException("Test writer");
     }
 }
