@@ -1,4 +1,5 @@
 using System.Text;
+using NSubstitute;
 using Shouldly;
 using TidyFolder.Search;
 
@@ -171,7 +172,16 @@ public class SearchLogicTest
             CreateFile(Path.Combine(root.FullName, "a1.txt"), "y");
 
             var oldOut = Console.Out;
-            Console.SetOut(new ThrowingTextWriter());
+
+            var writer = Substitute.For<TextWriter>();
+            writer.Encoding.Returns(Encoding.UTF8);
+            writer.WhenForAnyArgs(x => x.Write(Arg.Any<char>())).Do(_ => throw new NotSupportedException("Test writer"));
+            writer.WhenForAnyArgs(x => x.Write(Arg.Any<string>())).Do(_ => throw new NotSupportedException("Test writer"));
+            writer.WhenForAnyArgs(x => x.WriteLine(Arg.Any<string>())).Do(_ => throw new NotSupportedException("Test writer"));
+            writer.WhenForAnyArgs(x => x.WriteLine()).Do(_ => throw new NotSupportedException("Test writer"));
+            writer.WhenForAnyArgs(x => x.Flush()).Do(_ => throw new NotSupportedException("Test writer"));
+
+            Console.SetOut(writer);
 
             try
             {
@@ -197,23 +207,5 @@ public class SearchLogicTest
         }
     }
 
-    private sealed class ThrowingTextWriter : TextWriter
-    {
-        public override Encoding Encoding => Encoding.UTF8;
 
-        public override void Write(char value) =>
-            throw new NotSupportedException("Test writer");
-
-        public override void Write(string? value) =>
-            throw new NotSupportedException("Test writer");
-
-        public override void WriteLine(string? value) =>
-            throw new NotSupportedException("Test writer");
-
-        public override void WriteLine() =>
-            throw new NotSupportedException("Test writer");
-
-        public override void Flush() =>
-            throw new NotSupportedException("Test writer");
-    }
 }
