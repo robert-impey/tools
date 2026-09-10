@@ -1,8 +1,11 @@
 import 'dart:io';
+
 import 'package:crypto/crypto.dart';
 
 /// Groups files found within specified directories that are duplicates based on their content checksum.
-Future<Map<String, List<String>>> groupFilesByChecksum(List<Directory> dirs) async {
+Future<Map<String, List<String>>> groupFilesByChecksum(
+  List<Directory> dirs,
+) async {
   final Map<int, List<String>> fileSizes = {};
 
   // 1. Traverse directories and group paths by size
@@ -51,7 +54,10 @@ Future<Map<String, List<String>>> groupFilesByChecksum(List<Directory> dirs) asy
   return duplicateChecksums;
 }
 
-Future<void> printGroups(Map<String, List<String>> duplicateChecksums, bool findDupes) async {
+Future<void> printGroups(
+  Map<String, List<String>> duplicateChecksums,
+  bool findDupes,
+) async {
   if (duplicateChecksums.isEmpty) {
     print('No duplicate files found.');
     return;
@@ -66,7 +72,7 @@ Future<void> printGroups(Map<String, List<String>> duplicateChecksums, bool find
 
     if (findDupes) {
       for (var path in paths.skip(1)) {
-        print('$path');
+        print(path);
       }
     } else {
       print('\n--- Checksum: $checksum ---');
@@ -80,7 +86,9 @@ Future<void> printGroups(Map<String, List<String>> duplicateChecksums, bool find
 /// Recursively walks a directory, adding file paths to the size map.
 Future<void> _walkDir(Directory dir, Map<int, List<String>> fileSizes) async {
   try {
-    final List<FileSystemEntity> entities = await dir.list(recursive: false).toList();
+    final List<FileSystemEntity> entities = await dir
+        .list(recursive: false)
+        .toList();
 
     for (final entity in entities) {
       if (entity is Directory) {
@@ -121,10 +129,13 @@ void main(List<String> args) async {
   }
 
   if (targetDirs.isEmpty) {
-    print("Usage: dart run bin/dupes.dart [--dupes] <directory1> [directory2] ...");
+    print(
+      "Usage: dart run bin/dupes.dart [--dupes] <directory1> [directory2] ...",
+    );
     return;
   }
 
-  final Map<String, List<String>> duplicateChecksums = await groupFilesByChecksum(targetDirs);
+  final Map<String, List<String>> duplicateChecksums =
+      await groupFilesByChecksum(targetDirs);
   await printGroups(duplicateChecksums, findDupes);
 }
