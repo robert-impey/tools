@@ -26,3 +26,11 @@ updates:
     day: "friday"
     time: "12:00"
   target-branch: "dev"
+# --- Dart packages (pub) ---
+- package-ecosystem: "pub"
+  directory: "/dupes"
+  schedule:
+    interval: "weekly"
+    day: "friday"
+    time: "12:00"
+  target-branch: "dev"
