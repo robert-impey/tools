@@ -1,0 +1,5 @@
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --compress robert@remote.example.com:~/executables/ ~/executables
+receiving incremental file list
+
+sent 832 bytes  received 22,577 bytes  9,363.60 bytes/sec
+total size is 238,307  speedup is 10.18

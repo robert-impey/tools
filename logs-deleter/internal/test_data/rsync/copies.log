@@ -1,0 +1,40 @@
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --compress robert@remote.example.com:~/executables/ ~/executables
+receiving incremental file list
+.stay-deleted/
+Linux/dev/x64/
+Linux/dev/x64/cron-setter
+Linux/dev/x64/gensyn
+Linux/dev/x64/lmf
+Linux/dev/x64/logs-deleter
+Linux/dev/x64/permreset
+Linux/dev/x64/rct
+Linux/dev/x64/staydeleted
+Linux/dev/x64/.stay-deleted/
+Linux/prod/x64/
+Linux/prod/x64/cron-setter
+Linux/prod/x64/gensyn
+Linux/prod/x64/lmf
+Linux/prod/x64/logs-deleter
+Linux/prod/x64/permreset
+Linux/prod/x64/rct
+Linux/prod/x64/staydeleted
+Linux/prod/x64/.stay-deleted/
+Windows/dev/x64/
+Windows/dev/x64/.stay-deleted/
+Windows/prod/x64/
+Windows/prod/x64/.stay-deleted/
+Windows/prod/x86/
+Windows/prod/x86/.stay-deleted/
+darwin/dev/arm64/
+darwin/dev/arm64/.stay-deleted/
+darwin/prod/arm64/
+darwin/prod/arm64/.stay-deleted/
+dotnet/dev/BricksAndMortar/
+dotnet/dev/BricksAndMortar/.stay-deleted/
+dotnet/dev/Coelacanth/
+dotnet/prod/BricksAndMortar/
+dotnet/prod/BricksAndMortar/.stay-deleted/
+dotnet/prod/Coelacanth/
+
+sent 164,324 bytes  received 21,339 bytes  74,265.20 bytes/sec
+total size is 145,412,990  speedup is 783.21
