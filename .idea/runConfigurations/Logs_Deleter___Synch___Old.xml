@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Logs Deleter | Synch" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="Logs Deleter | Synch | Old" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$" />
     <parameters value="sweepFrom -v -l $USER_HOME$/logs -t synch" />
