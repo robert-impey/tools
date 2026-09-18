@@ -8,20 +8,14 @@ import (
 
 func TestRunRerlDeletesLogsWithoutCopies(t *testing.T) {
 	dir := t.TempDir()
+	// Load log files from fixed test data paths instead of generating temporary ones.
+	const (
+		testDataDir = "internal/test_data/robocopy"
+	)
 
-	// Create log files
-	noCopiesPath := filepath.Join(dir, "no-copies.robocopy-synch.log")
-	withCopiesPath := filepath.Join(dir, "with-copies.robocopy-synch.log")
-
-	contentNoCopies := "header\n    Files :       5117          0       5117          0          0          0\nfooter\n"
-	contentWithCopies := "header\n    Files :       5117          123       5117          0          0          0\nfooter\n"
-
-	if err := os.WriteFile(noCopiesPath, []byte(contentNoCopies), 0o600); err != nil {
-		t.Fatalf("write file: %v", err)
-	}
-	if err := os.WriteFile(withCopiesPath, []byte(contentWithCopies), 0o600); err != nil {
-		t.Fatalf("write file: %v", err)
-	}
+	// Paths to the scenario files:
+	noCopiesPath := filepath.Join(testDataDir, "empty.log")
+	withCopiesPath := filepath.Join(testDataDir, "copies.log")
 
 	oldLogsDirectory := LogsDirectory
 	oldVerbose := Verbose
