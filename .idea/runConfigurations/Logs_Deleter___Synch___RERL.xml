@@ -2,7 +2,7 @@
   <configuration default="false" name="Logs Deleter | Synch | RERL" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="rerl -v -l $USER_HOME$/logs" />
+    <parameters value="rerl -v -l $USER_HOME$/logs/synch" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/logs-deleter" />
     <directory value="$PROJECT_DIR$" />
