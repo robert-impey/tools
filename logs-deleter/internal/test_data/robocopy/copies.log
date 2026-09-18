@@ -1,0 +1,29 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : 18 September 2026 08:29:58
+   Source : Z:\docs\
+     Dest : C:\Users\rober\OneDrive\docs\
+
+    Files : *.*
+	    
+  Options : *.* /S /E /DCOPY:DA /COPY:DAT /XO /R:0 /W:30 
+
+------------------------------------------------------------------------------
+
+	                   4	Z:\docs\
+	    Newer     		       0	palimpsest.txt100%  
+	                  40	Z:\docs\.stay-deleted\
+	                   1	Z:\docs\.vscode\
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         3         0         3         0         0         0
+   Files :        45         1        44         0         0         0
+   Bytes :    17.8 k         0    17.8 k         0         0         0
+   Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+   Ended : 18 September 2026 08:29:58
+
