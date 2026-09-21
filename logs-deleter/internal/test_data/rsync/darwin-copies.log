@@ -1,0 +1,30 @@
+rsync --update --recursive --verbose --times --iconv=utf8 --perms --exclude-from=/Users/robert/Library/CloudStorage/OneDrive-Personal/local-scripts/_Common/synch/rsync-excluded.txt --compress /Users/robert/Library/CloudStorage/OneDrive-Personal/executables/ robert@kiya.robertimpey.com:~/executables
+sending incremental file list
+Windows/dev/x64/TidyFolder.exe
+Windows/dev/x64/TidyFolder.pdb
+Windows/dev/x64/Tools.Lib.pdb
+Windows/dev/x64/dupes.exe
+Windows/dev/x64/gensyn.exe
+Windows/dev/x64/lmf.exe
+Windows/dev/x64/logs-deleter.exe
+Windows/dev/x64/rct.exe
+Windows/dev/x64/staydeleted.exe
+Windows/prod/x64/dupes.exe
+Windows/prod/x64/gensyn.exe
+Windows/prod/x64/lmf.exe
+Windows/prod/x64/logs-deleter.exe
+Windows/prod/x64/rct.exe
+Windows/prod/x64/staydeleted.exe
+darwin/dev/arm64/gensyn
+darwin/dev/arm64/lmf
+darwin/dev/arm64/logs-deleter
+darwin/dev/arm64/rct
+darwin/dev/arm64/staydeleted
+darwin/prod/arm64/gensyn
+darwin/prod/arm64/lmf
+darwin/prod/arm64/logs-deleter
+darwin/prod/arm64/rct
+darwin/prod/arm64/staydeleted
+
+sent 10,992 bytes  received 279,856 bytes  193,898.67 bytes/sec
+total size is 151,765,673  speedup is 521.80

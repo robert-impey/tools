@@ -17,7 +17,7 @@ func RsyncFileHasCopies(fileName string) (bool, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		if line == "receiving incremental file list" {
+		if line == "receiving incremental file list" || line == "sending incremental file list" {
 			fileListStarted = true
 			continue
 		}
