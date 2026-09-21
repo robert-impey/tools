@@ -1,5 +1,6 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "r.lsp.promptToInstall": false
 }
