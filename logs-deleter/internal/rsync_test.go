@@ -16,12 +16,12 @@ func TestRsyncFileHasCopies(t *testing.T) {
 	}{
 		{
 			name:     "receiving log with copied files",
-			fileName: "linux-copies.log",
+			fileName: "receiving-copies.log",
 			want:     true,
 		},
 		{
 			name:     "sending log with copied files",
-			fileName: "darwin-copies.log",
+			fileName: "sending-copies.log",
 			want:     true,
 		},
 		{

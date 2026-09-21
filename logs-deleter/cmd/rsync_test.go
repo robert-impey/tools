@@ -9,7 +9,7 @@ import (
 func TestRunRsyncDeletesLogsWithoutCopies(t *testing.T) {
 	dir := t.TempDir()
 	emptyPath := copyRsyncFixture(t, dir, "empty.log")
-	copiesPath := copyRsyncFixture(t, dir, "linux-copies.log")
+	copiesPath := copyRsyncFixture(t, dir, "receiving-copies.log")
 
 	oldLogsDirectory := LogsDirectory
 	oldVerbose := Verbose
