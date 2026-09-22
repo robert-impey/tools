@@ -69,6 +69,31 @@ func TestGenerateRcifScript_ShouldCreateScriptFile_WithExpectedContent(t *testin
 	assert.Contains(t, s, "file2.txt")
 }
 
+func TestGenerateRcifScript_ShouldSynchronizeBothDirectionsWhenLogged(t *testing.T) {
+	tempDir := t.TempDir()
+	sfPath := filepath.Join(tempDir, "mysynch.txt")
+	content := strings.Join([]string{`C:\`, `D:\`, "", "file1.txt"}, "\n")
+	err := os.WriteFile(sfPath, []byte(content), 0o644)
+	assert.Nil(t, err)
+
+	autogen := t.TempDir()
+	err = GenerateRcifScript(sfPath, autogen, "myscript")
+	assert.Nil(t, err)
+
+	out := filepath.Join(autogen, "myscript.ps1")
+	b, err := os.ReadFile(out)
+	assert.Nil(t, err)
+	s := string(b)
+
+	sourceToDestination := `Start-Process ROBOCOPY -ArgumentList """$($sourceFolder)"" ""$($destinationFolder)"" /xo ""$($file)"""`
+	destinationToSource := `Start-Process ROBOCOPY -ArgumentList """$($destinationFolder)"" ""$($sourceFolder)"" /xo ""$($file)"""`
+
+	assert.Equal(t, 2, strings.Count(s, sourceToDestination))
+	assert.Equal(t, 2, strings.Count(s, destinationToSource))
+	assert.Equal(t, 2, strings.Count(s, "-RedirectStandardOutput"))
+	assert.Equal(t, 2, strings.Count(s, "-RedirectStandardError"))
+}
+
 func TestGenerateRcifScript_ShouldOverwriteExistingScriptFile(t *testing.T) {
 	tempDir := t.TempDir()
 	sfPath := filepath.Join(tempDir, "mysynch.txt")
