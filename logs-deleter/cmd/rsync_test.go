@@ -9,6 +9,7 @@ import (
 func TestRunRsyncDeletesLogsWithoutCopies(t *testing.T) {
 	dir := t.TempDir()
 	emptyPath := copyRsyncFixture(t, dir, "empty.log")
+	genScriptPath := copyRsyncFixture(t, dir, "gen-script.log")
 	copiesPath := copyRsyncFixture(t, dir, "receiving-copies.log")
 
 	oldLogsDirectory := LogsDirectory
@@ -26,6 +27,10 @@ func TestRunRsyncDeletesLogsWithoutCopies(t *testing.T) {
 
 	if _, err := os.Stat(emptyPath); !os.IsNotExist(err) {
 		t.Fatalf("expected empty rsync log to be deleted, stat error: %v", err)
+	}
+
+	if _, err := os.Stat(genScriptPath); err != nil {
+		t.Fatalf("expected unrelated log file to remain: %v", err)
 	}
 	if _, err := os.Stat(copiesPath); err != nil {
 		t.Fatalf("expected rsync log with copies to remain: %v", err)

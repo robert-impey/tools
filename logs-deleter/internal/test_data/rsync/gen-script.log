@@ -1,0 +1,9 @@
+Generating synch scripts for /Users/robert/Library/CloudStorage/OneDrive-Personal/local-scripts/_Common/darwin/ssh-config.txt
+Generating scripts in /Users/robert/autogen/synch
+Synch root: rsync --update --verbose --times --perms
+Source: /Users/robert/Library/CloudStorage/OneDrive-Personal/config/_Common/ssh
+Destination: /Users/robert/.ssh
+Files to synch:
+.gitignore
+config
+
