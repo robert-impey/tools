@@ -70,9 +70,9 @@ func TestGenerateRcifScript_ShouldCreateScriptFile_WithExpectedContent(t *testin
 	assert.Contains(t, s, "file1.txt")
 	assert.Contains(t, s, "file2.txt")
 	assert.Contains(t, s, "$logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
-	assert.Contains(t, s, "Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `")
 	assert.Contains(t, s, "file1.txt")
 	assert.Contains(t, s, "file2.txt")
+	assert.Contains(t, s, `Start-Process ROBOCOPY -ArgumentList """D:\" ""C:\" /xo ""file1.txt""" `)
 }
 
 func TestGenerateRcifScript_ShouldSynchronizeBothDirectionsWhenLogged(t *testing.T) {
