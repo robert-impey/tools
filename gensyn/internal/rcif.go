@@ -132,24 +132,6 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 
 	sourceClean := internal.CleanFolderPathForLogName(sf.Source)
 	destinationClean := internal.CleanFolderPathForLogName(sf.Destination)
-	if _, err := fmt.Fprintf(w, "$id = \"%s\"\n", sf.Id); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "$sourceFolder = \"%s\"\n", sf.Source); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "$sourceLogName = \"%s\"\n", sourceClean); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "$destinationFolder = \"%s\"\n", sf.Destination); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "$destinationLogName = \"%s\"\n", destinationClean); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintln(w); err != nil {
-		return err
-	}
 
 	for _, file := range sf.Files {
 		if file == "" || strings.HasPrefix(file, "#") {
@@ -159,10 +141,7 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 		if _, err := fmt.Fprintln(w); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(w, "$file = \"%s\"\n", file); err != nil {
-			return err
-		}
-		if err := writeRcifSynchBlock(w); err != nil {
+		if err := writeRcifSynchBlock(w, sf.Id, sf.Source, sourceClean, sf.Destination, destinationClean, file); err != nil {
 			return err
 		}
 	}
@@ -174,7 +153,15 @@ func GenerateRcifScript(synchFilePath, autoGenDir, scriptName string) error {
 	return nil
 }
 
-func writeRcifSynchBlock(w *bufio.Writer) error {
+func writeRcifSynchBlock(
+	w *bufio.Writer,
+	id string,
+	sourceFolder string,
+	sourceLogName string,
+	destinationFolder string,
+	destinationLogName string,
+	file string,
+) error {
 	lines := []string{
 		"if ($logged)",
 		"{",
@@ -194,32 +181,32 @@ func writeRcifSynchBlock(w *bufio.Writer) error {
 		"        New-Item -ItemType Directory -Path $synchLogsDir -Force | Out-Null",
 		"    }",
 		"",
-		"    $sourceToDestinationLogFileBase = \"$($logTimeStr).$($id).$($file).$($sourceLogName)-to-$($destinationLogName)\"",
+		fmt.Sprintf("    $sourceToDestinationLogFileBase = \"$($logTimeStr).%s.%s.%s-to-%s\"", id, file, sourceLogName, destinationLogName),
 		"    $sourceToDestinationLogPathBase = Join-Path $synchLogsDir \"$($sourceToDestinationLogFileBase).robocopy-synch\"",
 		"    $sourceToDestinationLogFile = \"$($sourceToDestinationLogPathBase).log\"",
 		"    $sourceToDestinationErrFile = \"$($sourceToDestinationLogPathBase).err\"",
-		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		fmt.Sprintf("    Start-Process ROBOCOPY -ArgumentList \"\"\"%s\"\" \"\"%s\"\" /xo \"\"%s\"\"\" `", sourceFolder, destinationFolder, file),
 		"        -RedirectStandardOutput $sourceToDestinationLogFile `",
 		"        -RedirectStandardError $sourceToDestinationErrFile `",
 		"        -NoNewWindow `",
 		"        -Wait",
 		"",
-		"    $destinationToSourceLogFileBase = \"$($logTimeStr).$($id).$($file).$($destinationLogName)-to-$($sourceLogName)\"",
+		fmt.Sprintf("    $destinationToSourceLogFileBase = \"$($logTimeStr).%s.%s.%s-to-%s\"", id, file, destinationLogName, sourceLogName),
 		"    $destinationToSourceLogPathBase = Join-Path $synchLogsDir \"$($destinationToSourceLogFileBase).robocopy-synch\"",
 		"    $destinationToSourceLogFile = \"$($destinationToSourceLogPathBase).log\"",
 		"    $destinationToSourceErrFile = \"$($destinationToSourceLogPathBase).err\"",
-		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($destinationFolder)\"\" \"\"$($sourceFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		fmt.Sprintf("    Start-Process ROBOCOPY -ArgumentList \"\"\"%s\"\" \"\"%s\"\" /xo \"\"%s\"\"\" `", destinationFolder, sourceFolder, file),
 		"        -RedirectStandardOutput $destinationToSourceLogFile `",
 		"        -RedirectStandardError $destinationToSourceErrFile `",
 		"        -NoNewWindow `",
 		"        -Wait",
 		"} else",
 		"{",
-		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		fmt.Sprintf("    Start-Process ROBOCOPY -ArgumentList \"\"\"%s\"\" \"\"%s\"\" /xo \"\"%s\"\"\" `", sourceFolder, destinationFolder, file),
 		"        -NoNewWindow `",
 		"        -Wait",
 		"",
-		"    Start-Process ROBOCOPY -ArgumentList \"\"\"$($destinationFolder)\"\" \"\"$($sourceFolder)\"\" /xo \"\"$($file)\"\"\" `",
+		fmt.Sprintf("    Start-Process ROBOCOPY -ArgumentList \"\"\"%s\"\" \"\"%s\"\" /xo \"\"%s\"\"\" `", destinationFolder, sourceFolder, file),
 		"        -NoNewWindow `",
 		"        -Wait",
 		"}",
