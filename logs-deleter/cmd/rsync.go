@@ -49,9 +49,16 @@ func runRsync() error {
 	}
 
 	for _, logFile := range matchingFiles {
-		hasCopies, err := internal.RsyncFileHasCopies(logFile)
+		isRsyncLog, hasCopies, err := internal.RsyncFileHasCopies(logFile)
 		if err != nil {
 			log.Printf("Failed to process file %v: %v\n", logFile, err)
+			continue
+		}
+
+		if !isRsyncLog {
+			if Verbose {
+				log.Printf("%v is not an rsync log - skipping\n", logFile)
+			}
 			continue
 		}
 

@@ -9,24 +9,34 @@ func TestRsyncFileHasCopies(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
-		fileName string
-		want     bool
+		name       string
+		fileName   string
+		wantRsync  bool
+		wantCopies bool
 	}{
 		{
-			name:     "receiving log with copied files",
-			fileName: "receiving-copies.log",
-			want:     true,
+			name:       "receiving log with copied files",
+			fileName:   "receiving-copies.log",
+			wantRsync:  true,
+			wantCopies: true,
 		},
 		{
-			name:     "sending log with copied files",
-			fileName: "sending-copies.log",
-			want:     true,
+			name:       "sending log with copied files",
+			fileName:   "sending-copies.log",
+			wantRsync:  true,
+			wantCopies: true,
 		},
 		{
-			name:     "log without copied files",
-			fileName: "empty.log",
-			want:     false,
+			name:       "log without copied files",
+			fileName:   "empty.log",
+			wantRsync:  true,
+			wantCopies: false,
+		},
+		{
+			name:       "unrelated log file",
+			fileName:   "gen-script.log",
+			wantRsync:  false,
+			wantCopies: false,
 		},
 	}
 
@@ -36,12 +46,15 @@ func TestRsyncFileHasCopies(t *testing.T) {
 
 			filePath := filepath.Join("test_data", "rsync", test.fileName)
 
-			hasCopies, err := RsyncFileHasCopies(filePath)
+			isRsyncLog, hasCopies, err := RsyncFileHasCopies(filePath)
 			if err != nil {
 				t.Fatalf("RsyncFileHasCopies error: %v", err)
 			}
-			if hasCopies != test.want {
-				t.Fatalf("expected RsyncFileHasCopies to return %t for %s", test.want, test.fileName)
+			if isRsyncLog != test.wantRsync {
+				t.Fatalf("expected isRsyncLog to be %t for %s", test.wantRsync, test.fileName)
+			}
+			if hasCopies != test.wantCopies {
+				t.Fatalf("expected hasCopies to be %t for %s", test.wantCopies, test.fileName)
 			}
 		})
 	}

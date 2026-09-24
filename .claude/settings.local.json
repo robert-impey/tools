@@ -4,7 +4,10 @@
       "Bash(go test *)",
       "Bash(go build *)",
       "Bash(gofmt -l logs-deleter)",
-      "Bash(go vet *)"
+      "Bash(go vet *)",
+      "Bash(gofmt -l)",
+      "Bash(gofmt -d internal/rsync_test.go)",
+      "Bash(gofmt -w internal/rsync_test.go)"
     ]
   }
 }
