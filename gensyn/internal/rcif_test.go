@@ -61,8 +61,14 @@ func TestGenerateRcifScript_ShouldCreateScriptFile_WithExpectedContent(t *testin
 	assert.Contains(t, s, "# AUTOGEN'D - DO NOT EDIT!")
 	assert.NotContains(t, s, "Import-Module \"$($env:LOCAL_SCRIPTS)\\_Common\\synch\\Synch.psm1\"")
 	assert.NotContains(t, s, "SynchSingleFile2Ways")
-	assert.Contains(t, s, "$sourceFolder = \"C:\\\"")
-	assert.Contains(t, s, "$destinationFolder = \"D:\\\"")
+	assert.NotContains(t, s, "$sourceFolder = \"C:\\\"")
+	assert.NotContains(t, s, "$destinationFolder = \"D:\\\"")
+	assert.NotContains(t, s, "$file = \"file1.txt\"")
+	assert.Contains(t, s, "$logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
+	assert.Contains(t, s, `Start-Process ROBOCOPY -ArgumentList """C:\" ""D:\" /xo ""file1.txt""" `)
+	assert.Contains(t, s, `Start-Process ROBOCOPY -ArgumentList """C:\" ""D:\" /xo ""file2.txt""" `)
+	assert.Contains(t, s, "file1.txt")
+	assert.Contains(t, s, "file2.txt")
 	assert.Contains(t, s, "$logTimeStr = Get-Date -Format \"yyyy-MM-ddTHH_mm_ss\"")
 	assert.Contains(t, s, "Start-Process ROBOCOPY -ArgumentList \"\"\"$($sourceFolder)\"\" \"\"$($destinationFolder)\"\" /xo \"\"$($file)\"\"\" `")
 	assert.Contains(t, s, "file1.txt")
@@ -85,8 +91,8 @@ func TestGenerateRcifScript_ShouldSynchronizeBothDirectionsWhenLogged(t *testing
 	assert.Nil(t, err)
 	s := string(b)
 
-	sourceToDestination := `Start-Process ROBOCOPY -ArgumentList """$($sourceFolder)"" ""$($destinationFolder)"" /xo ""$($file)"""`
-	destinationToSource := `Start-Process ROBOCOPY -ArgumentList """$($destinationFolder)"" ""$($sourceFolder)"" /xo ""$($file)"""`
+	sourceToDestination := `Start-Process ROBOCOPY -ArgumentList """C:\" ""D:\" /xo ""file1.txt"""`
+	destinationToSource := `Start-Process ROBOCOPY -ArgumentList """D:\" ""C:\" /xo ""file1.txt"""`
 
 	assert.Equal(t, 2, strings.Count(s, sourceToDestination))
 	assert.Equal(t, 2, strings.Count(s, destinationToSource))
@@ -117,6 +123,7 @@ func TestGenerateRcifScript_ShouldOverwriteExistingScriptFile(t *testing.T) {
 	s := string(b)
 	assert.NotContains(t, s, "Old content")
 	assert.NotContains(t, s, "SynchSingleFile2Ways")
-	assert.Contains(t, s, "$sourceFolder = \"C:\\\"")
-	assert.Contains(t, s, "$destinationFolder = \"D:\\\"")
+	assert.NotContains(t, s, "$sourceFolder = \"C:\\\"")
+	assert.NotContains(t, s, "$destinationFolder = \"D:\\\"")
+	assert.Contains(t, s, `Start-Process ROBOCOPY -ArgumentList """C:\" ""D:\" /xo ""file1.txt""" `)
 }
