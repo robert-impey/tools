@@ -33,6 +33,12 @@ func TestRsyncFileHasCopies(t *testing.T) {
 			wantCopies: false,
 		},
 		{
+			name:       "Unchanged single file log",
+			fileName:   "unchanged-single-file.log",
+			wantRsync:  true,
+			wantCopies: false,
+		},
+		{
 			name:       "unrelated log file",
 			fileName:   "gen-script.log",
 			wantRsync:  false,
