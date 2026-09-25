@@ -16,17 +16,17 @@ func RsyncFileHasCopies(fileName string) (isRsyncLog bool, hasCopies bool, err e
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+	inFileList := false
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "receiving incremental file list" || line == "sending incremental file list" {
 			isRsyncLog = true
-			continue
-		}
-		if isRsyncLog && strings.HasPrefix(line, "sent ") {
-			return true, false, nil
-		}
-		if isRsyncLog && line != "" {
-			return true, true, nil
+			inFileList = true
+		} else if strings.HasPrefix(line, "sent ") {
+			isRsyncLog = true
+			inFileList = false
+		} else if inFileList && line != "" {
+			hasCopies = true
 		}
 	}
 
@@ -34,5 +34,5 @@ func RsyncFileHasCopies(fileName string) (isRsyncLog bool, hasCopies bool, err e
 		return false, false, err
 	}
 
-	return isRsyncLog, false, nil
+	return isRsyncLog, hasCopies, nil
 }
