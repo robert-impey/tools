@@ -1,0 +1,5 @@
+rsync --update --verbose --times --perms /Users/robert/.config/zed/settings.json /Users/robert/Library/CloudStorage/OneDrive-Personal/config/_Common/zed/
+settings.json
+
+sent 2,586 bytes  received 35 bytes  5,242.00 bytes/sec
+total size is 2,494  speedup is 0.95
