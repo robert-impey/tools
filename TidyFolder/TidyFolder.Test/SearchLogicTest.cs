@@ -53,6 +53,8 @@ public class SearchLogicTest
             new() { Path = "/tmp/test0/c.txt", Name = "c.txt" },
             new() { Path = "/tmp/test0/a.md", Name = "a.md" },
             new() { Path = "/tmp/test1/c1.txt", Name = "c1.txt" },
+            new() { Path = "/tmp/test0/", Name = string.Empty },
+            new() { Path = "/tmp/test1/", Name = string.Empty },
         };
 
         var matches = SearchLogic.FindMatchingStems(entries);
