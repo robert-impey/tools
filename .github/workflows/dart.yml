@@ -1,0 +1,40 @@
+name: Dart CI
+
+on:
+  push:
+    branches:
+      - "dev"
+      - "prod"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - dupes
+    defaults:
+      run:
+        working-directory: ./${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Cache dependencies
+        uses: actions/cache@v6
+        with:
+          path: ${{ matrix.project }}/.pub-cache
+          key: ${{ runner.os }}-dart-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze project
+        run: dart analyze
+
+      - name: Test
+        run: dart test
