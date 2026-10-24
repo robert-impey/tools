@@ -18,7 +18,6 @@ jobs:
           - logs-deleter
           - permreset
           - rct
-          - sorttrees
           - staydeleted
     defaults:
       run:

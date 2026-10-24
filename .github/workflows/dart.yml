@@ -13,6 +13,7 @@ jobs:
       matrix:
         project:
           - dupes
+          - sorttrees
     defaults:
       run:
         working-directory: ./${{ matrix.project }}

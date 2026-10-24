@@ -4,7 +4,7 @@
 spaces, and siblings are sorted alphabetically. Blank lines are removed.
 
 ```text
-sorttrees TreeFile [--SeparateTopLevel] [--InPlace]
+dart run bin/sorttrees.dart TreeFile [--SeparateTopLevel] [--InPlace]
 ```
 
 - `--SeparateTopLevel` adds a blank line between top-level trees.
