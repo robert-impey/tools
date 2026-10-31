@@ -7,20 +7,18 @@ import (
 )
 
 func TestRefreshCrontabPreservesBeforeAndAfter(t *testing.T) {
-	input := strings.Join([]string{
-		"# Custom header task",
-		"5 0 * * * /usr/bin/echo before",
-		"",
-		"# Start of crontab tasks created by cron-setter at 2023-01-01 00:00:00",
-		"",
-		"10 0 * * * /old/task",
-		"",
-		"# End of cron tasks created by cron-setter at 2023-01-01 00:00:00",
-		"",
-		"# Custom footer task",
-		"55 23 * * * /usr/bin/echo after",
-		"",
-	}, "\n")
+	input := `# Custom header task
+5 0 * * * /usr/bin/echo before
+
+# Start of crontab tasks created by cron-setter at 2023-01-01 00:00:00
+
+10 0 * * * /old/task
+
+# End of cron tasks created by cron-setter at 2023-01-01 00:00:00
+
+# Custom footer task
+55 23 * * * /usr/bin/echo after
+`
 
 	var out bytes.Buffer
 	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
@@ -36,7 +34,10 @@ func TestRefreshCrontabPreservesBeforeAndAfter(t *testing.T) {
 		t.Fatalf("expected old timestamp to be replaced, got:\n%s", result)
 	}
 
-	expectedPrefix := "# Custom header task\n5 0 * * * /usr/bin/echo before\n\n# Start of crontab tasks created by cron-setter at "
+	expectedPrefix := `# Custom header task
+5 0 * * * /usr/bin/echo before
+
+# Start of crontab tasks created by cron-setter at `
 	if !strings.HasPrefix(result, expectedPrefix) {
 		t.Fatalf("expected output to start with %q, got:\n%s", expectedPrefix, result)
 	}
@@ -52,14 +53,12 @@ func TestRefreshCrontabPreservesBeforeAndAfter(t *testing.T) {
 }
 
 func TestRefreshCrontabRepeatedRefreshDoesNotAccumulateBlankLines(t *testing.T) {
-	input := strings.Join([]string{
-		"5 0 * * * /usr/bin/echo before",
-		"# Start of crontab tasks created by cron-setter at 2023-01-01 00:00:00",
-		"10 0 * * * /old/task",
-		"# End of cron tasks created by cron-setter at 2023-01-01 00:00:00",
-		"55 23 * * * /usr/bin/echo after",
-		"",
-	}, "\n")
+	input := `5 0 * * * /usr/bin/echo before
+# Start of crontab tasks created by cron-setter at 2023-01-01 00:00:00
+10 0 * * * /old/task
+# End of cron tasks created by cron-setter at 2023-01-01 00:00:00
+55 23 * * * /usr/bin/echo after
+`
 
 	var firstOut bytes.Buffer
 	if err := refreshCrontab(strings.NewReader(input), &firstOut); err != nil {
@@ -82,7 +81,8 @@ func TestRefreshCrontabRepeatedRefreshDoesNotAccumulateBlankLines(t *testing.T) 
 		t.Fatalf("unexpected first line after repeated refresh: %q", secondLines[0])
 	}
 
-	if firstLines[len(firstLines)-2] != "55 23 * * * /usr/bin/echo after" || secondLines[len(secondLines)-2] != "55 23 * * * /usr/bin/echo after" {
+	if firstLines[len(firstLines)-2] != "55 23 * * * /usr/bin/echo after" ||
+		secondLines[len(secondLines)-2] != "55 23 * * * /usr/bin/echo after" {
 		t.Fatalf("unexpected last non-empty line after repeated refresh: %q", secondLines[len(secondLines)-2])
 	}
 }
