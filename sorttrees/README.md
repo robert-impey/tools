@@ -1,4 +1,4 @@
-# tree-sorter
+# sorttrees
 
 Program for sorting space indented text, treating blocks indented to the same level as groups. 
 This is useful for grouping items in a "to do" list.
@@ -29,16 +29,15 @@ Trees of grouped data can be of arbitrary depth.
 
 ## Usage
 
-    $ ./treesorter.py -h
-    usage: Sort trees [-h] [--SeparateTopLevel] [--InPlace] TreeFile
-
-    positional arguments:
-      TreeFile            The file containing the tree.
-
-    optional arguments:
-      -h, --help          show this help message and exit
+    $ sorttrees -h
+    Sort an indented text tree.
+    
+    Usage: sorttrees TreeFile [--SeparateTopLevel] [--InPlace]
+    
+    Options:
       --SeparateTopLevel  Separate top level trees with a blank line.
       --InPlace           Write the output on top of the input file.
+      -h, --help          Show this help message.
 
 ### Examples
 
@@ -62,7 +61,7 @@ The input file might contain a few trees in no particular order:
 
 The tool reads the contents of the text file and prints out the trees in order.
 
-    $ ./treesorter.py fixtures/two-deep-with-gaps.txt
+    $ sorttrees fixtures/two-deep-with-gaps.txt
     1 one
         i one
         ii one
@@ -78,7 +77,7 @@ The tool reads the contents of the text file and prints out the trees in order.
 
 The --SeparateTopLevel puts a blank line between "top level" trees. This is useful for navigating between groups nimbly in vim.
 
-    $ ./treesorter.py fixtures/two-deep-with-gaps.txt --SeparateTopLevel
+    $ sorttrees fixtures/two-deep-with-gaps.txt --SeparateTopLevel
     1 one
         i one
         ii one
@@ -96,7 +95,7 @@ The --SeparateTopLevel puts a blank line between "top level" trees. This is usef
         
 The --InPlace flag writes the sorted trees on top of the input file. 
 
-    $ ./treesorter.py ~/docs/todo.txt --SeparateTopLevel --InPlace
+    $ sorttrees ~/docs/todo.txt --SeparateTopLevel --InPlace
 
 In this case, the tool creates a back up file with the extension ".bak" first. Obviously, you've already got other back ups anyway. This is free software. I take no respobsibility for anything that happens to your files. See license.
 
