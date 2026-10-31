@@ -37,7 +37,10 @@ func init() {
 }
 
 func printAllTasks() {
-	printHeaderComment()
+	creationTime := time.Now().UTC()
+	creationTimeStr := creationTime.Format("2006-01-02 15:04:05")
+
+	printHeaderComment(creationTimeStr)
 
 	printStayDeletedRun(0, 2)
 	printSynch(2, 4)
@@ -61,11 +64,16 @@ func printAllTasks() {
 	fmt.Println()
 
 	printStayDeletedRun(21, 24)
+
+	printFooterComment(creationTimeStr)
 }
 
-func printHeaderComment() {
-	now := time.Now().UTC()
-	fmt.Printf("# Cron tasks created by cron-setter at %s\n\n", now.Format("2006-01-02 15:04:05"))
+func printHeaderComment(creationTimeStr string) {
+	fmt.Printf("# Start of crontab tasks created by cron-setter at %s\n\n", creationTimeStr)
+}
+
+func printFooterComment(creationTimeStr string) {
+	fmt.Printf("# End of cron tasks created by cron-setter at %s\n\n", creationTimeStr)
 }
 
 func getLocalScripts() string {
