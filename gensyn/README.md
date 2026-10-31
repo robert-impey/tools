@@ -103,3 +103,38 @@ copies. A script checks that each folder exists at both locations before
 copying. Pass the `-logged` switch when running a generated script to write
 its output and errors to `.log` and `.err` files under the user's
 `logs/synch` directory.
+
+### Rcif
+
+Create a synch file, for example `Reports.txt`:
+
+```
+C:\Data
+D:\Backup
+
+annual-report.docx
+summary.xlsx
+```
+
+The first two lines are the source and destination directories. Leave the
+third line blank, then list the individual files to synchronize. Blank lines
+and lines beginning with `#` in the file list are ignored. The file must
+contain at least one file name. Run `gensyn` from PowerShell with the output
+directory already created:
+
+```powershell
+gensyn rcif --files .\Reports.txt --autogen C:\Users\Robert\autogen\synch --script Reports
+```
+
+The flags also have short forms: `-f` for `--files`, `-a` for `--autogen`,
+and `-s` for `--script`. The script name is given without the `.ps1`
+extension, and the generated script is written as
+`C:\Users\Robert\autogen\synch\Reports.ps1`; an existing script with that
+name is replaced. For each listed file, the script runs `ROBOCOPY` first
+from source to destination and then in reverse, using `/XO` to skip older
+source files.
+
+Pass the `-logged` switch when running the generated script to write each
+direction's output and errors to `.log` and `.err` files under the user's
+`logs/synch` directory. Log names include a timestamp, the synch file's
+basename, and the file and direction being copied.
