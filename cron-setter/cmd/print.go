@@ -6,6 +6,7 @@ Copyright © 2023 Robert Impey robert-impey@users.noreply.github.com
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"os"
@@ -17,8 +18,10 @@ import (
 )
 
 const (
-	ZshPath  string = "/usr/bin/zsh"
-	PwshPath string = "/snap/bin/pwsh"
+	ZshPath             string = "/usr/bin/zsh"
+	PwshPath            string = "/snap/bin/pwsh"
+	headerCommentPrefix string = "# Start of crontab tasks created by cron-setter"
+	footerCommentPrefix string = "# End of cron tasks created by cron-setter"
 )
 
 // printCmd represents the print command
@@ -28,7 +31,7 @@ var printCmd = &cobra.Command{
 	Long: `This command prints out a crontab with the daily tasks.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		printAllTasks()
+		printAllTasks(os.Stdout)
 	},
 }
 
@@ -36,44 +39,44 @@ func init() {
 	rootCmd.AddCommand(printCmd)
 }
 
-func printAllTasks() {
+func printAllTasks(w io.Writer) {
 	creationTime := time.Now().UTC()
 	creationTimeStr := creationTime.Format("2006-01-02 15:04:05")
 
-	printHeaderComment(creationTimeStr)
+	printHeaderComment(w, creationTimeStr)
 
-	printStayDeletedRun(0, 2)
-	printSynch(2, 4)
-	printResetPerms(7)
-	fmt.Println()
+	printStayDeletedRun(w, 0, 2)
+	printSynch(w, 2, 4)
+	printResetPerms(w, 7)
+	fmt.Fprintln(w)
 
-	printStayDeletedRun(8, 10)
+	printStayDeletedRun(w, 8, 10)
 
-	printBuild(10)
-	printLogsDeleter(11)
-	printListManagedFolders(12)
-	fmt.Println()
+	printBuild(w, 10)
+	printLogsDeleter(w, 11)
+	printListManagedFolders(w, 12)
+	fmt.Fprintln(w)
 
-	printSynch(13, 4)
-	printResetPerms(17)
-	fmt.Println()
+	printSynch(w, 13, 4)
+	printResetPerms(w, 17)
+	fmt.Fprintln(w)
 
-	printStayDeletedRun(18, 20)
+	printStayDeletedRun(w, 18, 20)
 
-	printBuild(20)
-	fmt.Println()
+	printBuild(w, 20)
+	fmt.Fprintln(w)
 
-	printStayDeletedRun(21, 24)
+	printStayDeletedRun(w, 21, 24)
 
-	printFooterComment(creationTimeStr)
+	printFooterComment(w, creationTimeStr)
 }
 
-func printHeaderComment(creationTimeStr string) {
-	fmt.Printf("# Start of crontab tasks created by cron-setter at %s\n\n", creationTimeStr)
+func printHeaderComment(w io.Writer, creationTimeStr string) {
+	fmt.Fprintf(w, "%s at %s\n\n", headerCommentPrefix, creationTimeStr)
 }
 
-func printFooterComment(creationTimeStr string) {
-	fmt.Printf("# End of cron tasks created by cron-setter at %s\n\n", creationTimeStr)
+func printFooterComment(w io.Writer, creationTimeStr string) {
+	fmt.Fprintf(w, "%s at %s\n", footerCommentPrefix, creationTimeStr)
 }
 
 func getLocalScripts() string {
@@ -118,53 +121,53 @@ func getLogsDeleterScript() string {
 	return filepath.Join(localScriptsDir, "_Common", "logs_deleter", "Clear-OldLogs.ps1")
 }
 
-func printStayDeletedRun(startHour int, endHour int) {
+func printStayDeletedRun(w io.Writer, startHour int, endHour int) {
 	script := getStayDeletedScript()
 
 	for i := startHour; i < endHour; i++ {
 		stayDeletedMinutes := rand.Int31n(60)
-		fmt.Printf("%d %d * * * %s %s\n",
+		fmt.Fprintf(w, "%d %d * * * %s %s\n",
 			stayDeletedMinutes, i, PwshPath, script)
 	}
-	fmt.Println()
+	fmt.Fprintln(w)
 }
 
-func printLogsDeleter(hour int) {
+func printLogsDeleter(w io.Writer, hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getLogsDeleterScript()
-	fmt.Printf("%d %d * * * %s %s\n",
+	fmt.Fprintf(w, "%d %d * * * %s %s\n",
 		minutes, hour, PwshPath, script)
 }
 
-func printResetPerms(hour int) {
+func printResetPerms(w io.Writer, hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getResetPermsScript()
-	fmt.Printf("%d %d * * * %s %s\n",
+	fmt.Fprintf(w, "%d %d * * * %s %s\n",
 		minutes, hour, ZshPath, script)
 }
 
-func printSynch(earliestHour int32, hoursRange int32) {
+func printSynch(w io.Writer, earliestHour int32, hoursRange int32) {
 	synchScript := getSynchScript()
 
 	synchMinutes := rand.Int31n(60)
 	synchHours := rand.Int31n(hoursRange) + earliestHour
 
-	fmt.Printf("%d %d * * * %s %s\n",
+	fmt.Fprintf(w, "%d %d * * * %s %s\n",
 		synchMinutes, synchHours, ZshPath, synchScript)
 }
 
-func printListManagedFolders(hour int) {
+func printListManagedFolders(w io.Writer, hour int) {
 	minutes := rand.Int31n(60)
 
 	script := getListManagedFoldersScript()
-	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
+	fmt.Fprintf(w, "%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
 }
 
-func printBuild(hour int) {
+func printBuild(w io.Writer, hour int) {
 	script := getBuildScript()
 	minutes := rand.Int31n(60)
 
-	fmt.Printf("%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
+	fmt.Fprintf(w, "%d %d * * * %s %s\n", minutes, hour, PwshPath, script)
 }
