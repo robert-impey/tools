@@ -1,4 +1,3 @@
-````markdown
 # staydeleted
 To prevent files and directories from being accidentally deleted when using two-way synchronization tools (like rsync) with backup disks, `staydeleted` allows you to mark specific files or directories for protection.
 
@@ -12,7 +11,7 @@ This is particularly useful for folders synced to external backups on a regular 
 *   **Dependency:** This behavior relies on your synchronization tools using options like `rsync --update` or similar mechanisms to read these metadata files and treat them as actual content.
 *   **Cleanup:** The tool automatically manages the metadata files. Metadata files are marked for deletion and cleaned up after a set expiration period (default is 12 months), preventing the `.stay-deleted` folder from accumulating old, irrelevant data.
 
-See [https://github.com/robert-impey/generate-synch-scripts](https://github.com/robert-impey/generate-synch-scripts) for related synchronization scripts.
+See [https://github.com/robert-impey/tools/gensyn](https://github.com/robert-impey/tools/gensyn) for related synchronization scripts.
 
 ---
 
@@ -27,7 +26,7 @@ This is the default action and marks the file for deletion, instructing the syst
 
 ```bash
 PS C:\foo> staydeleted mark bar.txt
-````
+```
 
 __Marking to Keep:__ Use the `--keep` flag (or `-k`) to tell the tool that this file must __not__ be deleted, even if it appears to be deleted from the primary source.
 
