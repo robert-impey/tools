@@ -200,6 +200,11 @@ func readTestFile(path, testDataDir string, verbose bool) (string, string, error
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error scanning file: %v\n", err)
+		return "", "", err
+	}
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
