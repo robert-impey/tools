@@ -2,5 +2,6 @@
     "makefile.extensionOutputFolder": "./.vscode",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "r.lsp.promptToInstall": false
+    "r.lsp.promptToInstall": false,
+    "lmstudioCode.minContextLength": 16384
 }
