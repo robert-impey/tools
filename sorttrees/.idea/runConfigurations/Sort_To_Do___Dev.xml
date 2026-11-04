@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Sort To Do | Dev" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+    <option name="arguments" value="--InPlace --SeparateTopLevel &quot;C:\Users\rober\Dropbox\docs\todo-dev.txt&quot;" />
+    <option name="filePath" value="$PROJECT_DIR$/bin/sorttrees.dart" />
+    <method v="2" />
+  </configuration>
+</component>
