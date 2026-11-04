@@ -49,6 +49,7 @@ Options:
     }
 
     if (inPlace) {
+      stdout.writeln('Sorting ${file.path}...');
       await file.copy('${file.path}.bak');
     }
 

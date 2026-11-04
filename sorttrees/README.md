@@ -1,5 +1,7 @@
 # sorttrees
 
+This Dart program was ported from the Python code in [tree-sorter](https://github.com/robert-impey/tree-sorter).
+
 Program for sorting space indented text, treating blocks indented to the same level as groups. 
 This is useful for grouping items in a "to do" list.
 
