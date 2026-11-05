@@ -104,7 +104,9 @@ copying. Pass the `-logged` switch when running a generated script to write
 its output and errors to `.log` and `.err` files under the user's
 `logs/synch` directory.
 
-### Rcif
+### RCIF
+
+`rcif` stands for 'RoboCopy Individual File'.
 
 Create a synch file, for example `Reports.txt`:
 
