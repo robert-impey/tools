@@ -3,5 +3,5 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
     "r.lsp.promptToInstall": false,
-    "lmstudioCode.minContextLength": 16384
+    "lmstudioCode.minContextLength": 32768
 }
