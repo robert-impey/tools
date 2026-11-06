@@ -446,6 +446,90 @@ func TestExecuteVerboseOutputAndCancellation(t *testing.T) {
 	}
 }
 
+func TestMainExecutesTxtAndErrFilesInNestedProgramFolders(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		fileExt   string
+		helperMode string
+	}{
+		{name: "txt file", fileExt: ".txt", helperMode: "stdout"},
+		{name: "err file", fileExt: ".err", helperMode: "stderr"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if os.Getenv("RCT_REAL_CLI_HELPER_PROCESS") == "1" {
+				os.Args = []string{"rct", "--directory", os.Getenv("RCT_REAL_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_REAL_CLI_TEST_DATA_DIR")}
+				main()
+				return
+			}
+
+			rootDir := t.TempDir()
+			programDir := filepath.Join(rootDir, "nested", "program")
+			testsDir := filepath.Join(programDir, testsDirName)
+			if err := os.MkdirAll(testsDir, 0755); err != nil {
+				t.Fatal(err)
+			}
+
+			executable, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			binaryPath := filepath.Join(programDir, filepath.Base(executable))
+			binaryBytes, err := os.ReadFile(executable)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(binaryPath, binaryBytes, 0755); err != nil {
+				t.Fatal(err)
+			}
+
+			fileName := "nested-cli" + tc.fileExt
+			content := fmt.Sprintf("%s -test.run=^TestMainHelperRealCliCommand$\n---\n%s", filepath.Base(executable), programDir)
+			if err := os.WriteFile(filepath.Join(testsDir, fileName), []byte(content), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			cmd := exec.Command(os.Args[0], "-test.run=^TestMainExecutesTxtAndErrFilesInNestedProgramFolders$")
+			cmd.Env = append(os.Environ(),
+				"RCT_REAL_CLI_HELPER_PROCESS=1",
+				"RCT_REAL_CLI_DIR="+rootDir,
+				"RCT_REAL_CLI_TEST_DATA_DIR="+rootDir,
+				"RCT_REAL_CLI_HELPER_MODE="+tc.helperMode,
+			)
+			output, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("real CLI helper exited unexpectedly: %v\nOutput:\n%s", err, output)
+			}
+
+			stdout := string(output)
+			if !strings.Contains(stdout, "Success rate:") {
+				t.Fatalf("expected CLI output to report success rate, got:\n%s", stdout)
+			}
+			if !strings.Contains(stdout, "100.0%") {
+				t.Fatalf("expected CLI output to report a successful run, got:\n%s", stdout)
+			}
+			if !strings.Contains(stdout, "Test file: nested-cli") {
+				t.Fatalf("expected CLI output to show the nested test file, got:\n%s", stdout)
+			}
+		})
+	}
+}
+
+func TestMainHelperRealCliCommand(t *testing.T) {
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if os.Getenv("RCT_REAL_CLI_HELPER_MODE") == "stdout" {
+		fmt.Println(workingDir)
+		os.Exit(0)
+	}
+	if os.Getenv("RCT_REAL_CLI_HELPER_MODE") == "stderr" {
+		fmt.Fprintln(os.Stderr, workingDir)
+		os.Exit(0)
+	}
+	t.Skip("helper only used by CLI execution tests")
+}
+
 func captureStdout(fn func()) string {
 	oldStdout := os.Stdout
 	r, w, err := os.Pipe()
