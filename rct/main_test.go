@@ -160,11 +160,76 @@ func TestExecuteCommandHelper(t *testing.T) {
 	}
 }
 
-// --- Main Logic Tests ---
+func TestRunTest(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// TestRunTest_Success simulates a successful test run.
-// This test is highly complex due to required filesystem and OS process mocking
-// and is skipped in favor of unit testing the core components.
-func TestRunTest_Success(t *testing.T) {
-	t.Skip("Skipping full runTest integration test due to high setup complexity (mocking FS and OS execution)")
+	rootDir := t.TempDir()
+	programDir := filepath.Join(rootDir, "program")
+	testsDir := filepath.Join(programDir, testsDirName)
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(programDir, filepath.Base(executable)), executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	testCases := []struct {
+		name           string
+		extension      string
+		mode           string
+		outputType     string
+		expectedOutput string
+		wantSuccess    bool
+	}{
+		{name: "txt compares stdout", extension: ".txt", mode: "stdout", outputType: "out", expectedOutput: programDir, wantSuccess: true},
+		{name: "err compares stderr", extension: ".err", mode: "stderr", outputType: "err", expectedOutput: programDir, wantSuccess: true},
+		{name: "mismatched output fails", extension: ".txt", mode: "stdout", outputType: "out", expectedOutput: "unexpected output", wantSuccess: false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("RCT_RUN_TEST_HELPER", tc.mode)
+
+			testFile := filepath.Join(testsDir, "command"+tc.extension)
+			content := fmt.Sprintf("%s -test.run=^TestRunTestCommandHelper$\n---\n%s",
+				filepath.Base(executable), tc.expectedOutput)
+			if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			got := runTest(context.Background(), testFile, rootDir, false, tc.outputType, programDir)
+			if got != tc.wantSuccess {
+				t.Errorf("runTest() = %t, want %t", got, tc.wantSuccess)
+			}
+		})
+	}
+}
+
+func TestRunTestCommandHelper(t *testing.T) {
+	switch os.Getenv("RCT_RUN_TEST_HELPER") {
+	case "stdout":
+		workingDir, err := os.Getwd()
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Println(workingDir)
+		os.Exit(0)
+	case "stderr":
+		workingDir, err := os.Getwd()
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Fprintln(os.Stderr, workingDir)
+		os.Exit(0)
+	default:
+		t.Skip("helper test is only run by TestRunTest")
+	}
 }
