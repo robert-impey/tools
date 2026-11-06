@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
-
-// Mocking the global context. For unit tests, we use a background context.
-var testCtx = context.Background()
 
 // TestEnumerateFilteredDirectories tests the logic for finding program directories.
 func TestEnumerateFilteredDirectories(t *testing.T) {
@@ -113,39 +110,53 @@ func TestReadTestFile(t *testing.T) {
 	}
 }
 
-// TestExecuteCommand tests the execution of a shell command.
+// TestExecuteCommand tests command output selection and exit-code handling.
 func TestExecuteCommand(t *testing.T) {
-	// Use a predictable command that exists on most systems (like 'echo')
-	// Since the environment is win32, we use cmd /c.
-
-	// Test 1: Success case (Echoing something)
-	cmdSuccess := "cmd /c echo Hello World"
-
-	output, exitCode := executeCommand(testCtx, cmdSuccess, "", "out")
-
-	if exitCode != 0 {
-		t.Errorf("Test 1 Failed: Expected exit code 0, got %d. Output: %s", exitCode, output)
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	expectedSuccess := "Hello World"
-	if strings.TrimRight(output, "\r\n") != strings.TrimRight(expectedSuccess, "\r\n") {
-		t.Errorf("Test 1 Failed: Expected output '%s', got '%s'", expectedSuccess, output)
+	command := filepath.Base(executable) + " -test.run=^TestExecuteCommandHelper$"
+	testCases := []struct {
+		name       string
+		mode       string
+		outputType string
+		wantOutput string
+		wantCode   int
+	}{
+		{name: "stdout", mode: "stdout", outputType: "out", wantOutput: "helper stdout", wantCode: 0},
+		{name: "stderr", mode: "stderr", outputType: "err", wantOutput: "helper stderr", wantCode: 0},
+		{name: "nonzero exit", mode: "exit", outputType: "out", wantCode: 7},
 	}
 
-	// Test 2: Failure case (Non-existent command)
-	// On Windows, attempting to run a non-existent command via cmd /c will often fail
-	cmdFailure := "non_existent_command_12345"
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("RCT_EXECUTE_COMMAND_HELPER", tc.mode)
+			output, exitCode := executeCommand(context.Background(), command, filepath.Dir(executable), tc.outputType)
 
-	// We expect an exit code != 0
-	outputFailure, exitCodeFailure := executeCommand(testCtx, cmdFailure, "", "out")
-
-	if exitCodeFailure == 0 {
-		t.Errorf("Test 2 Failed: Expected non-zero exit code on failure, got 0")
+			if output != tc.wantOutput {
+				t.Errorf("output = %q, want %q", output, tc.wantOutput)
+			}
+			if exitCode != tc.wantCode {
+				t.Errorf("exit code = %d, want %d", exitCode, tc.wantCode)
+			}
+		})
 	}
+}
 
-	// The output on failure should contain an error message from the shell
-	if outputFailure == "" {
-		t.Logf("Test 2 Info: Failure command produced no output, relying on exit code check.")
+func TestExecuteCommandHelper(t *testing.T) {
+	switch os.Getenv("RCT_EXECUTE_COMMAND_HELPER") {
+	case "stdout":
+		fmt.Print("helper stdout\n")
+		os.Exit(0)
+	case "stderr":
+		fmt.Fprint(os.Stderr, "helper stderr\n")
+		os.Exit(0)
+	case "exit":
+		os.Exit(7)
+	default:
+		t.Skip("helper test is only run by TestExecuteCommand")
 	}
 }
 
