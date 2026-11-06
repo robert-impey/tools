@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -232,4 +234,78 @@ func TestRunTestCommandHelper(t *testing.T) {
 	default:
 		t.Skip("helper test is only run by TestRunTest")
 	}
+}
+
+func TestMainUsesFlagsEndToEnd(t *testing.T) {
+	if os.Getenv("RCT_CLI_HELPER_PROCESS") == "1" {
+		os.Args = []string{"rct", "--directory", os.Getenv("RCT_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_CLI_TEST_DATA_DIR"), "--verbose"}
+		main()
+		return
+	}
+
+	rootDir := t.TempDir()
+	programDir := filepath.Join(rootDir, "program")
+	testsDir := filepath.Join(programDir, testsDirName)
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	testDataDir := filepath.Join(rootDir, "fixtures")
+	if err := os.MkdirAll(testDataDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	binaryPath := filepath.Join(programDir, filepath.Base(executable))
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	testFile := filepath.Join(testsDir, "cli.txt")
+	content := fmt.Sprintf("%s -test.run=^TestMainHelperCommand$\n---\n%s", filepath.Base(executable), programDir)
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cmd := exec.Command(os.Args[0], "-test.run=^TestMainUsesFlagsEndToEnd$")
+	cmd.Env = append(os.Environ(),
+		"RCT_CLI_HELPER_PROCESS=1",
+		"RCT_CLI_DIR="+rootDir,
+		"RCT_CLI_TEST_DATA_DIR="+testDataDir,
+		"RCT_TEST_BINARY_HELPER=1",
+	)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("CLI helper process exited unexpectedly: %v\nOutput:\n%s", err, output)
+	}
+
+	stdout := string(output)
+	for _, needle := range []string{"Searching", "Program directory:", "Success rate:", "OK"} {
+		if !strings.Contains(stdout, needle) {
+			t.Fatalf("expected CLI output to contain %q, got:\n%s", needle, stdout)
+		}
+	}
+	if !strings.Contains(stdout, programDir) {
+		t.Fatalf("expected CLI output to include program dir %q, got:\n%s", programDir, stdout)
+	}
+}
+
+func TestMainHelperCommand(t *testing.T) {
+	if os.Getenv("RCT_TEST_BINARY_HELPER") != "1" {
+		t.Skip("helper test is only run by TestMainUsesFlagsEndToEnd")
+	}
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(workingDir)
+	os.Exit(0)
 }
