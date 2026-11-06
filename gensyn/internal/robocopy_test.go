@@ -5,6 +5,8 @@ Copyright © 2025 Robert Impey robert-impey@users.noreply.github.com
 */
 
 import (
+	"bufio"
+	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -13,6 +15,63 @@ import (
 
 	common "github.com/robert-impey/tools/internal"
 )
+
+func TestWriteSynchScriptFileParams(t *testing.T) {
+	var output strings.Builder
+	w := bufio.NewWriter(&output)
+
+	if err := writeSynchScriptFileParams(w); err != nil {
+		t.Fatalf("writeSynchScriptFileParams returned an error: %v", err)
+	}
+	if err := w.Flush(); err != nil {
+		t.Fatalf("failed to flush output: %v", err)
+	}
+
+	want := "param(\n" +
+		"    [Parameter (Mandatory = $False)]\n" +
+		"    [switch]$logged = $False\n" +
+		")\n\n"
+	if got := output.String(); got != want {
+		t.Errorf("unexpected output:\n got: %q\nwant: %q", got, want)
+	}
+}
+
+func TestWriteSynchScriptFileParamsReturnsWriteErrors(t *testing.T) {
+	lines := []string{
+		"param(",
+		"    [Parameter (Mandatory = $False)]",
+		"    [switch]$logged = $False",
+		")",
+		"",
+	}
+
+	for i := range lines {
+		t.Run(lines[i], func(t *testing.T) {
+			previousOutputLength := len(strings.Join(lines[:i], "\n"))
+			if i > 0 {
+				previousOutputLength++
+			}
+			bufferSize := previousOutputLength + 32
+			w := bufio.NewWriterSize(errorWriterForParams{}, bufferSize)
+			if _, err := w.Write(make([]byte, bufferSize-previousOutputLength)); err != nil {
+				t.Fatalf("failed to prepare writer: %v", err)
+			}
+
+			err := writeSynchScriptFileParams(w)
+			if !errors.Is(err, errParamsWriter) {
+				t.Fatalf("expected writer error %v, got %v", errParamsWriter, err)
+			}
+		})
+	}
+}
+
+var errParamsWriter = errors.New("params writer failed")
+
+type errorWriterForParams struct{}
+
+func (errorWriterForParams) Write([]byte) (int, error) {
+	return 0, errParamsWriter
+}
 
 func TestGetCleanLocationName(t *testing.T) {
 	tests := []struct {
