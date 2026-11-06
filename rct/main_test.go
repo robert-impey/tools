@@ -112,6 +112,27 @@ func TestReadTestFile(t *testing.T) {
 	}
 }
 
+func TestReadTestFileReplacesTestDataDirToken(t *testing.T) {
+	testDataDir := filepath.Join("/tmp", "fixture-data")
+	testPath := filepath.Join(t.TempDir(), "test.txt")
+	testContent := "echo TEST_DATA_DIR\n---\nexpected output"
+	if err := os.WriteFile(testPath, []byte(testContent), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	command, output, err := readTestFile(testPath, testDataDir, false)
+	if err != nil {
+		t.Fatalf("readTestFile failed unexpectedly: %v", err)
+	}
+
+	if command != "echo "+testDataDir {
+		t.Fatalf("command = %q, want %q", command, "echo "+testDataDir)
+	}
+	if output != "expected output" {
+		t.Fatalf("output = %q, want %q", output, "expected output")
+	}
+}
+
 // TestExecuteCommand tests command output selection and exit-code handling.
 func TestExecuteCommand(t *testing.T) {
 	executable, err := os.Executable()
