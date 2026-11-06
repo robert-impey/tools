@@ -123,3 +123,99 @@ func TestGenerateRcifScript_ShouldOverwriteExistingScriptFile(t *testing.T) {
 	assert.NotContains(t, s, "$destinationFolder = \"D:\\\"")
 	assert.Contains(t, s, `Start-Process ROBOCOPY -ArgumentList @("C:\", "D:\", "/xo", "file1.txt") `)
 }
+
+func TestGenerateRcifScript_ShouldValidateRequiredArguments(t *testing.T) {
+	tempDir := t.TempDir()
+	synchFile := filepath.Join(tempDir, "synch.txt")
+	assert.NoError(t, os.WriteFile(synchFile, []byte(strings.Join([]string{`C:\`, `D:\`, "", "file.txt"}, "\n")), 0o644))
+
+	tests := []struct {
+		name          string
+		synchFilePath string
+		autoGenDir    string
+		scriptName    string
+		wantError     string
+	}{
+		{
+			name:       "missing synch file path",
+			autoGenDir: tempDir,
+			scriptName: "script",
+			wantError:  "synch file path is required",
+		},
+		{
+			name:          "missing output directory",
+			synchFilePath: synchFile,
+			scriptName:    "script",
+			wantError:     "autogen folder is required",
+		},
+		{
+			name:          "missing script name",
+			synchFilePath: synchFile,
+			autoGenDir:    tempDir,
+			wantError:     "script name is required",
+		},
+		{
+			name:          "nonexistent output directory",
+			synchFilePath: synchFile,
+			autoGenDir:    filepath.Join(tempDir, "missing"),
+			scriptName:    "script",
+			wantError:     "auto-generated folder does not exist",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := GenerateRcifScript(tt.synchFilePath, tt.autoGenDir, tt.scriptName)
+			assert.ErrorContains(t, err, tt.wantError)
+		})
+	}
+}
+
+func TestGenerateRcifScript_ShouldReturnErrorForInvalidSynchFile(t *testing.T) {
+	tempDir := t.TempDir()
+	synchFile := filepath.Join(tempDir, "invalid.txt")
+	assert.NoError(t, os.WriteFile(synchFile, []byte("invalid"), 0o644))
+
+	err := GenerateRcifScript(synchFile, tempDir, "script")
+	assert.Error(t, err)
+	assert.ErrorContains(t, err, "at least four lines")
+}
+
+func TestGenerateRcifScript_ShouldSkipCommentLines(t *testing.T) {
+	tempDir := t.TempDir()
+	synchFile := filepath.Join(tempDir, "synch.txt")
+	content := strings.Join([]string{`C:\`, `D:\`, "", "# this is a comment", "file.txt"}, "\n")
+	assert.NoError(t, os.WriteFile(synchFile, []byte(content), 0o644))
+
+	err := GenerateRcifScript(synchFile, tempDir, "script")
+	assert.NoError(t, err)
+
+	script, err := os.ReadFile(filepath.Join(tempDir, "script.ps1"))
+	assert.NoError(t, err)
+	assert.NotContains(t, string(script), "# this is a comment")
+	assert.Contains(t, string(script), `Start-Process ROBOCOPY -ArgumentList @("C:\", "D:\", "/xo", "file.txt") `)
+}
+
+func TestGenerateRcifScript_ShouldReturnErrorWhenOutputPathCannotBeCreated(t *testing.T) {
+	tempDir := t.TempDir()
+	synchFile := filepath.Join(tempDir, "synch.txt")
+	content := strings.Join([]string{`C:\`, `D:\`, "", "file.txt"}, "\n")
+	assert.NoError(t, os.WriteFile(synchFile, []byte(content), 0o644))
+
+	err := GenerateRcifScript(synchFile, tempDir, filepath.Join("missing", "script"))
+	assert.ErrorContains(t, err, "failed to create script file")
+}
+
+func TestGenerateRcifScript_ShouldReturnErrorWhenExistingScriptCannotBeRemoved(t *testing.T) {
+	tempDir := t.TempDir()
+	synchFile := filepath.Join(tempDir, "synch.txt")
+	content := strings.Join([]string{`C:\`, `D:\`, "", "file.txt"}, "\n")
+	assert.NoError(t, os.WriteFile(synchFile, []byte(content), 0o644))
+
+	outputPath := filepath.Join(tempDir, "script.ps1")
+	assert.NoError(t, os.Mkdir(outputPath, 0o755))
+	assert.NoError(t, os.WriteFile(filepath.Join(outputPath, "existing.txt"), []byte("keep"), 0o644))
+
+	err := GenerateRcifScript(synchFile, tempDir, "script")
+	assert.ErrorContains(t, err, "failed to remove existing script")
+}
