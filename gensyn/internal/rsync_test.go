@@ -175,6 +175,37 @@ func TestReadGSSConfigFromReaderError(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestDeleteIfExists(t *testing.T) {
+	t.Run("returns nil when path does not exist", func(t *testing.T) {
+		err := deleteIfExists(filepath.Join(t.TempDir(), "missing"))
+		assert.NoError(t, err)
+	})
+
+	t.Run("returns error when the path cannot be inspected", func(t *testing.T) {
+		err := deleteIfExists(filepath.Join(t.TempDir(), "invalid\x00path"))
+		assert.Error(t, err)
+	})
+
+	t.Run("deletes an existing file", func(t *testing.T) {
+		filePath := filepath.Join(t.TempDir(), "existing.txt")
+		assert.NoError(t, os.WriteFile(filePath, []byte("content"), 0o644))
+
+		err := deleteIfExists(filePath)
+		assert.NoError(t, err)
+		assert.NoFileExists(t, filePath)
+	})
+
+	t.Run("returns error when an existing path cannot be removed", func(t *testing.T) {
+		dirPath := filepath.Join(t.TempDir(), "non-empty")
+		assert.NoError(t, os.Mkdir(dirPath, 0o755))
+		assert.NoError(t, os.WriteFile(filepath.Join(dirPath, "child.txt"), []byte("content"), 0o644))
+
+		err := deleteIfExists(dirPath)
+		assert.Error(t, err)
+		assert.FileExists(t, filepath.Join(dirPath, "child.txt"))
+	})
+}
+
 type errorReader struct {
 	err error
 }
