@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -394,6 +395,75 @@ func TestExecuteReturnsExpectedExitCodes(t *testing.T) {
 	if code := execute(context.Background(), settings); code != 0 {
 		t.Fatalf("execute() with a passing test returned %d, want 0", code)
 	}
+}
+
+func TestExecuteVerboseOutputAndCancellation(t *testing.T) {
+	rootDir := t.TempDir()
+	programDir := filepath.Join(rootDir, "program")
+	if err := os.MkdirAll(filepath.Join(programDir, testsDirName), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	binaryPath := filepath.Join(programDir, filepath.Base(executable))
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	testFile := filepath.Join(programDir, testsDirName, "verbose.txt")
+	content := fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programDir)
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	settings := CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: true}
+	if code := execute(ctx, settings); code != 1 {
+		t.Fatalf("execute() after cancellation returned %d, want 1", code)
+	}
+
+	output := captureStdout(func() {
+		settings = CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: true}
+		code := execute(context.Background(), settings)
+		if code != 0 {
+			t.Fatalf("execute() in verbose mode returned %d, want 0", code)
+		}
+	})
+
+	for _, needle := range []string{"Searching", "Program directory:", "Test file:", "Command output (Actual):", "Success rate:"} {
+		if !strings.Contains(output, needle) {
+			t.Fatalf("expected verbose output to contain %q, got:\n%s", needle, output)
+		}
+	}
+}
+
+func captureStdout(fn func()) string {
+	oldStdout := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		panic(err)
+	}
+	os.Stdout = w
+	defer func() {
+		os.Stdout = oldStdout
+	}()
+
+	fn()
+	w.Close()
+	output, err := io.ReadAll(r)
+	if err != nil {
+		panic(err)
+	}
+	return string(output)
 }
 
 func TestExecuteHelperSuccess(t *testing.T) {
