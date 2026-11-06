@@ -297,6 +297,92 @@ func TestMainUsesFlagsEndToEnd(t *testing.T) {
 	}
 }
 
+func TestExecuteFindsAndRunsTestsAcrossProgramDirectories(t *testing.T) {
+	rootDir := t.TempDir()
+	programA := filepath.Join(rootDir, "programA")
+	programB := filepath.Join(rootDir, "programB")
+	for _, dir := range []string{programA, programB} {
+		if err := os.MkdirAll(filepath.Join(dir, testsDirName), 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if err := os.MkdirAll(filepath.Join(rootDir, ".ignored"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, dir := range []string{programA, programB} {
+		binaryPath := filepath.Join(dir, filepath.Base(executable))
+		executableBytes, err := os.ReadFile(executable)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, tc := range []struct {
+		dir       string
+		fileName  string
+		content   string
+		expected  string
+		testType  string
+		exitCode  int
+		wantPass  bool
+	}{
+		{dir: programA, fileName: "first.txt", content: fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programA), expected: programA, testType: "out", wantPass: true},
+		{dir: programA, fileName: "second.err", content: fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programA), expected: programA, testType: "err", wantPass: true},
+		{dir: programB, fileName: "third.txt", content: fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), "wrong value"), expected: "wrong value", testType: "out", wantPass: false},
+	} {
+		if err := os.WriteFile(filepath.Join(tc.dir, testsDirName, tc.fileName), []byte(tc.content), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	settings := CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: false}
+	code := execute(context.Background(), settings)
+	if code != 0 {
+		t.Fatalf("execute() returned %d, want 0", code)
+	}
+
+	if got := enumerateFilteredDirectories(rootDir); len(got) < 3 {
+		t.Fatalf("enumerateFilteredDirectories() unexpectedly short: %v", got)
+	}
+}
+
+func TestExecuteReturnsExpectedExitCodes(t *testing.T) {
+	rootDir := t.TempDir()
+	settings := CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: false}
+
+	if code := execute(context.Background(), settings); code != 1 {
+		t.Fatalf("execute() with no tests returned %d, want 1", code)
+	}
+
+	programDir := filepath.Join(rootDir, "program")
+	if err := os.MkdirAll(filepath.Join(programDir, testsDirName), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(programDir, testsDirName, "empty.txt"), []byte("echo hi\n---\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if code := execute(context.Background(), settings); code != 0 {
+		t.Fatalf("execute() with a passing test returned %d, want 0", code)
+	}
+}
+
+func TestExecuteHelperSuccess(t *testing.T) {
+	if os.Getenv("RCT_EXECUTE_HELPER_SUCCESS") != "1" {
+		t.Skip("helper test is only run by execute tests")
+	}
+	fmt.Println(os.Getwd())
+	os.Exit(0)
+}
+
 func TestMainHelperCommand(t *testing.T) {
 	if os.Getenv("RCT_TEST_BINARY_HELPER") != "1" {
 		t.Skip("helper test is only run by TestMainUsesFlagsEndToEnd")
