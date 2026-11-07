@@ -109,6 +109,46 @@ func testGetSetFile(dir string, tfn string, t *testing.T) {
 	}
 }
 
+func TestGetActionForFile_ActionValuesAndInvalidAction(t *testing.T) {
+	tests := []struct {
+		name       string
+		actionText string
+		wantAction Action
+		wantError  bool
+	}{
+		{name: "delete", actionText: "delete", wantAction: Delete},
+		{name: "keep", actionText: "keep", wantAction: Keep},
+		{name: "unsupported action", actionText: "archive", wantAction: NoAction, wantError: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			sdFile := filepath.Join(dir, "metadata.txt")
+			if err := os.WriteFile(sdFile, []byte("target.txt\n"+tt.actionText+"\n"), 0644); err != nil {
+				t.Fatalf("write metadata: %v", err)
+			}
+
+			got, err := GetActionForFile(sdFile, dir)
+			if tt.wantError {
+				if err == nil {
+					t.Fatal("GetActionForFile returned nil error for unsupported action")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("GetActionForFile: %v", err)
+			}
+			if got.File != filepath.Join(dir, "target.txt") {
+				t.Errorf("GetActionForFile returned path %q, want %q", got.File, filepath.Join(dir, "target.txt"))
+			}
+			if got.Action != tt.wantAction {
+				t.Errorf("GetActionForFile returned action %v, want %v", got.Action, tt.wantAction)
+			}
+		})
+	}
+}
+
 func TestFindingSdFiles(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "dir with [globbing] (chars)")
 
@@ -176,6 +216,46 @@ func TestSweepFromDirectories(t *testing.T) {
 	// Assert: keep_me.txt still exists
 	if _, err := os.Stat(keepFile2); err != nil {
 		t.Fatalf("expected %s to be kept, stat err=%v", keepFile2, err)
+	}
+}
+
+func TestSweepFromDirectories_ConflictingActionsUseLatestMark(t *testing.T) {
+	tests := []struct {
+		name           string
+		firstAction    Action
+		secondAction   Action
+		wantFileExists bool
+	}{
+		{name: "keep overrides delete", firstAction: Delete, secondAction: Keep, wantFileExists: true},
+		{name: "delete overrides keep", firstAction: Keep, secondAction: Delete, wantFileExists: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			target := filepath.Join(dir, "conflict.txt")
+			if err := os.WriteFile(target, []byte("content"), 0644); err != nil {
+				t.Fatalf("write target: %v", err)
+			}
+			if err := SetActionForFile(target, tt.firstAction); err != nil {
+				t.Fatalf("SetActionForFile(first action): %v", err)
+			}
+			if err := SetActionForFile(target, tt.secondAction); err != nil {
+				t.Fatalf("SetActionForFile(second action): %v", err)
+			}
+
+			if err := SweepDirectory(dir, 12, false); err != nil {
+				t.Fatalf("SweepDirectory: %v", err)
+			}
+
+			_, err := os.Stat(target)
+			if tt.wantFileExists && err != nil {
+				t.Errorf("expected target to remain, stat err=%v", err)
+			}
+			if !tt.wantFileExists && !os.IsNotExist(err) {
+				t.Errorf("expected target to be deleted, stat err=%v", err)
+			}
+		})
 	}
 }
 
