@@ -3,6 +3,9 @@ out
 target
 vendor
 _deps
+
 coverage
 coverage.out
 $coverage
+coverage.html
+coverage_*.txt
