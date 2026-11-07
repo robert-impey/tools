@@ -1,5 +1,5 @@
 # staydeleted
-To prevent files and directories from being accidentally deleted when using two-way synchronization tools (like rsync) with backup disks, `staydeleted` allows you to mark specific files or directories for protection.
+The `staydeleted` tool is designed to manage the coordinated, multi-site deletion of files across multiple, independently synchronized directories (e.g., /a/docs, /b/docs, /c/docs). Its purpose is to ensure that files marked for deletion are removed from all synchronized locations after a predetermined period, thus preventing them from being restored or appearing in other synchronization endpoints.
 
 This is particularly useful for folders synced to external backups on a regular schedule, where accidental deletions can be restored from the backup, bypassing the intended deletion cycle.
 
@@ -7,9 +7,11 @@ This is particularly useful for folders synced to external backups on a regular 
 
 `staydeleted` does not modify the contents of your files. Instead, when you mark a file, it creates a hidden metadata file (e.g., `.stay-deleted/<hash>.txt`) inside a dedicated subdirectory, `.stay-deleted`, within the directory containing the protected file.
 
+This tool does not modify the contents of your files. Instead, when you mark a file, it creates a hidden metadata file (e.g., `.stay-deleted/<hash>.txt`) inside a dedicated subdirectory, `.stay-deleted`, within the directory containing the protected file.
+
 *   **Protection:** The metadata file contains instructions (`delete` or `keep`) that the `sweep` command reads.
-*   **Dependency:** This behavior relies on your synchronization tools using options like `rsync --update` or similar mechanisms to read these metadata files and treat them as actual content.
-*   **Cleanup:** The tool automatically manages the metadata files. Metadata files are marked for deletion and cleaned up after a set expiration period (default is 12 months), preventing the `.stay-deleted` folder from accumulating old, irrelevant data.
+*   **Coordination:** The existence and synchronized deletion of this metadata file across all linked repositories confirms that the deletion signal has propagated to all intended sites.
+*   **Cleanup:** The tool automatically manages the metadata files. Metadata files are marked for deletion and cleaned up after a set expiration period (default is 12 months). This mechanism confirms that the deletion window has passed and prevents the `.stay-deleted` folder from accumulating old, irrelevant data.
 
 See [https://github.com/robert-impey/tools/gensyn](https://github.com/robert-impey/tools/gensyn) for related synchronization scripts.
 
@@ -78,7 +80,7 @@ PS C:> staydeleted sweepFrom directories-to-sweep.txt
 
 #### 📅 Expiry and Cleanup
 
-The tool automatically manages the metadata files. By default, metadata files are marked for deletion and cleaned up after __12 months__. This prevents the `.stay-deleted` folder from accumulating old, irrelevant data.
+The tool automatically manages the metadata files. By default, metadata files are marked for deletion and cleaned up after __12 months__. This period represents the time assumed necessary for the deletion signal to propagate across all synchronized directories. This prevents the `.stay-deleted` folder from accumulating old, irrelevant data.
 
 You can explicitly override this cleanup period using the `--expiry` flag when running `sweep` or `sweepFrom`.
 
