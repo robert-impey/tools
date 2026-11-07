@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"time"
 )
 
 func TestGetSdFolder(t *testing.T) {
@@ -233,5 +234,52 @@ func TestSweepFromDirectories_NFCDeletionKeepsNFD(t *testing.T) {
 
 	if _, err := os.Stat(nfdFile); err != nil {
 		t.Fatalf("expected NFD file %q to remain, stat err=%v", nfdFile, err)
+	}
+}
+
+func TestSweepDirectory_RemovesExpiredMetadataWithoutDeletingTarget(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "keep_after_expiry.txt")
+	if err := os.WriteFile(target, []byte("keep"), 0644); err != nil {
+		t.Fatalf("write target: %v", err)
+	}
+	if err := SetActionForFile(target, Delete); err != nil {
+		t.Fatalf("SetActionForFile: %v", err)
+	}
+
+	sdFile, err := GetSdFile(target)
+	if err != nil {
+		t.Fatalf("GetSdFile: %v", err)
+	}
+	expiredAt := time.Now().AddDate(0, -13, 0)
+	if err := os.Chtimes(sdFile, expiredAt, expiredAt); err != nil {
+		t.Fatalf("set metadata modification time: %v", err)
+	}
+
+	if err := SweepDirectory(dir, 12, false); err != nil {
+		t.Fatalf("SweepDirectory: %v", err)
+	}
+
+	if _, err := os.Stat(sdFile); !os.IsNotExist(err) {
+		t.Errorf("expected expired metadata %q to be removed, got err=%v", sdFile, err)
+	}
+	if _, err := os.Stat(target); err != nil {
+		t.Errorf("expected target %q to remain after metadata expiry, stat err=%v", target, err)
+	}
+}
+
+func TestSweepDirectory_RemovesEmptyMetadataFolder(t *testing.T) {
+	dir := t.TempDir()
+	sdFolder := filepath.Join(dir, SdFolderName)
+	if err := os.Mkdir(sdFolder, 0755); err != nil {
+		t.Fatalf("create metadata folder: %v", err)
+	}
+
+	if err := SweepDirectory(dir, 12, false); err != nil {
+		t.Fatalf("SweepDirectory: %v", err)
+	}
+
+	if _, err := os.Stat(sdFolder); !os.IsNotExist(err) {
+		t.Errorf("expected empty metadata folder %q to be removed, got err=%v", sdFolder, err)
 	}
 }
