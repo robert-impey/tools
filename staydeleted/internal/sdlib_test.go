@@ -219,6 +219,70 @@ func TestSweepFromDirectories(t *testing.T) {
 	}
 }
 
+func TestSweepDirectory_TraversesNestedDirectories(t *testing.T) {
+	root := t.TempDir()
+	deleteDir := filepath.Join(root, "level one", "level two", "delete")
+	keepDir := filepath.Join(root, "level one", "keep")
+	for _, dir := range []string{deleteDir, keepDir} {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatalf("create directory %q: %v", dir, err)
+		}
+	}
+
+	deleteFile := filepath.Join(deleteDir, "remove.txt")
+	if err := os.WriteFile(deleteFile, []byte("remove"), 0644); err != nil {
+		t.Fatalf("write delete file: %v", err)
+	}
+	if err := SetActionForFile(deleteFile, Delete); err != nil {
+		t.Fatalf("mark delete file: %v", err)
+	}
+
+	keepFile := filepath.Join(keepDir, "retain.txt")
+	if err := os.WriteFile(keepFile, []byte("retain"), 0644); err != nil {
+		t.Fatalf("write keep file: %v", err)
+	}
+	if err := SetActionForFile(keepFile, Keep); err != nil {
+		t.Fatalf("mark keep file: %v", err)
+	}
+
+	if err := SweepDirectory(root, 12, false); err != nil {
+		t.Fatalf("SweepDirectory: %v", err)
+	}
+
+	if _, err := os.Stat(deleteFile); !os.IsNotExist(err) {
+		t.Errorf("expected nested delete target %q to be removed, got err=%v", deleteFile, err)
+	}
+	if _, err := os.Stat(keepFile); err != nil {
+		t.Errorf("expected nested keep target %q to remain, stat err=%v", keepFile, err)
+	}
+}
+
+func TestSweepDirectory_AlreadyDeletedTargetKeepsMetadata(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "already_removed.txt")
+	if err := os.WriteFile(target, []byte("content"), 0644); err != nil {
+		t.Fatalf("write target: %v", err)
+	}
+	if err := SetActionForFile(target, Delete); err != nil {
+		t.Fatalf("mark target: %v", err)
+	}
+
+	sdFile, err := GetSdFile(target)
+	if err != nil {
+		t.Fatalf("GetSdFile: %v", err)
+	}
+	if err := os.Remove(target); err != nil {
+		t.Fatalf("remove target before sweep: %v", err)
+	}
+
+	if err := SweepDirectory(dir, 12, false); err != nil {
+		t.Fatalf("SweepDirectory: %v", err)
+	}
+	if _, err := os.Stat(sdFile); err != nil {
+		t.Errorf("expected metadata for already deleted target to remain, stat err=%v", err)
+	}
+}
+
 func TestSweepFromDirectories_ConflictingActionsUseLatestMark(t *testing.T) {
 	tests := []struct {
 		name           string
