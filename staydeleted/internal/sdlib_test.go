@@ -47,6 +47,37 @@ func TestSetGetActionFunnyCharsInDir(t *testing.T) {
 	testGetSetFile(dir, tfn, t)
 }
 
+func TestSetGetActionComplexPathAndUnicode(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "資料 [draft] (v1)")
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatalf("create directory: %v", err)
+	}
+
+	fileName := "résumé #1 [approved] — 日本語.txt"
+	filePath := filepath.Join(dir, fileName)
+	if err := os.WriteFile(filePath, []byte("content"), 0644); err != nil {
+		t.Fatalf("write file: %v", err)
+	}
+	if err := SetActionForFile(filePath, Keep); err != nil {
+		t.Fatalf("SetActionForFile: %v", err)
+	}
+
+	sdFile, err := GetSdFile(filePath)
+	if err != nil {
+		t.Fatalf("GetSdFile: %v", err)
+	}
+	got, err := GetActionForFile(sdFile, dir)
+	if err != nil {
+		t.Fatalf("GetActionForFile: %v", err)
+	}
+	if got.File != filePath {
+		t.Errorf("GetActionForFile returned path %q, want %q", got.File, filePath)
+	}
+	if got.Action != Keep {
+		t.Errorf("GetActionForFile returned action %v, want %v", got.Action, Keep)
+	}
+}
+
 func testGetSetFile(dir string, tfn string, t *testing.T) {
 	tfp := filepath.Join(dir, tfn)
 
