@@ -185,6 +185,9 @@ func ReadSweepFromFile(sweepFromFileName string) ([]string, error) {
 
 		directoriesToSweep = append(directoriesToSweep, directoryToSweep)
 	}
+	if err := input.Err(); err != nil {
+		return nil, err
+	}
 
 	return directoriesToSweep, nil
 }
