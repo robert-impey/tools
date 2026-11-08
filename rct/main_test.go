@@ -554,7 +554,11 @@ func TestExecuteHelperSuccess(t *testing.T) {
 	if os.Getenv("RCT_EXECUTE_HELPER_SUCCESS") != "1" {
 		t.Skip("helper test is only run by execute tests")
 	}
-	fmt.Println(os.Getwd())
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(wd)
 	os.Exit(0)
 }
 
@@ -569,4 +573,271 @@ func TestMainHelperCommand(t *testing.T) {
 	}
 	fmt.Println(workingDir)
 	os.Exit(0)
+}
+
+func TestEnumerateFilteredDirectoriesHandlesErrorsAndDSYM(t *testing.T) {
+	tempDir := t.TempDir()
+
+	validSubdir := filepath.Join(tempDir, "valid_subdir")
+	if err := os.Mkdir(validSubdir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	dsymDir := filepath.Join(tempDir, "bundle.dSYM")
+	if err := os.Mkdir(dsymDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	unreadableDir := filepath.Join(tempDir, "unreadable_dir")
+	if err := os.Mkdir(unreadableDir, 0000); err == nil {
+		// Ensure permissions are restored so t.TempDir cleanup succeeds
+		t.Cleanup(func() {
+			os.Chmod(unreadableDir, 0755)
+		})
+	}
+
+	results := enumerateFilteredDirectories(tempDir)
+
+	for _, dir := range results {
+		if strings.HasSuffix(dir, ".dSYM") {
+			t.Errorf("expected .dSYM directory to be filtered out, got %s", dir)
+		}
+	}
+
+	foundValid := false
+	for _, dir := range results {
+		if dir == validSubdir {
+			foundValid = true
+			break
+		}
+	}
+	if !foundValid {
+		t.Errorf("expected %s in results, but was missing", validSubdir)
+	}
+}
+
+func TestReadTestFileErrorsAndVerbose(t *testing.T) {
+	tempDir := t.TempDir()
+
+	// 1. Non-existent file
+	nonExistent := filepath.Join(tempDir, "does_not_exist.txt")
+	if _, _, err := readTestFile(nonExistent, tempDir, false); err == nil {
+		t.Errorf("expected error reading non-existent file, got nil")
+	}
+
+	// 2. Malformed test files (< 3 lines)
+	cases := []struct {
+		name    string
+		content string
+	}{
+		{name: "empty file", content: ""},
+		{name: "one line", content: "echo hello"},
+		{name: "two lines", content: "echo hello\n---"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			filePath := filepath.Join(tempDir, tc.name+".txt")
+			if err := os.WriteFile(filePath, []byte(tc.content), 0644); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := readTestFile(filePath, tempDir, false); err == nil {
+				t.Errorf("expected malformed test file error for %s, got nil", tc.name)
+			}
+		})
+	}
+
+	// 3. Verbose mode
+	validFile := filepath.Join(tempDir, "valid.txt")
+	if err := os.WriteFile(validFile, []byte("echo hello\n---\nhello\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	output := captureStdout(func() {
+		cmd, exp, err := readTestFile(validFile, tempDir, true)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cmd != "echo hello" || exp != "hello" {
+			t.Fatalf("unexpected cmd or exp: %q, %q", cmd, exp)
+		}
+	})
+
+	if !strings.Contains(output, "Command: echo hello") {
+		t.Errorf("expected verbose output to contain 'Command: echo hello', got %q", output)
+	}
+}
+
+func TestExecuteCommandEmptyAndNonExitErrors(t *testing.T) {
+	ctx := context.Background()
+	tempDir := t.TempDir()
+
+	// 1. Empty and whitespace-only command
+	for _, cmd := range []string{"", "   ", "\t\n"} {
+		out, code := executeCommand(ctx, cmd, tempDir, "out")
+		if out != "" || code != -1 {
+			t.Errorf("executeCommand(%q) = (%q, %d), want (%q, -1)", cmd, out, code, "")
+		}
+	}
+
+	// 2. Non-exit error (command binary not found)
+	out, code := executeCommand(ctx, "nonexistent_command_12345", tempDir, "out")
+	if code != -1 {
+		t.Errorf("executeCommand for nonexistent binary returned exit code %d, want -1 (output: %q)", code, out)
+	}
+}
+
+func TestExecuteSkipsSubdirectoriesAndUnrecognizedFiles(t *testing.T) {
+	t.Setenv("RCT_EXECUTE_HELPER_SUCCESS", "1")
+
+	rootDir := t.TempDir()
+	programDir := filepath.Join(rootDir, "program")
+	testsDir := filepath.Join(programDir, testsDirName)
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	binaryPath := filepath.Join(programDir, filepath.Base(executable))
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	// 1. Nested subdirectory inside tests/
+	if err := os.Mkdir(filepath.Join(testsDir, "nested_subfolder"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. Unrecognized file extensions
+	if err := os.WriteFile(filepath.Join(testsDir, "notes.md"), []byte("# Notes"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(testsDir, "data.json"), []byte("{}"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// 3. Valid test file
+	testFile := filepath.Join(testsDir, "01_valid.txt")
+	content := fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programDir)
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	output := captureStdout(func() {
+		settings := CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: false}
+		code := execute(context.Background(), settings)
+		if code != 0 {
+			t.Fatalf("execute() returned %d, want 0", code)
+		}
+	})
+
+	if !strings.Contains(output, "Success rate: \033[32m1\033[0m/\033[1m1\033[0m") {
+		t.Errorf("expected 1 test to be discovered and run, output: %s", output)
+	}
+}
+
+func TestExecuteDeterministicAlphabeticalOrder(t *testing.T) {
+	t.Setenv("RCT_EXECUTE_HELPER_SUCCESS", "1")
+
+	rootDir := t.TempDir()
+	programDir := filepath.Join(rootDir, "program")
+	testsDir := filepath.Join(programDir, testsDirName)
+	if err := os.MkdirAll(testsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	binaryPath := filepath.Join(programDir, filepath.Base(executable))
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	// Create test files in reverse or shuffled order
+	for _, name := range []string{"03_test.txt", "01_test.txt", "02_test.txt"} {
+		testFile := filepath.Join(testsDir, name)
+		content := fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programDir)
+		if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	output := captureStdout(func() {
+		settings := CommandSettings{Directory: rootDir, TestDataDirectory: rootDir, Verbose: true}
+		code := execute(context.Background(), settings)
+		if code != 0 {
+			t.Fatalf("execute() returned %d, want 0", code)
+		}
+	})
+
+	pos1 := strings.Index(output, "Test file: 01_test.txt")
+	pos2 := strings.Index(output, "Test file: 02_test.txt")
+	pos3 := strings.Index(output, "Test file: 03_test.txt")
+
+	if pos1 == -1 || pos2 == -1 || pos3 == -1 {
+		t.Fatalf("all three test files should be present in output, got:\n%s", output)
+	}
+	if !(pos1 < pos2 && pos2 < pos3) {
+		t.Errorf("expected tests to execute in alphabetical order: pos1=%d, pos2=%d, pos3=%d", pos1, pos2, pos3)
+	}
+}
+
+func TestRunTestHandlesErrorsAndVerbose(t *testing.T) {
+	tempDir := t.TempDir()
+	nonExistentFile := filepath.Join(tempDir, "missing.txt")
+
+	// 1. Error reading test file in runTest
+	if ok := runTest(context.Background(), nonExistentFile, tempDir, false, "out", tempDir); ok {
+		t.Errorf("runTest() with non-existent file returned true, want false")
+	}
+
+	// 2. Verbose mode when test fails
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	programDir := filepath.Join(tempDir, "prog")
+	if err := os.MkdirAll(programDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	binaryPath := filepath.Join(programDir, filepath.Base(executable))
+	executableBytes, err := os.ReadFile(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(binaryPath, executableBytes, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	testFile := filepath.Join(programDir, "test.txt")
+	content := fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\nexpected_different_output", filepath.Base(executable))
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	output := captureStdout(func() {
+		ok := runTest(context.Background(), testFile, tempDir, true, "out", programDir)
+		if ok {
+			t.Errorf("runTest() should have failed")
+		}
+	})
+
+	for _, needle := range []string{"Test output (Expected):", "Command output (Actual):", "Exit code:", "FAIL"} {
+		if !strings.Contains(output, needle) {
+			t.Errorf("expected verbose runTest output to contain %q, got:\n%s", needle, output)
+		}
+	}
 }
