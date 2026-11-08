@@ -2,3 +2,9 @@
 # Created by `dart pub`
 .dart_tool/
 !bin/
+# Coverage output files and directories
+.html/
+.coverage_output/
+coverage_output/
+*.html
+**/*.vm.json
