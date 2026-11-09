@@ -25,4 +25,4 @@ Each tool is designed to solve a practical automation problem:
 - [**logs-deleter**](./logs-deleter/README.md): Cleans up old logs (rsync, robocopy, custom) using retention policies based on file age and content analysis; supports per-tool sweeps.
 - [**rct**](./rct/README.md): Output-based test runner that discovers `.txt`/`.err` test files in `tests/` directories and compares command outputs against expected results.
 - [**cron-setter**](./cron-setter/README.md): Generates crontab entries to schedule maintenance scripts at randomised minutes within designated hours, wrapped in comment headers to preserve custom jobs.
-- [**TidyFolder (search)**](./TidyFolder/README.md): Scans a directory tree for related files with matching extensions where one filename stem starts with another, grouped by parent folder.
+- [**TidyFolder**](./TidyFolder/TidyFolder/README.md): Scans a directory tree for related files with matching extensions where one filename stem starts with another, grouped by parent folder.
