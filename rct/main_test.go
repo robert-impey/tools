@@ -349,13 +349,13 @@ func TestExecuteFindsAndRunsTestsAcrossProgramDirectories(t *testing.T) {
 	}
 
 	for _, tc := range []struct {
-		dir       string
-		fileName  string
-		content   string
-		expected  string
-		testType  string
-		exitCode  int
-		wantPass  bool
+		dir      string
+		fileName string
+		content  string
+		expected string
+		testType string
+		exitCode int
+		wantPass bool
 	}{
 		{dir: programA, fileName: "first.txt", content: fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programA), expected: programA, testType: "out", wantPass: true},
 		{dir: programA, fileName: "second.err", content: fmt.Sprintf("%s -test.run=^TestExecuteHelperSuccess$\n---\n%s", filepath.Base(executable), programA), expected: programA, testType: "err", wantPass: true},
@@ -448,8 +448,8 @@ func TestExecuteVerboseOutputAndCancellation(t *testing.T) {
 
 func TestMainExecutesTxtAndErrFilesInNestedProgramFolders(t *testing.T) {
 	for _, tc := range []struct {
-		name      string
-		fileExt   string
+		name       string
+		fileExt    string
 		helperMode string
 	}{
 		{name: "txt file", fileExt: ".txt", helperMode: "stdout"},
