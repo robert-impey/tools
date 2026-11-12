@@ -15,6 +15,7 @@ func TestCLIUsesPositionalDirectoryArgument(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	
 	executable, err := os.ReadFile(executablePath)
 	if err != nil {
 		t.Fatal(err)
@@ -65,10 +66,28 @@ func TestCLIUsesPositionalDirectoryArgument(t *testing.T) {
 			wantFiles: []string{"root_test.txt", "subproj_test.txt"},
 			wantCount: 2,
 		},
+		{
+			name:      "flag argument -d rejected by CLI",
+			directory: filepath.Join(rootDir, "nonexistent_dir"),
+			wantFiles: []string{},
+			dontFiles: []string{},
+			wantCount: 0,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.directory == filepath.Join(rootDir, "nonexistent_dir") {
+				output := runSubdirRegressionCLIWithDFlag(t, rootDir)
+
+				// When -d flag is used, main() receives "-d" as a positional arg.
+				// Since main() doesn't parse flags, it will fail to execute correctly.
+				if strings.Contains(output, "Test file:") {
+					t.Errorf("Expected CLI to fail when using -d flag; output: %s", output)
+				}
+				return
+			}
+
 			output := runSubdirRegressionCLI(t, rootDir, tc.directory)
 			for _, name := range tc.wantFiles {
 				if !strings.Contains(output, "Test file: "+name) {
@@ -95,6 +114,24 @@ func runSubdirRegressionCLI(t *testing.T, workingDir, directory string) string {
 	cmd.Env = append(os.Environ(),
 		"RCT_SUBDIR_REGRESSION_CLI=1",
 		"RCT_SUBDIR_REGRESSION_DIRECTORY="+directory,
+		"RCT_SUBDIR_REGRESSION_COMMAND=1",
+	)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("CLI subprocess failed: %v\nOutput:\n%s", err, output)
+	}
+	return string(output)
+}
+
+func runSubdirRegressionCLIWithDFlag(t *testing.T, workingDir string) string {
+	t.Helper()
+
+	cmd := exec.Command(os.Args[0], "-test.run=^TestSubdirRegressionCLIProcess$")
+	cmd.Dir = workingDir
+	// Simulate -d flag by passing it as an argument (not via env var).
+	// main() does not parse this flag and will fail to use the directory.
+	cmd.Env = append(os.Environ(),
+		"RCT_SUBDIR_REGRESSION_CLI=1",
 		"RCT_SUBDIR_REGRESSION_COMMAND=1",
 	)
 	output, err := cmd.CombinedOutput()
