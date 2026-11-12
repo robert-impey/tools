@@ -31,7 +31,16 @@ func main() {
 
 	pflag.Parse()
 
+	// Capture remaining positional arguments as directory path
+	for i := 1; i < len(os.Args); i++ {
+		if !strings.HasPrefix(os.Args[i], "-") && settings.Directory == "." {
+			settings.Directory = os.Args[i]
+			break
+		}
+	}
+
 	ctx := context.Background() // Use for cancellation if needed
+	
 	exitCode := execute(ctx, settings)
 	os.Exit(exitCode)
 }
