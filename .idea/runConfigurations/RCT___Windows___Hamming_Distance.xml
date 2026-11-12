@@ -2,7 +2,7 @@
   <configuration default="false" name="RCT | Windows | Hamming Distance" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="tools" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="-d &quot;C:\Users\rober\code\CodingExperiments\pascal\HammingDistance&quot;" />
+    <parameters value="&quot;C:\Users\rober\code\CodingExperiments\pascal\HammingDistance&quot;" />
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/rct" />
     <directory value="$PROJECT_DIR$" />
