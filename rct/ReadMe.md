@@ -9,8 +9,9 @@ go run ./rct [flags]
 
 ## Flags
 
-* `--directory` (`-d`): Root directory to search. Defaults to the current
-  directory (`.`).
+The directory to search is an optional positional argument, not a flag:
+`go run ./rct [dir] [flags]`. It defaults to the current directory (`.`).
+
 * `--test-data-directory` (`-t`): Test data directory. Defaults to `./data`.
   This path is made absolute, and `TEST_DATA_DIR` in test commands is replaced
   with it.
