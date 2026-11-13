@@ -260,7 +260,7 @@ func TestRunTestCommandHelper(t *testing.T) {
 
 func TestMainUsesFlagsEndToEnd(t *testing.T) {
 	if os.Getenv("RCT_CLI_HELPER_PROCESS") == "1" {
-		os.Args = []string{"rct", "--directory", os.Getenv("RCT_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_CLI_TEST_DATA_DIR"), "--verbose"}
+		os.Args = []string{"rct", os.Getenv("RCT_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_CLI_TEST_DATA_DIR"), "--verbose"}
 		main()
 		return
 	}
@@ -457,7 +457,7 @@ func TestMainExecutesTxtAndErrFilesInNestedProgramFolders(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if os.Getenv("RCT_REAL_CLI_HELPER_PROCESS") == "1" {
-				os.Args = []string{"rct", "--directory", os.Getenv("RCT_REAL_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_REAL_CLI_TEST_DATA_DIR")}
+				os.Args = []string{"rct", os.Getenv("RCT_REAL_CLI_DIR"), "--test-data-directory", os.Getenv("RCT_REAL_CLI_TEST_DATA_DIR")}
 				main()
 				return
 			}

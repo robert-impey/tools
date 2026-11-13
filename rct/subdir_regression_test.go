@@ -66,28 +66,10 @@ func TestCLIUsesPositionalDirectoryArgument(t *testing.T) {
 			wantFiles: []string{"root_test.txt", "subproj_test.txt"},
 			wantCount: 2,
 		},
-		{
-			name:      "flag argument -d rejected by CLI",
-			directory: filepath.Join(rootDir, "nonexistent_dir"),
-			wantFiles: []string{},
-			dontFiles: []string{},
-			wantCount: 0,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.directory == filepath.Join(rootDir, "nonexistent_dir") {
-				output := runSubdirRegressionCLIWithDFlag(t, rootDir)
-
-				// When -d flag is used, main() receives "-d" as a positional arg.
-				// Since main() doesn't parse flags, it will fail to execute correctly.
-				if strings.Contains(output, "Test file:") {
-					t.Errorf("Expected CLI to fail when using -d flag; output: %s", output)
-				}
-				return
-			}
-
 			output := runSubdirRegressionCLI(t, rootDir, tc.directory)
 			for _, name := range tc.wantFiles {
 				if !strings.Contains(output, "Test file: "+name) {
@@ -101,6 +83,18 @@ func TestCLIUsesPositionalDirectoryArgument(t *testing.T) {
 			}
 			if got := strings.Count(output, "Test file:"); got != tc.wantCount {
 				t.Errorf("CLI ran %d tests, want %d; output:\n%s", got, tc.wantCount, output)
+			}
+		})
+	}
+
+	for _, flag := range []string{"-d", "--directory"} {
+		t.Run("rejects "+flag, func(t *testing.T) {
+			output, err := runSubdirRegressionCLIWithFlag(t, rootDir, flag)
+			if err == nil {
+				t.Fatalf("Expected CLI to reject %q; output: %s", flag, output)
+			}
+			if strings.Contains(output, "Test file:") {
+				t.Errorf("Expected CLI not to run tests when %q is used; output: %s", flag, output)
 			}
 		})
 	}
@@ -123,22 +117,19 @@ func runSubdirRegressionCLI(t *testing.T, workingDir, directory string) string {
 	return string(output)
 }
 
-func runSubdirRegressionCLIWithDFlag(t *testing.T, workingDir string) string {
+func runSubdirRegressionCLIWithFlag(t *testing.T, workingDir, flag string) (string, error) {
 	t.Helper()
 
 	cmd := exec.Command(os.Args[0], "-test.run=^TestSubdirRegressionCLIProcess$")
 	cmd.Dir = workingDir
-	// Simulate -d flag by passing it as an argument (not via env var).
-	// main() does not parse this flag and will fail to use the directory.
 	cmd.Env = append(os.Environ(),
 		"RCT_SUBDIR_REGRESSION_CLI=1",
+		"RCT_SUBDIR_REGRESSION_FLAG="+flag,
+		"RCT_SUBDIR_REGRESSION_DIRECTORY=subproj",
 		"RCT_SUBDIR_REGRESSION_COMMAND=1",
 	)
 	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("CLI subprocess failed: %v\nOutput:\n%s", err, output)
-	}
-	return string(output)
+	return string(output), err
 }
 
 func TestSubdirRegressionCLIProcess(t *testing.T) {
@@ -147,6 +138,9 @@ func TestSubdirRegressionCLIProcess(t *testing.T) {
 	}
 
 	os.Args = []string{"rct"}
+	if flag := os.Getenv("RCT_SUBDIR_REGRESSION_FLAG"); flag != "" {
+		os.Args = append(os.Args, flag)
+	}
 	if directory := os.Getenv("RCT_SUBDIR_REGRESSION_DIRECTORY"); directory != "" {
 		os.Args = append(os.Args, directory)
 	}

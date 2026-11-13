@@ -25,22 +25,17 @@ const testsDirName = "tests"
 func main() {
 	var settings CommandSettings
 
-	pflag.StringVarP(&settings.Directory, "directory", "d", ".", "Root directory to search")
 	pflag.StringVarP(&settings.TestDataDirectory, "test-data-directory", "t", "./data", "Directory containing test data")
 	pflag.BoolVarP(&settings.Verbose, "verbose", "v", false, "Enable verbose output")
 
 	pflag.Parse()
 
-	// Capture remaining positional arguments as directory path
-	for i := 1; i < len(os.Args); i++ {
-		if !strings.HasPrefix(os.Args[i], "-") && settings.Directory == "." {
-			settings.Directory = os.Args[i]
-			break
-		}
+	if pflag.NArg() > 0 {
+		settings.Directory = pflag.Arg(0)
 	}
 
 	ctx := context.Background() // Use for cancellation if needed
-	
+
 	exitCode := execute(ctx, settings)
 	os.Exit(exitCode)
 }
@@ -68,7 +63,6 @@ func execute(ctx context.Context, settings CommandSettings) int {
 		}
 
 		testDirPath := filepath.Join(programDir, testsDirName)
-
 		if settings.Verbose {
 			printSeparator('+', 40)
 			fmt.Printf("\033[33mProgram directory:\033[0m \033[1m%s\033[0m\n", programDir)
@@ -179,7 +173,6 @@ func runTest(ctx context.Context, testFile, testDataDir string, verbose bool, te
 	}
 
 	actualOutput, exitCode := executeCommand(ctx, command, programDir, testType)
-
 	if verbose {
 		fmt.Println("Command output (Actual):")
 		printSeparator('.', 40)
@@ -190,7 +183,6 @@ func runTest(ctx context.Context, testFile, testDataDir string, verbose bool, te
 	}
 
 	success := strings.TrimRight(actualOutput, "\r\n") == strings.TrimRight(expectedOutput, "\r\n")
-
 	if success {
 		fmt.Println("\033[32mOK\033[0m")
 	} else {
@@ -209,7 +201,6 @@ func readTestFile(path, testDataDir string, verbose bool) (string, string, error
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
-
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error scanning file: %v\n", err)
 		return "", "", err
@@ -217,18 +208,14 @@ func readTestFile(path, testDataDir string, verbose bool) (string, string, error
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-
 	if len(lines) < 3 {
 		return "", "", fmt.Errorf("malformed test file")
 	}
-
 	command := strings.TrimSpace(lines[0])
 	command = strings.ReplaceAll(command, "TEST_DATA_DIR", testDataDir)
-
 	if verbose {
 		fmt.Printf("Command: %s\n", command)
 	}
-
 	expectedOutput := strings.Join(lines[2:], "\n")
 	return command, expectedOutput, nil
 }
@@ -238,7 +225,6 @@ func executeCommand(ctx context.Context, commandStr, workingDir, outputType stri
 	if len(parts) == 0 {
 		return "", -1
 	}
-
 	executable := parts[0]
 	args := parts[1:]
 
@@ -249,10 +235,8 @@ func executeCommand(ctx context.Context, commandStr, workingDir, outputType stri
 
 	var stdout, stderr strings.Builder
 	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
+cmd.Stderr = &stderr
 	err := cmd.Run()
-
 	exitCode := 0
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
@@ -268,7 +252,6 @@ func executeCommand(ctx context.Context, commandStr, workingDir, outputType stri
 	} else {
 		output = stderr.String()
 	}
-
 	return strings.TrimRight(output, "\r\n"), exitCode
 }
 
