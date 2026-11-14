@@ -30,8 +30,9 @@ var printCmd = &cobra.Command{
 	Short: "Print out a crontab",
 	Long: `This command prints out a crontab with the daily tasks.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		printAllTasks(os.Stdout)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		printAllTasks(cmd.OutOrStdout())
+		return nil
 	},
 }
 
@@ -86,7 +87,7 @@ func getLocalScripts() string {
 
 	currentUser, err := user.Current()
 	if err != nil {
-		log.Fatal(nil)
+		log.Fatalf("failed to retrieve current user: %v", err)
 	}
 	return filepath.Join(currentUser.HomeDir, "local-scripts")
 }
