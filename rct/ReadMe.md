@@ -20,11 +20,13 @@ The directory to search is an optional positional argument, not a flag:
 
 ## Test discovery and format
 
-The CLI recursively searches the root and its subdirectories for directories
-named `tests`. Hidden directories and directories whose names end in `.dSYM`
-are skipped. In each `tests` directory, non-directory files ending in `.txt`
-or `.err` (case-insensitive) are run in filename order; other files are
-ignored.
+The CLI considers the supplied root and recursively enumerates its
+subdirectories as potential sub-project roots; these directories do not need
+to be named `tests`. Dot-prefixed subdirectories (such as `.ignored`) and
+directories whose names end in `.dSYM` are skipped. For each potential
+sub-project root, the CLI looks for an immediate `tests` subdirectory. In each
+`tests` directory, non-directory files ending in `.txt` or `.err`
+(case-insensitive) are run in filename order; other files are ignored.
 
 Each test file must contain at least three lines:
 
