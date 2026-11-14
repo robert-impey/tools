@@ -1,4 +1,4 @@
-package cmd
+package cronsetter
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ func TestRefreshCrontabPreservesBeforeAndAfter(t *testing.T) {
 `
 
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -62,12 +62,12 @@ func TestRefreshCrontabRepeatedRefreshDoesNotAccumulateBlankLines(t *testing.T) 
 `
 
 	var firstOut bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &firstOut); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &firstOut); err != nil {
 		t.Fatalf("first refreshCrontab error: %v", err)
 	}
 
 	var secondOut bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(firstOut.String()), &secondOut); err != nil {
+	if err := RefreshCrontab(strings.NewReader(firstOut.String()), &secondOut); err != nil {
 		t.Fatalf("second refreshCrontab error: %v", err)
 	}
 
@@ -92,7 +92,7 @@ func TestRefreshCrontabWithoutExistingSectionAppendsTasks(t *testing.T) {
 	input := "# Only custom task\n5 0 * * * /usr/bin/echo custom\n"
 
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -110,7 +110,7 @@ func TestRefreshCrontabWithWhitespaceAroundComments(t *testing.T) {
 		"10 0 * * * /old/task\n\t " + footerCommentPrefix + " at 2023-01-01 00:00:00  \ncustom-after\n"
 
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -131,7 +131,7 @@ func TestRefreshCrontabWithWhitespaceAroundComments(t *testing.T) {
 
 func TestRefreshCrontabWithEmptyInput(t *testing.T) {
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(""), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(""), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -147,7 +147,7 @@ func TestRefreshCrontabWithHeaderAndNoFooter(t *testing.T) {
 	input := headerCommentPrefix + " at 2023-01-01 00:00:00\n10 0 * * * /old/task\n"
 
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -163,7 +163,7 @@ func TestRefreshCrontabWithoutTrailingNewline(t *testing.T) {
 	input := "5 0 * * * /usr/bin/echo custom"
 
 	var out bytes.Buffer
-	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+	if err := RefreshCrontab(strings.NewReader(input), &out); err != nil {
 		t.Fatalf("refreshCrontab returned error: %v", err)
 	}
 
@@ -181,7 +181,7 @@ func TestRefreshCrontabWithoutTrailingNewline(t *testing.T) {
 func TestRefreshCrontabReturnsReaderError(t *testing.T) {
 	wantErr := errors.New("read failed")
 	var out bytes.Buffer
-	if err := refreshCrontab(errorReader{err: wantErr}, &out); !errors.Is(err, wantErr) {
+	if err := RefreshCrontab(errorReader{err: wantErr}, &out); !errors.Is(err, wantErr) {
 		t.Fatalf("refreshCrontab error = %v, want %v", err, wantErr)
 	}
 }

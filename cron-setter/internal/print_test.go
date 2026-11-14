@@ -1,4 +1,4 @@
-package cmd
+package cronsetter
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ func TestPrintAllTasksGeneratesValidCronEntries(t *testing.T) {
 	t.Setenv("LOCAL_SCRIPTS", filepath.Join(t.TempDir(), "local-scripts"))
 
 	var out bytes.Buffer
-	printAllTasks(&out)
+	PrintTasks(&out)
 
 	expectedTools := []string{
 		"Sweep-ManagedFolders.ps1",
@@ -78,7 +78,7 @@ func TestPrintAllTasksUsesLocalScriptsEnvironmentOverride(t *testing.T) {
 	t.Setenv("LOCAL_SCRIPTS", localScripts)
 
 	var out bytes.Buffer
-	printAllTasks(&out)
+	PrintTasks(&out)
 
 	for _, script := range []string{
 		filepath.Join(localScripts, "_Common", "stay_deleted", "Sweep-ManagedFolders.ps1"),

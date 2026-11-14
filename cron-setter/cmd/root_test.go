@@ -35,10 +35,10 @@ func TestRootCmdPrint(t *testing.T) {
 	}
 
 	result := out.String()
-	if !strings.Contains(result, headerCommentPrefix+" at ") {
+	if !strings.Contains(result, "# Start of crontab tasks created by cron-setter at ") {
 		t.Errorf("expected output to contain header comment prefix, got: %s", result)
 	}
-	if !strings.Contains(result, footerCommentPrefix+" at ") {
+	if !strings.Contains(result, "# End of cron tasks created by cron-setter at ") {
 		t.Errorf("expected output to contain footer comment prefix, got: %s", result)
 	}
 	if !strings.Contains(result, "Sweep-ManagedFolders.ps1") {
