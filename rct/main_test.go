@@ -113,6 +113,27 @@ func TestReadTestFile(t *testing.T) {
 	}
 }
 
+func TestReadTestFileErrorExt(t *testing.T) {
+	tempDir := t.TempDir()
+	testPath := filepath.Join(tempDir, "test.err")
+	testContent := "command --fail\n---\nexpected error output"
+	if err := os.WriteFile(testPath, []byte(testContent), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	command, output, err := readTestFile(testPath, filepath.Join(tempDir, "data"), false)
+	if err != nil {
+		t.Fatalf("readTestFile failed unexpectedly: %v", err)
+	}
+
+	if command != "command --fail" {
+		t.Errorf("Expected command %q, got %q", "command --fail", command)
+	}
+	if output != "expected error output" {
+		t.Errorf("Expected output %q, got %q", "expected error output", output)
+	}
+}
+
 func TestReadTestFileReplacesTestDataDirToken(t *testing.T) {
 	testDataDir := filepath.Join("/tmp", "fixture-data")
 	testPath := filepath.Join(t.TempDir(), "test.txt")
