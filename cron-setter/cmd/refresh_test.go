@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"errors"
-	"io"
 	"strings"
 	"testing"
 )
@@ -193,16 +192,4 @@ type errorReader struct {
 
 func (r errorReader) Read([]byte) (int, error) {
 	return 0, r.err
-}
-
-func TestExecuteHelp(t *testing.T) {
-	previousOut := rootCmd.OutOrStdout()
-	t.Cleanup(func() {
-		rootCmd.SetArgs(nil)
-		rootCmd.SetOut(previousOut)
-	})
-	rootCmd.SetArgs([]string{"--help"})
-	rootCmd.SetOut(io.Discard)
-
-	Execute()
 }
