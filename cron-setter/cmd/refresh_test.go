@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"strings"
 	"testing"
 )
@@ -102,4 +104,105 @@ func TestRefreshCrontabWithoutExistingSectionAppendsTasks(t *testing.T) {
 	if !strings.Contains(result, footerCommentPrefix+" at ") {
 		t.Fatalf("expected output to contain footer comment, got:\n%s", result)
 	}
+}
+
+func TestRefreshCrontabWithWhitespaceAroundComments(t *testing.T) {
+	input := "custom-before\n \t" + headerCommentPrefix + " at 2023-01-01 00:00:00 \t\n" +
+		"10 0 * * * /old/task\n\t " + footerCommentPrefix + " at 2023-01-01 00:00:00  \ncustom-after\n"
+
+	var out bytes.Buffer
+	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+		t.Fatalf("refreshCrontab returned error: %v", err)
+	}
+
+	result := out.String()
+	if !strings.HasPrefix(result, "custom-before\n"+headerCommentPrefix+" at ") {
+		t.Fatalf("expected leading custom content and regenerated header, got:\n%s", result)
+	}
+	if strings.Contains(result, "/old/task") || strings.Contains(result, "2023-01-01 00:00:00") {
+		t.Fatalf("expected old managed section to be replaced, got:\n%s", result)
+	}
+	if !strings.Contains(result, "\ncustom-after\n") {
+		t.Fatalf("expected footer and trailing custom content, got:\n%s", result)
+	}
+	if !strings.Contains(result, footerCommentPrefix+" at ") {
+		t.Fatalf("expected regenerated footer, got:\n%s", result)
+	}
+}
+
+func TestRefreshCrontabWithEmptyInput(t *testing.T) {
+	var out bytes.Buffer
+	if err := refreshCrontab(strings.NewReader(""), &out); err != nil {
+		t.Fatalf("refreshCrontab returned error: %v", err)
+	}
+
+	if !strings.HasPrefix(out.String(), headerCommentPrefix+" at ") {
+		t.Fatalf("expected generated tasks for empty input, got:\n%s", out.String())
+	}
+	if !strings.Contains(out.String(), footerCommentPrefix+" at ") {
+		t.Fatalf("expected generated footer for empty input, got:\n%s", out.String())
+	}
+}
+
+func TestRefreshCrontabWithHeaderAndNoFooter(t *testing.T) {
+	input := headerCommentPrefix + " at 2023-01-01 00:00:00\n10 0 * * * /old/task\n"
+
+	var out bytes.Buffer
+	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+		t.Fatalf("refreshCrontab returned error: %v", err)
+	}
+
+	if strings.Contains(out.String(), "/old/task") {
+		t.Fatalf("expected the unfinished managed section to be replaced, got:\n%s", out.String())
+	}
+	if !strings.Contains(out.String(), footerCommentPrefix+" at ") {
+		t.Fatalf("expected regenerated footer for an unfinished managed section, got:\n%s", out.String())
+	}
+}
+
+func TestRefreshCrontabWithoutTrailingNewline(t *testing.T) {
+	input := "5 0 * * * /usr/bin/echo custom"
+
+	var out bytes.Buffer
+	if err := refreshCrontab(strings.NewReader(input), &out); err != nil {
+		t.Fatalf("refreshCrontab returned error: %v", err)
+	}
+
+	if !strings.HasPrefix(out.String(), input+"\n"+headerCommentPrefix+" at ") {
+		t.Fatalf("expected input line followed by generated header, got:\n%s", out.String())
+	}
+	if !strings.HasSuffix(out.String(), "\n") {
+		t.Fatalf("expected generated footer to end with a newline, got:\n%s", out.String())
+	}
+	if !strings.Contains(out.String(), footerCommentPrefix+" at ") {
+		t.Fatalf("expected generated footer, got:\n%s", out.String())
+	}
+}
+
+func TestRefreshCrontabReturnsReaderError(t *testing.T) {
+	wantErr := errors.New("read failed")
+	var out bytes.Buffer
+	if err := refreshCrontab(errorReader{err: wantErr}, &out); !errors.Is(err, wantErr) {
+		t.Fatalf("refreshCrontab error = %v, want %v", err, wantErr)
+	}
+}
+
+type errorReader struct {
+	err error
+}
+
+func (r errorReader) Read([]byte) (int, error) {
+	return 0, r.err
+}
+
+func TestExecuteHelp(t *testing.T) {
+	previousOut := rootCmd.OutOrStdout()
+	t.Cleanup(func() {
+		rootCmd.SetArgs(nil)
+		rootCmd.SetOut(previousOut)
+	})
+	rootCmd.SetArgs([]string{"--help"})
+	rootCmd.SetOut(io.Discard)
+
+	Execute()
 }
