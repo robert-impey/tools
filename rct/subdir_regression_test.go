@@ -15,7 +15,7 @@ func TestCLIUsesPositionalDirectoryArgument(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	executable, err := os.ReadFile(executablePath)
 	if err != nil {
 		t.Fatal(err)

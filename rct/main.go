@@ -234,7 +234,7 @@ func executeCommand(ctx context.Context, commandStr, workingDir, outputType stri
 
 	var stdout, stderr strings.Builder
 	cmd.Stdout = &stdout
-cmd.Stderr = &stderr
+	cmd.Stderr = &stderr
 	err := cmd.Run()
 	exitCode := 0
 	if err != nil {
