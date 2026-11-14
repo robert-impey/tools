@@ -55,14 +55,12 @@ func TestEnumerateFilteredDirectories(t *testing.T) {
 
 	// 3. Assertions
 	expected := []string{
-		tempDir,
 		programADir,
 		programBDir,
 		filepath.Join(tempDir, "file_without_program"),
 	}
 
-	// Since the function is non-deterministic in order and includes rootDir,
-	// we check containment and count.
+	// Since the function is non-deterministic in order, we check containment and count.
 	if len(actual) < 3 {
 		t.Fatalf("Expected at least 3 program directories, got %d. List: %v", len(actual), actual)
 	}
