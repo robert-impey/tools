@@ -34,6 +34,10 @@ Each test file must contain at least three lines:
 2. A separator line, which is ignored.
 3. The expected output; any remaining lines are part of it.
 
+Each individual line is subject to `bufio.Scanner`'s default token limit of
+roughly 64 KiB. This is a per-line limit, not a whole-file limit; an
+overlong line is reported as a test-file read error.
+
 For example:
 
 ```text
@@ -51,5 +55,5 @@ trailing newline characters, but otherwise requires an exact match.
 The CLI prints a success count and percentage when tests are found. In verbose
 mode it also displays each command's exit code. Exit codes do not affect
 whether a test passes: pass/fail is determined only by output. The CLI exits
-with status `1` when no tests are found or the operation is cancelled; test
-failures alone do not change its exit status.
+with status `1` when no tests are found; test failures alone do not change its
+exit status.

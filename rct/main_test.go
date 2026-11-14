@@ -13,66 +13,44 @@ import (
 
 // TestEnumerateFilteredDirectories tests the logic for finding program directories.
 func TestEnumerateFilteredDirectories(t *testing.T) {
-	// 1. Setup a temporary directory structure
-	tempDir, err := os.MkdirTemp("", "test_root")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	// Structure:
-	// tempDir/
-	// ├── programA/
-	// │   ├── tests/
-	// │   └── file.txt
-	// ├── .ignored/
-	// ├── programB/
-	// │   ├── tests/
-	// │   └── test.err
-	// └── file_without_program/
-
-	// Create programA
+	tempDir := t.TempDir()
 	programADir := filepath.Join(tempDir, "programA")
-	os.Mkdir(programADir, 0755)
-	os.Mkdir(filepath.Join(programADir, "tests"), 0755)
-	os.WriteFile(filepath.Join(programADir, "tests", "test1.txt"), []byte("dummy"), 0644)
-	os.WriteFile(filepath.Join(programADir, "file.txt"), []byte("dummy"), 0644)
-
-	// Create ignored directory
-	os.Mkdir(filepath.Join(tempDir, ".ignored"), 0755)
-
-	// Create programB
 	programBDir := filepath.Join(tempDir, "programB")
-	os.Mkdir(programBDir, 0755)
-	os.Mkdir(filepath.Join(programBDir, "tests"), 0755)
-	os.WriteFile(filepath.Join(programBDir, "tests", "test2.err"), []byte("dummy"), 0644)
+	directories := []string{
+		filepath.Join(tempDir, ".ignored"),
+		filepath.Join(tempDir, "file_without_program"),
+		programADir,
+		filepath.Join(programADir, "tests"),
+		programBDir,
+		filepath.Join(programBDir, "tests"),
+	}
+	for _, dir := range directories {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
 
-	// Create another directory to test filtering
-	os.Mkdir(filepath.Join(tempDir, "file_without_program"), 0755)
-
-	// 2. Run the function under test
 	actual := enumerateFilteredDirectories(tempDir)
-
-	// 3. Assertions
 	expected := []string{
+		tempDir,
+		filepath.Join(tempDir, "file_without_program"),
 		programADir,
 		programBDir,
-		filepath.Join(tempDir, "file_without_program"),
+		filepath.Join(programADir, "tests"),
+		filepath.Join(programBDir, "tests"),
 	}
 
-	// Since the function is non-deterministic in order, we check containment and count.
-	if len(actual) < 3 {
-		t.Fatalf("Expected at least 3 program directories, got %d. List: %v", len(actual), actual)
+	if len(actual) != len(expected) {
+		t.Fatalf("enumerateFilteredDirectories() returned %v, want exactly %v", actual, expected)
 	}
 
 	found := make(map[string]bool)
 	for _, dir := range actual {
 		found[dir] = true
 	}
-
 	for _, expectedDir := range expected {
 		if _, found := found[expectedDir]; !found {
-			t.Errorf("Expected directory %s not found in results.", expectedDir)
+			t.Errorf("enumerateFilteredDirectories() did not include %s; got %v", expectedDir, actual)
 		}
 	}
 }
@@ -594,7 +572,7 @@ func TestMainHelperCommand(t *testing.T) {
 	os.Exit(0)
 }
 
-func TestEnumerateFilteredDirectoriesHandlesErrorsAndDSYM(t *testing.T) {
+func TestEnumerateFilteredDirectoriesFiltersDSYM(t *testing.T) {
 	tempDir := t.TempDir()
 
 	validSubdir := filepath.Join(tempDir, "valid_subdir")
@@ -607,31 +585,34 @@ func TestEnumerateFilteredDirectoriesHandlesErrorsAndDSYM(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	unreadableDir := filepath.Join(tempDir, "unreadable_dir")
-	if err := os.Mkdir(unreadableDir, 0000); err == nil {
-		// Ensure permissions are restored so t.TempDir cleanup succeeds
-		t.Cleanup(func() {
-			os.Chmod(unreadableDir, 0755)
-		})
-	}
-
 	results := enumerateFilteredDirectories(tempDir)
 
+	foundValid := false
 	for _, dir := range results {
 		if strings.HasSuffix(dir, ".dSYM") {
 			t.Errorf("expected .dSYM directory to be filtered out, got %s", dir)
 		}
-	}
-
-	foundValid := false
-	for _, dir := range results {
 		if dir == validSubdir {
 			foundValid = true
-			break
 		}
 	}
 	if !foundValid {
 		t.Errorf("expected %s in results, but was missing", validSubdir)
+	}
+}
+
+func TestEnumerateFilteredDirectoriesHandlesReadDirError(t *testing.T) {
+	notDirectory := filepath.Join(t.TempDir(), "not-a-directory")
+	if err := os.WriteFile(notDirectory, []byte("file"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.ReadDir(notDirectory); err == nil {
+		t.Fatal("expected reading a regular file as a directory to fail")
+	}
+
+	got := enumerateFilteredDirectories(notDirectory)
+	if len(got) != 1 || got[0] != notDirectory {
+		t.Fatalf("enumerateFilteredDirectories() = %v, want [%s]", got, notDirectory)
 	}
 }
 
@@ -684,6 +665,18 @@ func TestReadTestFileErrorsAndVerbose(t *testing.T) {
 
 	if !strings.Contains(output, "Command: echo hello") {
 		t.Errorf("expected verbose output to contain 'Command: echo hello', got %q", output)
+	}
+}
+
+func TestReadTestFileRejectsOverlongLine(t *testing.T) {
+	testPath := filepath.Join(t.TempDir(), "overlong.txt")
+	content := "command\n---\n" + strings.Repeat("x", 64*1024+1)
+	if err := os.WriteFile(testPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, _, err := readTestFile(testPath, "", false); err == nil {
+		t.Fatal("readTestFile() accepted a line exceeding Scanner's token limit")
 	}
 }
 
