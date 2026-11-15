@@ -76,8 +76,8 @@ public static class SearchLogic
                 // Ensure stems are non-null before calling StartsWith to avoid CS8602.
                 if (!string.IsNullOrEmpty(otherStem)
                     && !string.IsNullOrEmpty(stem)
-                    && otherStem.StartsWith(stem, StringComparison.Ordinal)
-                    && otherStem != stem)
+                    && otherStem.StartsWith(stem, StringComparison.OrdinalIgnoreCase)
+                    && !otherStem.Equals(stem, StringComparison.OrdinalIgnoreCase))
                 {
                     result.Add((file, other));
                 }

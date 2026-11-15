@@ -85,6 +85,57 @@ public class SearchLogicTest
     }
 
     [Fact]
+    public void FindMatchingStems_MatchesStemsRegardlessOfCaseInSameFolder()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "TidyFolderTest", "foo");
+        var entries = new List<DirEntry>
+        {
+            new() { Path = Path.Combine(directory, "readme.md"), Name = "readme.md" },
+            new() { Path = Path.Combine(directory, "ReadMe-v2.md"), Name = "ReadMe-v2.md" },
+        };
+
+        var matches = SearchLogic.FindMatchingStems(entries);
+
+        matches.ShouldHaveSingleItem();
+        matches[0].Item1.Name.ShouldBe("readme.md");
+        matches[0].Item2.Name.ShouldBe("ReadMe-v2.md");
+    }
+
+    [Fact]
+    public void FindMatchingStems_MatchesExtensionsRegardlessOfCase()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "TidyFolderTest", "foo");
+        var entries = new List<DirEntry>
+        {
+            new() { Path = Path.Combine(directory, "report.md"), Name = "report.md" },
+            new() { Path = Path.Combine(directory, "report-final.MD"), Name = "report-final.MD" },
+        };
+
+        var matches = SearchLogic.FindMatchingStems(entries);
+
+        matches.ShouldHaveSingleItem();
+        matches[0].Item1.Name.ShouldBe("report.md");
+        matches[0].Item2.Name.ShouldBe("report-final.MD");
+    }
+
+    [Fact]
+    public void FindMatchingStems_MatchesExtensionlessFiles()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "TidyFolderTest", "foo");
+        var entries = new List<DirEntry>
+        {
+            new() { Path = Path.Combine(directory, "README"), Name = "README" },
+            new() { Path = Path.Combine(directory, "README-v2"), Name = "README-v2" },
+        };
+
+        var matches = SearchLogic.FindMatchingStems(entries);
+
+        matches.ShouldHaveSingleItem();
+        matches[0].Item1.Name.ShouldBe("README");
+        matches[0].Item2.Name.ShouldBe("README-v2");
+    }
+
+    [Fact]
     public void SearchDirectory_NoLogsDir_DoesNotError()
     {
         var tempDir = Directory.CreateTempSubdirectory();

@@ -24,8 +24,8 @@ TidyFolder search --logs-dir "C:\\Logs" "C:\\Documents"
 ### Matching and output
 
 Only files are considered; directories are not included.
-A pair is reported when both files have exactly the same parent folder path (including case), their extensions match without regard to case, and one filename stem starts with the other using a case-sensitive comparison. 
-For example, `report.txt` and `report-final.TXT` match, but `Report-final.txt` does not match `report.txt` because the stem comparison is case-sensitive.
+A pair is reported when both files have exactly the same parent folder path (including case), their extensions match without regard to case, and one filename stem starts with the other without regard to case. 
+For example, `report.txt` and `Report-final.TXT` match. Files in parent folder paths that differ only by case are treated as being in different folders.
 A file with no extension can match another extensionless file.
 
 Results are grouped by parent folder, with the two filenames listed under each folder. 
