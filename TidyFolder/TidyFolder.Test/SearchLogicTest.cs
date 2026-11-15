@@ -70,6 +70,21 @@ public class SearchLogicTest
     }
 
     [Fact]
+    public void FindMatchingStems_DoesNotMatchFilesInCaseDifferentFolders()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "TidyFolderTest");
+        var entries = new List<DirEntry>
+        {
+            new() { Path = Path.Combine(root, "foo", "readme.md"), Name = "readme.md" },
+            new() { Path = Path.Combine(root, "FOO", "readme-v2.md"), Name = "readme-v2.md" },
+        };
+
+        var matches = SearchLogic.FindMatchingStems(entries);
+
+        matches.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void SearchDirectory_NoLogsDir_DoesNotError()
     {
         var tempDir = Directory.CreateTempSubdirectory();

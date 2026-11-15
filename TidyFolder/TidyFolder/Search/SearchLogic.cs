@@ -68,7 +68,7 @@ public static class SearchLogic
 
                 var dir1 = Path.GetDirectoryName(file.Path) ?? string.Empty;
                 var dir2 = Path.GetDirectoryName(other.Path) ?? string.Empty;
-                if (!dir1.Equals(dir2, StringComparison.OrdinalIgnoreCase))
+                if (!dir1.Equals(dir2, StringComparison.Ordinal))
                 {
                     continue;
                 }
