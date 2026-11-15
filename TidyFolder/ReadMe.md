@@ -11,7 +11,7 @@ TidyFolder search [OPTIONS] <directory>
 
 ### Arguments and options
 
-- `<directory>` — required path to an existing directory. The command searches its files recursively.
+- `<directory>` – required path to an existing directory. The command **recursively** searches the supplied directory’s file tree for matching filename stems and extensions, reporting related files such as `report.txt` and `report-final.txt`.
 - `-l|--logs-dir <PATH>` — optional path to an existing directory where output and error log files are written.
 
 For example:

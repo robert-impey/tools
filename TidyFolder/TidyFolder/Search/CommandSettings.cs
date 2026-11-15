@@ -11,7 +11,7 @@ public class CommandSettings : Spectre.Console.Cli.CommandSettings
     public string LogsDirectory { get; set; } = string.Empty;
 
     [CommandArgument(0, "<directory>")]
-    [Description("Search a single directory")]
+    [Description("Root directory to search recursively")]
     public string Directory { get; init; } = string.Empty;
 
     public override ValidationResult Validate()

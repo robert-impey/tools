@@ -21,7 +21,7 @@ app.Configure(config =>
     config.SetApplicationName("TidyFolder");
 
     config.AddCommand<TidyFolder.Search.Command>("search")
-        .WithDescription("Searches a single directory");
+        .WithDescription("Recursively searches a directory tree for files with matching filename stems and extensions.");
 
 });
 
