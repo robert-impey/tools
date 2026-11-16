@@ -6,7 +6,6 @@
     <kind value="PACKAGE" />
     <package value="github.com/robert-impey/tools/rct" />
     <directory value="$PROJECT_DIR$" />
-    <auto_managed_config_id value="$PROJECT_DIR$/rct" />
     <method v="2" />
   </configuration>
 </component>
