@@ -12,12 +12,6 @@ void main(List<String> args) async {
       final dir = Directory(arg);
       if (await dir.exists()) {
         targetDirs.add(dir);
-      } else {
-        final file = File(arg);
-        if (await file.exists()) {
-          // If a file is provided, use its parent directory
-          targetDirs.add(file.parent);
-        }
       }
     }
   }
