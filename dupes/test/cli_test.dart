@@ -23,4 +23,20 @@ void main() {
 
     await tempDir.delete(recursive: true);
   });
+
+  test('CLI prints usage message when no target directories are provided', () async {
+    var result = await Process.run('dart', ['run', 'bin/dupes.dart']);
+    expect(result.exitCode, equals(0));
+    expect(
+      result.stdout,
+      contains('Usage: dart run bin/dupes.dart [--dupes] <directory1> [directory2] ...'),
+    );
+
+    result = await Process.run('dart', ['run', 'bin/dupes.dart', '--dupes']);
+    expect(result.exitCode, equals(0));
+    expect(
+      result.stdout,
+      contains('Usage: dart run bin/dupes.dart [--dupes] <directory1> [directory2] ...'),
+    );
+  });
 }
