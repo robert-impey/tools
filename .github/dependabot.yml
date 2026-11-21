@@ -29,7 +29,9 @@ updates:
 
 # --- Dart packages (pub) ---
 - package-ecosystem: "pub"
-  directory: "/dupes"
+  directories:
+    - "/dupes"
+    - "/sorttrees"
   schedule:
     interval: "weekly"
     day: "friday"
